@@ -50,7 +50,7 @@ def ControlTimeout():
         print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}.' + Style.RESET_ALL)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def SwitchIndicator(color: dict, sheet_name: str, service):
