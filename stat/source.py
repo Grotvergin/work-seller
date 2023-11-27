@@ -76,7 +76,7 @@ SHEETS_AND_COLS = {
                'totalPrice': '+',
                'discountPercent': '+',
                'warehouseName': '+',
-               'oblastOkrugName': '+',
+               'regionName': '+',
                'incomeID': '+',
                'odid': '',
                'nmId': '+',
