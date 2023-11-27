@@ -32,6 +32,7 @@ def main():
         while not SwitchIndicator(GREEN, heading, len(COLS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
+    ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
@@ -44,10 +45,10 @@ def ParseCurrentHeading(config, heading: str):
 def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
-        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        print(Fore.RED + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def SwitchIndicator(color: dict, sheet_name: str, width:int, service):

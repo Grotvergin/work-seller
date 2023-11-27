@@ -21,13 +21,9 @@ def main():
             print(Fore.LIGHTBLUE_EX + f"Current word is: {word}" + Style.RESET_ALL)
             for page in range(1, PAGES_QUANTITY + 1):
                 print(Fore.LIGHTBLUE_EX + f"Processing page number: {page}" + Style.RESET_ALL)
-                params = {'resultset': 'catalog',
-                          'page': page,
-                          'query': word,
-                          'sort': 'popular',
-                          'curr': 'rub',
-                          'dest': '-1257786'}
-                raw = GetData(URL, params)
+                PARAMS['page'] = page
+                PARAMS['query'] = word
+                raw = GetData(URL)
                 if raw:
                     prepared = PrepareData(raw, heading, COLUMNS, word, page)
                     while not UploadData(prepared, heading, row, service):
@@ -41,16 +37,17 @@ def main():
         while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
+    ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
 def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
-        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        print(Fore.RED + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
@@ -153,15 +150,15 @@ def UploadData(list_of_rows: list, sheet_name: str, row: int, service):
         return True
 
 
-def GetData(url: str, params: dict):
+def GetData(url: str):
     print(Fore.LIGHTBLUE_EX + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
         ControlTimeout()
         print(Fore.RED + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
-        raw = GetData(url, params)
+        raw = GetData(url)
     else:
         ControlTimeout()
         if response.status_code == 200:
@@ -170,7 +167,7 @@ def GetData(url: str, params: dict):
         else:
             print(Fore.RED + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
             Sleep(LONG_SLEEP)
-            raw = GetData(url, params)
+            raw = GetData(url)
     return raw
 
 

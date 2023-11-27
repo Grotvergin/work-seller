@@ -34,16 +34,17 @@ def main():
                 ControlTimeout()
                 Sleep(LONG_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
+    ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
 def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
-        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        print(Fore.RED + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def SwitchIndicator(color: dict, sheet_name: str, width:int, sheet_id:str, service):

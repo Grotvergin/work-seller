@@ -24,6 +24,7 @@ def main():
         while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
+    ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
@@ -81,10 +82,10 @@ def GetData(url: str, token:str, key:str, value:str):
 def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
-        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        print(Fore.RED + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def Sleep(timer: int):
