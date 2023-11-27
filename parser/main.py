@@ -7,7 +7,7 @@ def main():
 
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
-        while not SwitchIndicator(RED, heading, service):
+        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
         row = 2
@@ -38,7 +38,7 @@ def main():
                     print(Fore.LIGHTMAGENTA_EX + f'Page {page} is empty.')
                 Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, service):
+        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
@@ -53,10 +53,12 @@ def ControlTimeout():
         print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
-def SwitchIndicator(color: dict, sheet_name: str, service):
-    color['requests'][0]['repeatCell']['range']['sheetId'] = SHEETS_AND_GIDS[sheet_name]
+def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
+    color['requests'][0]['repeatCell']['range']['endColumnIndex'] = width
     try:
-        responce = service.spreadsheets().batchUpdate(spreadsheetId=SHEET_ID, body=color).execute()
+        response = service.spreadsheets().get(spreadsheetId=SHEET_ID, ranges=[sheet_name], includeGridData=False).execute()
+        color['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get('sheetId')
+        service.spreadsheets().batchUpdate(spreadsheetId=SHEET_ID, body=color).execute()
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
@@ -66,7 +68,6 @@ def SwitchIndicator(color: dict, sheet_name: str, service):
     else:
         print(Fore.GREEN + f"Switching success." + Style.RESET_ALL)
         return True
-
 
 
 def ParseConfig():
@@ -83,8 +84,10 @@ def BuildService():
     except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError):
         print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
+        ControlTimeout()
         BuildService()
     else:
+        ControlTimeout()
         print(Fore.GREEN + f'Built service successfully.' + Style.RESET_ALL)
         return service
 

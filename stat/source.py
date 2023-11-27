@@ -1,6 +1,6 @@
 import sys
 import datetime
-from time import sleep
+import time
 from googleapiclient.discovery import build
 import httplib2
 import requests
@@ -12,20 +12,21 @@ from tqdm import tqdm
 from colorama import Fore, Style, init
 
 init()
-scopes = ['https://www.googleapis.com/auth/spreadsheets']
-creds = service_account.Credentials.from_service_account_file('keys.json', scopes=scopes)
-percent_commission = 0.022249
-long_sleep = 90
-short_sleep = 5
+START = time.time()
+TIMEOUT = 3600*2
+CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
+PERC_COMM = 0.022249
+LONG_SLEEP = 90
+SHORT_SLEEP = 5
 
-sheets_and_url = {
+SHEETS_AND_URL = {
     'Realisations': 'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
     'Orders': 'https://statistics-api.wildberries.ru/api/v1/supplier/orders',
     'Sales': 'https://statistics-api.wildberries.ru/api/v1/supplier/sales',
     'Warehouse': 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks'
 }
 
-sheets_and_columns = {
+SHEETS_AND_COLS = {
     'Realisations': {'realizationreport_id': '+',
                      'suppliercontract_code': 'SPEC',
                      'rrd_id': '+',
@@ -136,4 +137,54 @@ sheets_and_columns = {
                   'Price': '+',
                   'Discount': '+',
                   'WarehouseID': ''}
+}
+
+RED = {
+    'requests': [
+        {
+            'repeatCell': {
+                'range': {
+                    'startRowIndex': 0,
+                    'endRowIndex': 1,
+                    'startColumnIndex': 0
+                },
+                'cell': {
+                    'userEnteredFormat': {
+                        'backgroundColor': {
+                            'red': 1.0,
+                            'green': 0.0,
+                            'blue': 0.0,
+                            'alpha': 0.5
+                        }
+                    }
+                },
+                'fields': 'userEnteredFormat.backgroundColor'
+            }
+        }
+    ]
+}
+
+GREEN = {
+    'requests': [
+        {
+            'repeatCell': {
+                'range': {
+                    'startRowIndex': 0,
+                    'endRowIndex': 1,
+                    'startColumnIndex': 0
+                },
+                'cell': {
+                    'userEnteredFormat': {
+                        'backgroundColor': {
+                            'red': 0.0,
+                            'green': 1.0,
+                            'blue': 0.0,
+                            'alpha': 0.2
+                        }
+                    }
+                },
+                'fields': 'userEnteredFormat.backgroundColor'
+            }
+        }
+    ]
 }

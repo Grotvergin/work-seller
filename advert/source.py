@@ -1,4 +1,5 @@
-from time import sleep
+import time
+import sys
 from googleapiclient.discovery import build
 import requests
 import httplib2
@@ -10,16 +11,17 @@ from tqdm import tqdm
 from colorama import Fore, Style, init
 
 init()
-url_for_all_campaigns = 'https://advert-api.wb.ru/adv/v0/adverts'
-url_for_statistics = 'https://advert-api.wb.ru/adv/v1/fullstat'
-short_sleep = 10
-long_sleep = 300
-message = 'No data'
-scopes = ['https://www.googleapis.com/auth/spreadsheets']
-spreadsheet_id = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
-creds = service_account.Credentials.from_service_account_file('keys.json', scopes=scopes)
+URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v0/adverts'
+URL_STAT = 'https://advert-api.wb.ru/adv/v1/fullstat'
+START = time.time()
+TIMEOUT = 3600*6
+SHORT_SLEEP = 10
+LONG_SLEEP = 300
+MSG = 'No data'
+SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
+CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 
-columns = {'advertId': 'SPEC',
+COLUMNS = {'advertId': 'SPEC',
            'date': 'SPEC',
            'nmId': '+',
            'name': '+',
@@ -33,3 +35,53 @@ columns = {'advertId': 'SPEC',
            'cr': '+',
            'shks': '+',
            'sum_price': '+'}
+
+RED = {
+    'requests': [
+        {
+            'repeatCell': {
+                'range': {
+                    'startRowIndex': 0,
+                    'endRowIndex': 1,
+                    'startColumnIndex': 0
+                },
+                'cell': {
+                    'userEnteredFormat': {
+                        'backgroundColor': {
+                            'red': 1.0,
+                            'green': 0.0,
+                            'blue': 0.0,
+                            'alpha': 0.5
+                        }
+                    }
+                },
+                'fields': 'userEnteredFormat.backgroundColor'
+            }
+        }
+    ]
+}
+
+GREEN = {
+    'requests': [
+        {
+            'repeatCell': {
+                'range': {
+                    'startRowIndex': 0,
+                    'endRowIndex': 1,
+                    'startColumnIndex': 0
+                },
+                'cell': {
+                    'userEnteredFormat': {
+                        'backgroundColor': {
+                            'red': 0.0,
+                            'green': 1.0,
+                            'blue': 0.0,
+                            'alpha': 0.2
+                        }
+                    }
+                },
+                'fields': 'userEnteredFormat.backgroundColor'
+            }
+        }
+    ]
+}

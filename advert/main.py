@@ -6,18 +6,42 @@ def main():
     service = BuildService()
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
+        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
+            ControlTimeout()
+            Sleep(LONG_SLEEP)
         token, blank_rows = ParseCurrentHeading(config, heading)
         print(Fore.LIGHTBLUE_EX + f"Configuration: \nToken = {token}\nBlank rows = {blank_rows}" + Style.RESET_ALL)
-        empty = PrepareEmpty(len(columns), blank_rows)
-        while not UploadData(empty, heading, len(columns), 2, service):
-            Sleep(long_sleep)
-        raw = GetData(url_for_all_campaigns, token, 'order', 'create')
+        empty = PrepareEmpty(len(COLUMNS), blank_rows)
+        while not UploadData(empty, heading, len(COLUMNS), 2, service):
+            ControlTimeout()
+            Sleep(LONG_SLEEP)
+        raw = GetData(URL_CAMPAIGNS, token, 'order', 'create')
         if raw:
-            ProcessData(raw, heading, columns, token, service)
+            ProcessData(raw, heading, COLUMNS, token, service)
         else:
             print(Fore.LIGHTBLUE_EX + f"Sheet {heading} is empty." + Style.RESET_ALL)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
+        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
+            ControlTimeout()
+            Sleep(LONG_SLEEP)
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
+    color['requests'][0]['repeatCell']['range']['endColumnIndex'] = width
+    try:
+        response = service.spreadsheets().get(spreadsheetId=SHEET_ID, ranges=[sheet_name], includeGridData=False).execute()
+        color['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get('sheetId')
+        service.spreadsheets().batchUpdate(spreadsheetId=SHEET_ID, body=color).execute()
+    except HttpError as err:
+        print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        return False
+    except (TimeoutError, httplib2.error.ServerNotFoundError):
+        print(Fore.RED + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        return False
+    else:
+        print(Fore.GREEN + f"Switching success." + Style.RESET_ALL)
+        return True
 
 
 def MakeColumnIndexes():
@@ -39,26 +63,37 @@ def GetData(url: str, token:str, key:str, value:str):
         response = requests.get(url, headers=headers, params=params)
     except requests.ConnectionError:
         print(Fore.RED + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
-        Sleep(long_sleep)
+        Sleep(LONG_SLEEP)
+        ControlTimeout()
         raw = GetData(url, token, key, value)
     else:
+        ControlTimeout()
         if response.status_code == 200:
             print(Fore.GREEN + f'Success status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
             raw = response.json()
         else:
             print(Fore.RED + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
-            Sleep(long_sleep)
+            Sleep(LONG_SLEEP)
             raw = GetData(url, token, key, value)
     return raw
 
 
-def Sleep(time: int):
-    print(Fore.LIGHTBLUE_EX + f'Sleeping for {time} seconds...')
-    if time == short_sleep:
-        sleep(short_sleep)
+def ControlTimeout():
+    current = time.time()
+    if (current - START) > TIMEOUT:
+        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        sys.exit()
     else:
-        for _ in tqdm(range(time)):
-            sleep(1)
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+
+
+def Sleep(timer: int):
+    print(Fore.LIGHTBLUE_EX + f'Sleeping for {timer} seconds...')
+    if timer == SHORT_SLEEP:
+        time.sleep(SHORT_SLEEP)
+    else:
+        for _ in tqdm(range(timer)):
+            time.sleep(1)
         print()
 
 
@@ -75,8 +110,8 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
 
     for i in tqdm(range(campaigns_number)):
         print()
-        data = GetData(url_for_statistics, token, 'id', raw[i]['advertId'])
-        Sleep(short_sleep)
+        data = GetData(URL_STAT, token, 'id', raw[i]['advertId'])
+        Sleep(SHORT_SLEEP)
 
         list_of_rows = []
         try:
@@ -114,30 +149,31 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
                             try:
                                 one_row.append(str(data['days'][j]['apps'][k]['nm'][nm][key]).replace('.', ','))
                             except KeyError:
-                                one_row.append(message)
+                                one_row.append(MSG)
                         elif key == 'advertId':
                             try:
                                 one_row.append(str(data[key]))
                             except KeyError:
-                                one_row.append(message)
+                                one_row.append(MSG)
                         elif key == 'date':
                             try:
                                 one_row.append(str(data['days'][j][key]))
                             except KeyError:
-                                one_row.append(message)
+                                one_row.append(MSG)
                         else:
                             one_row.append(value.replace('.', ','))
                     list_of_rows.append(one_row)
 
         while not UploadData(list_of_rows, sheet_name, width, row, service):
-            Sleep(long_sleep)
+            ControlTimeout()
+            Sleep(LONG_SLEEP)
         row += len(list_of_rows)
 
 
 def UploadData(list_of_rows: list, sheet_name: str, width: int, row: int, service):
     body = {'values': list_of_rows}
     try:
-        res = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id,
+        res = service.spreadsheets().values().update(spreadsheetId=SHEET_ID,
                                                      range=f'{sheet_name}!A{row}:{column_indexes[width]}{row + len(list_of_rows)}',
                                                      valueInputOption='USER_ENTERED', body=body).execute()
     except HttpError as err:
@@ -175,10 +211,11 @@ def PrepareEmpty(width: int, blank_rows: int):
 def BuildService():
     print(Fore.LIGHTBLUE_EX + f'Trying to build service...' + Style.RESET_ALL)
     try:
-        service = build('sheets', 'v4', credentials=creds)
+        service = build('sheets', 'v4', credentials=CREDS)
     except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError):
         print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
-        Sleep(long_sleep)
+        Sleep(LONG_SLEEP)
+        ControlTimeout()
         BuildService()
     else:
         print(Fore.GREEN + f'Built service successfully.' + Style.RESET_ALL)

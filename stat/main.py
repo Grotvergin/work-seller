@@ -7,26 +7,60 @@ def main():
 
     for heading in sections:
         print(Fore.YELLOW + f'Start of processing {heading}...' + Style.RESET_ALL)
-        token, dateFrom, dateTo, blank_rows, spreadsheet_id = ParseCurrentHeading(config, heading)
-        print(Fore.LIGHTBLUE_EX + f'Configuration: \nToken = {token}\nDateFrom = {dateFrom}\nDateTo = {dateTo}\nBlank rows = {blank_rows}\nSpreadsheet ID = {spreadsheet_id}' + Style.RESET_ALL)
+        token, date_from, date_to, blank_rows, spreadsheet_id = ParseCurrentHeading(config, heading)
+        print(Fore.LIGHTBLUE_EX + f'Configuration: \nToken = {token}\nDateFrom = {date_from}\nDateTo = {date_to}\nBlank rows = {blank_rows}\nSpreadsheet ID = {spreadsheet_id}' + Style.RESET_ALL)
 
-        for sheet, url in sheets_and_url.items():
-            empty = PrepareEmpty(len(sheets_and_columns[sheet]), blank_rows)
-            while not UploadData(empty, sheet, len(sheets_and_columns[sheet]), spreadsheet_id, service):
-                Sleep(long_sleep)
-            raw = GetData(url, token, dateFrom, dateTo)
+        for sheet, url in SHEETS_AND_URL.items():
+            while not SwitchIndicator(RED, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
+                ControlTimeout()
+                Sleep(LONG_SLEEP)
+            empty = PrepareEmpty(len(SHEETS_AND_COLS[sheet]), blank_rows)
+            while not UploadData(empty, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
+                ControlTimeout()
+                Sleep(LONG_SLEEP)
+            raw = GetData(url, token, date_from, date_to)
             if raw:
                 raw = Normalize(raw)
                 if sheet == 'Realisations':
                     raw = SortByRRD_ID(raw)
-                prepared = PrepareData(raw, sheet, sheets_and_columns[sheet])
-                while not UploadData(prepared, sheet, len(sheets_and_columns[sheet]), spreadsheet_id, service):
-                    Sleep(long_sleep)
+                prepared = PrepareData(raw, sheet, SHEETS_AND_COLS[sheet])
+                while not UploadData(prepared, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
+                    ControlTimeout()
+                    Sleep(LONG_SLEEP)
             else:
-                print(Fore.LIGHTBLUE_EX + f"Sheet {sheet} is empty from {dateFrom} to {dateTo}." + Style.RESET_ALL)
-            Sleep(long_sleep)
+                print(Fore.LIGHTBLUE_EX + f"Sheet {sheet} is empty from {date_from} to {date_to}." + Style.RESET_ALL)
+            Sleep(LONG_SLEEP)
+            while not SwitchIndicator(GREEN, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
+                ControlTimeout()
+                Sleep(LONG_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def ControlTimeout():
+    current = time.time()
+    if (current - START) > TIMEOUT:
+        print(Fore.RED + f'Timeout error: elapsed time is {current - START}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        sys.exit()
+    else:
+        print(Fore.GREEN + f'Timeout OK: elapsed time is {current - START}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+
+
+def SwitchIndicator(color: dict, sheet_name: str, width:int, sheet_id:str, service):
+    color['requests'][0]['repeatCell']['range']['endColumnIndex'] = width
+    try:
+        response = service.spreadsheets().get(spreadsheetId=sheet_id, ranges=[sheet_name], includeGridData=False).execute()
+        color['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get('sheetId')
+        service.spreadsheets().batchUpdate(spreadsheetId=sheet_id, body=color).execute()
+    except HttpError as err:
+        print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        return False
+    except (TimeoutError, httplib2.error.ServerNotFoundError):
+        print(Fore.RED + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        return False
+    else:
+        print(Fore.GREEN + f"Switching success." + Style.RESET_ALL)
+        return True
 
 
 def ParseConfig():
@@ -38,25 +72,27 @@ def ParseConfig():
 
 def ParseCurrentHeading(config, heading: str):
     token = config[heading]['Token']
-    dateFrom = config[heading]['DateFrom']
+    date_from = config[heading]['DateFrom']
     blank_rows = int(config[heading]['BlankSpace'])
     spreadsheet_id = config[heading]['SpreadsheetID']
     try:
-        dateTo = config[heading]['DateTo']
+        date_to = config[heading]['DateTo']
     except KeyError:
-        dateTo = datetime.datetime.now().strftime("%Y-%m-%d")
-    return token, dateFrom, dateTo, blank_rows, spreadsheet_id
+        date_to = datetime.datetime.now().strftime("%Y-%m-%d")
+    return token, date_from, date_to, blank_rows, spreadsheet_id
 
 
 def BuildService():
     print(Fore.LIGHTBLUE_EX + f'Trying to build service...' + Style.RESET_ALL)
     try:
-        service = build('sheets', 'v4', credentials=creds)
+        service = build('sheets', 'v4', credentials=CREDS)
     except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError):
         print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
-        Sleep(long_sleep)
+        Sleep(LONG_SLEEP)
+        ControlTimeout()
         BuildService()
     else:
+        ControlTimeout()
         print(Fore.GREEN + f'Built service successfully.' + Style.RESET_ALL)
         return service
 
@@ -89,34 +125,36 @@ def Normalize(raw: list):
     return raw
 
 
-def GetData(url: str, token:str, dateFrom:str, dateTo: str):
+def GetData(url: str, token:str, date_from:str, date_to: str):
     headers = {'Authorization': token}
-    params = {'dateFrom': dateFrom, 'dateTo': dateTo}
+    params = {'dateFrom': date_from, 'dateTo': date_to}
     print(Fore.LIGHTBLUE_EX + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
     try:
         response = requests.get(url, headers=headers, params=params)
     except requests.ConnectionError:
         print(Fore.RED + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
-        Sleep(long_sleep)
-        raw = GetData(url, token, dateFrom, dateTo)
+        Sleep(LONG_SLEEP)
+        ControlTimeout()
+        raw = GetData(url, token, date_from, date_to)
     else:
+        ControlTimeout()
         if response.status_code == 200:
             print(Fore.GREEN + f'Success status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
             raw = response.json()
         else:
             print(Fore.RED + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
-            Sleep(long_sleep)
-            raw = GetData(url, token, dateFrom, dateTo)
+            Sleep(LONG_SLEEP)
+            raw = GetData(url, token, date_from, date_to)
     return raw
 
 
-def Sleep(time: int):
-    print(Fore.LIGHTBLUE_EX + f'Sleeping for {time} seconds...')
-    if time == short_sleep:
-        sleep(short_sleep)
+def Sleep(timer: int):
+    print(Fore.LIGHTBLUE_EX + f'Sleeping for {timer} seconds...')
+    if timer == SHORT_SLEEP:
+        time.sleep(SHORT_SLEEP)
     else:
-        for _ in tqdm(range(time)):
-            sleep(1)
+        for _ in tqdm(range(timer)):
+            time.sleep(1)
         print()
 
 
@@ -173,7 +211,7 @@ def PrepareData(raw: list, sheet_name: str, column_names: dict):
                         raw[i]['retail_price_withdisc_rub']) - float(raw[i]['retail_price_withdisc_rub']) + float(
                         raw[i]['retail_amount'])
                 else:
-                    raw[i]['retail_commission'] = float(raw[i]['retail_amount']) * percent_commission
+                    raw[i]['retail_commission'] = float(raw[i]['retail_amount']) * PERC_COMM
                 one_row.append(str(raw[i]['retail_commission']).replace('.', ','))
             elif key == 'supplier_reward':
                 raw[i]['supplier_reward'] = float(raw[i]['retail_amount']) - float(raw[i]['retail_commission'])

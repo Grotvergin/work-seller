@@ -23,7 +23,6 @@ PAGES_QUANTITY = 5
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 SHEET_ID = '1luoj-fVTjBwEebIJ2ZySJKpQLS9a0Ui1LPQIO9u0OCg'
-SHEETS_AND_GIDS = {'Dishes': 0, 'Bathroom': 1599632956, 'Lighting': 887264526}
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 
 RED = {
@@ -31,11 +30,9 @@ RED = {
         {
             'repeatCell': {
                 'range': {
-                    'sheetId': 'SPEC',
                     'startRowIndex': 0,
                     'endRowIndex': 1,
-                    'startColumnIndex': 0,
-                    'endColumnIndex': 6
+                    'startColumnIndex': 0
                 },
                 'cell': {
                     'userEnteredFormat': {
@@ -58,9 +55,9 @@ GREEN = {
         {
             'repeatCell': {
                 'range': {
-                    'sheetId': 'SPEC',
                     'startRowIndex': 0,
                     'endRowIndex': 1,
+                    'startColumnIndex': 0
                 },
                 'cell': {
                     'userEnteredFormat': {
