@@ -9,7 +9,7 @@ def main():
         login, password = ParseCurrentHeading(config, heading)
         DATA_AUTH['email'] = login
         DATA_AUTH['password'] = password
-        while not SwitchIndicator(GREEN, heading, len(COLS), service):
+        while not SwitchIndicator(RED, heading, len(COLS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
         empty = PrepareEmpty(COLS)
@@ -148,7 +148,7 @@ def MakeColumnIndexes():
 
 def Sleep(timer: int):
     print(Fore.LIGHTBLUE_EX + f'Sleeping for some time...')
-    for _ in tqdm(range(random.randint(int(0.7 * timer), int(1.3 * timer)))):
+    for _ in tqdm(range(random.randint(int(0.5 * timer), int(1.5 * timer)))):
         time.sleep(1)
     print()
 

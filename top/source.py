@@ -15,7 +15,7 @@ init()
 URL_AUTH = 'https://app.topvtop.pro/api/auth/callback/credentials'
 URL_DATA = 'https://app.topvtop.pro/api/paymenthistory/get'
 START = time.time()
-SHORT_SLEEP = 10
+SHORT_SLEEP = 50
 LONG_SLEEP = 300
 TIMEOUT = 3600*1
 BLANK_ROWS = 10000 
