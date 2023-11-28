@@ -82,7 +82,10 @@ def PrepareData(raw: dict, sheet_name: str, column_names: list):
         one_row = []
         for column in column_names:
             try:
-                one_row.append(str(raw[i][column]))
+                if column == 'summ':
+                    one_row.append(str(raw[i][column]).replace('.', ','))
+                else:
+                    one_row.append(str(raw[i][column]))
             except KeyError:
                 one_row.append(MSG)
         list_of_rows.append(one_row)
