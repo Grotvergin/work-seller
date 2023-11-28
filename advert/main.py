@@ -95,7 +95,6 @@ def Sleep(timer: int):
     else:
         for _ in range(timer):
             time.sleep(1)
-        print()
 
 
 def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, service):

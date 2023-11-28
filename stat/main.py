@@ -156,7 +156,6 @@ def Sleep(timer: int):
     else:
         for _ in range(timer):
             time.sleep(1)
-        print()
 
 
 def PrepareEmpty(width: int, blank_rows: int):

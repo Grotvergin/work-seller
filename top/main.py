@@ -9,10 +9,10 @@ def main():
         login, password = ParseCurrentHeading(config, heading)
         DATA_AUTH['email'] = login
         DATA_AUTH['password'] = password
-        while not SwitchIndicator(RED, heading, len(COLS), service):
+        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
-        empty = PrepareEmpty(COLS)
+        empty = PrepareEmpty(COLUMNS)
         while not UploadData(empty, heading, 2, service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
@@ -21,7 +21,7 @@ def main():
         Sleep(SHORT_SLEEP)
         raw = GetData(session)
         if raw:
-            prepared = PrepareData(raw, heading, COLS)
+            prepared = PrepareData(raw, heading, COLUMNS)
             while not UploadData(prepared, heading, 2, service):
                 ControlTimeout()
                 Sleep(LONG_SLEEP)
@@ -29,7 +29,7 @@ def main():
             print(Fore.LIGHTMAGENTA_EX + f'Sheet {heading} is empty.')
         Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, len(COLS), service):
+        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
     ControlTimeout()
@@ -96,7 +96,7 @@ def UploadData(list_of_rows: list, sheet_name: str, row: int, service):
     body = {'values': list_of_rows}
     try:
         res = service.spreadsheets().values().update(spreadsheetId=SHEET_ID,
-                                                     range=f'{sheet_name}!A{row}:{column_indexes[len(COLS)]}{row + len(list_of_rows)}',
+                                                     range=f'{sheet_name}!A{row}:{column_indexes[len(COLUMNS)]}{row + len(list_of_rows)}',
                                                      valueInputOption='USER_ENTERED', body=body).execute()
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
@@ -154,7 +154,6 @@ def Sleep(timer: int):
     print(Fore.LIGHTBLUE_EX + f'Sleeping for {rand_time} seconds...')
     for _ in range(rand_time):
         time.sleep(1)
-    print()
 
 
 def Authorize(session: requests.Session):

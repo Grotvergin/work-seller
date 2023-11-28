@@ -176,7 +176,6 @@ def Sleep(timer: int):
     print(Fore.LIGHTBLUE_EX + f'Sleeping for {rand_time} seconds...')
     for _ in range(rand_time):
         time.sleep(1)
-    print()
 
 
 def MakeColumnIndexes():

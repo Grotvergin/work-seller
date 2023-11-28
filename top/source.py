@@ -21,7 +21,7 @@ TIMEOUT = 3600*1
 BLANK_ROWS = 10000 
 SHEET_ID = '1kQNuedNt7xFU6m4HJe8Lm6he0bokWvwwqN5FeoNGAHY'
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
-COLS = ['_id', 'article', 'basisoperation', 'comment', 'dataoperation', 'refRewarded', 'summ', 'type', 'typeoperations', 'user']
+COLUMNS = ['_id', 'article', 'basisoperation', 'comment', 'dataoperation', 'refRewarded', 'summ', 'type', 'typeoperations', 'user']
 MSG = 'NoData'
 COOKIES_AUTH = {
     '_ym_uid': '1699982868953556305',
