@@ -7,10 +7,10 @@ from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 import configparser
 from pathlib import Path
-from tqdm import tqdm
 from colorama import Fore, Style, init
 import random
 from datetime import datetime
+import socket
 
 random.seed()
 init()

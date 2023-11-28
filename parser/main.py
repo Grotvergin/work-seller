@@ -17,7 +17,7 @@ def main():
         while not UploadData(empty, heading, row, service):
             ControlTimeout()
             Sleep(LONG_SLEEP)
-        for word in tqdm(words):
+        for word in words:
             print(Fore.LIGHTBLUE_EX + f"Current word is: {word}" + Style.RESET_ALL)
             for page in range(1, PAGES_QUANTITY + 1):
                 print(Fore.LIGHTBLUE_EX + f"Processing page number: {page}" + Style.RESET_ALL)
@@ -59,7 +59,7 @@ def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError):
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
@@ -78,7 +78,7 @@ def BuildService():
     print(Fore.LIGHTBLUE_EX + f'Trying to build service...' + Style.RESET_ALL)
     try:
         service = build('sheets', 'v4', credentials=CREDS)
-    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError):
+    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
         ControlTimeout()
@@ -142,7 +142,7 @@ def UploadData(list_of_rows: list, sheet_name: str, row: int, service):
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError):
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
@@ -172,8 +172,9 @@ def GetData(url: str):
 
 
 def Sleep(timer: int):
-    print(Fore.LIGHTBLUE_EX + f'Sleeping for some time...')
-    for _ in tqdm(range(random.randint(int(0.7 * timer), int(1.3 * timer)))):
+    rand_time = random.randint(int(0.5 * timer), int(1.5 * timer))
+    print(Fore.LIGHTBLUE_EX + f'Sleeping for {rand_time} seconds...')
+    for _ in range(rand_time):
         time.sleep(1)
     print()
 

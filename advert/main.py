@@ -37,7 +37,7 @@ def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError):
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
@@ -93,7 +93,7 @@ def Sleep(timer: int):
     if timer == SHORT_SLEEP:
         time.sleep(SHORT_SLEEP)
     else:
-        for _ in tqdm(range(timer)):
+        for _ in range(timer):
             time.sleep(1)
         print()
 
@@ -109,8 +109,8 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
     else:
         print(Fore.GREEN + f'For sheet {sheet_name} found {campaigns_number} companies.' + Style.RESET_ALL)
 
-    for i in tqdm(range(campaigns_number)):
-        print()
+    for i in range(campaigns_number):
+        print(f'Processing campaign {i} out of {campaigns_number}...')
         data = GetData(URL_STAT, token, 'id', raw[i]['advertId'])
         Sleep(SHORT_SLEEP)
 
@@ -180,7 +180,7 @@ def UploadData(list_of_rows: list, sheet_name: str, width: int, row: int, servic
     except HttpError as err:
         print(Fore.RED + f'Error status = {err} on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError):
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
@@ -213,7 +213,7 @@ def BuildService():
     print(Fore.LIGHTBLUE_EX + f'Trying to build service...' + Style.RESET_ALL)
     try:
         service = build('sheets', 'v4', credentials=CREDS)
-    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError):
+    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
         print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
         ControlTimeout()

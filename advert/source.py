@@ -1,5 +1,6 @@
 import time
 import sys
+import socket
 from googleapiclient.discovery import build
 import requests
 import httplib2
@@ -7,7 +8,6 @@ from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 import configparser
 from pathlib import Path
-from tqdm import tqdm
 from colorama import Fore, Style, init
 
 init()
