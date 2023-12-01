@@ -1,4 +1,5 @@
 from source import *
+from pprint import pprint
 
 
 def main():
@@ -6,26 +7,36 @@ def main():
     service = BuildService()
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
-        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
-        token, blank_rows = ParseCurrentHeading(config, heading)
-        print(Fore.LIGHTBLUE_EX + f"Configuration: \nToken = {token}\nBlank rows = {blank_rows}" + Style.RESET_ALL)
-        empty = PrepareEmpty(len(COLUMNS), blank_rows)
-        while not UploadData(empty, heading, len(COLUMNS), 2, service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
-        raw = GetData(URL_CAMPAIGNS, token, 'order', 'create')
-        if raw:
-            ProcessData(raw, heading, COLUMNS, token, service)
+        ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
+        token = config[heading]['Token']
+        print(Fore.LIGHTBLUE_EX + f"Configuration: \nToken = {token}" + Style.RESET_ALL)
+        empty = PrepareEmpty(len(COLUMNS))
+        ExecuteRetry(UploadData, empty, heading, len(COLUMNS), 2, service)
+        campaigns = PrepareCampaigns(token)
+        if campaigns:
+            ProcessData(campaigns, heading, COLUMNS, token, service)
         else:
             print(Fore.LIGHTBLUE_EX + f"Sheet {heading} is empty." + Style.RESET_ALL)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def PrepareCampaigns(token):
+    list_of_campaigns = []
+    raw = GetData(URL_CAMPAIGNS, token)
+    for advert in raw['adverts']:
+        for lst in advert['advert_list']:
+            list_of_campaigns.append(lst['advertId'])
+    pprint(list_of_campaigns)
+    return list_of_campaigns
+
+
+def ExecuteRetry(func, *args):
+    while not func(*args):
+        ControlTimeout()
+        Sleep(LONG_SLEEP)
 
 
 def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
@@ -56,12 +67,15 @@ def MakeColumnIndexes():
     return indexes
 
 
-def GetData(url: str, token:str, key:str, value:str):
+def GetData(url: str, token:str, key='', value=''):
     headers = {'Authorization': token}
     params = {key: value}
     print(Fore.LIGHTBLUE_EX + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
     try:
-        response = requests.get(url, headers=headers, params=params)
+        if key != '' and value != '':
+            response = requests.get(url, headers=headers, params=params)
+        else:
+            response = requests.get(url, headers=headers)
     except requests.ConnectionError:
         print(Fore.RED + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
@@ -110,7 +124,7 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
 
     for i in range(campaigns_number):
         print(f'Processing campaign {i} out of {campaigns_number}...')
-        data = GetData(URL_STAT, token, 'id', raw[i]['advertId'])
+        data = GetData(URL_STAT, token, 'id', raw[i])
         Sleep(SHORT_SLEEP)
 
         list_of_rows = []
@@ -118,9 +132,9 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
             days_number = len(data['days'])
         except TypeError:
             days_number = 0
-            print(Fore.LIGHTMAGENTA_EX + f"For AdvertID {raw[i]['advertId']} found NO days!" + Style.RESET_ALL)
+            print(Fore.LIGHTMAGENTA_EX + f"For AdvertID {raw[i]} found NO days!" + Style.RESET_ALL)
         else:
-            print(Fore.GREEN + f"For AdvertID {raw[i]['advertId']} found {days_number} days." + Style.RESET_ALL)
+            print(Fore.GREEN + f"For AdvertID {raw[i]} found {days_number} days." + Style.RESET_ALL)
 
         for j in range(days_number):
             try:
@@ -163,10 +177,7 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
                         else:
                             one_row.append(value.replace('.', ','))
                     list_of_rows.append(one_row)
-
-        while not UploadData(list_of_rows, sheet_name, width, row, service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(UploadData, list_of_rows, sheet_name, width, row, service)
         row += len(list_of_rows)
 
 
@@ -194,16 +205,10 @@ def ParseConfig():
     return config, sections
 
 
-def ParseCurrentHeading(config, heading: str):
-    token = config[heading]['Token']
-    blank_rows = int(config[heading]['BlankSpace'])
-    return token, blank_rows
-
-
-def PrepareEmpty(width: int, blank_rows: int):
+def PrepareEmpty(width: int):
     list_of_empty = []
     one_row = [''] * width
-    for k in range(blank_rows):
+    for k in range(BLANK_ROWS):
         list_of_empty.append(one_row)
     return list_of_empty
 

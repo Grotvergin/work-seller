@@ -6,29 +6,27 @@ def main():
     service = BuildService()
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
-        token = ParseCurrentHeading(config, heading)
-        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        token = config[heading]['Token']
+        ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
         empty = PrepareEmpty(COLUMNS)
-        while not UploadData(empty, heading, 2, service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(UploadData, empty, heading, 2, service)
         raw = GetData(token)
         if raw:
             prepared = PrepareData(raw, heading, COLUMNS)
-            while not UploadData(prepared, heading, 2, service):
-                ControlTimeout()
-                Sleep(LONG_SLEEP)
+            ExecuteRetry(UploadData, prepared, heading, 2, service)
         else:
             print(Fore.LIGHTMAGENTA_EX + f'Sheet {heading} is empty.')
         Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def ExecuteRetry(func, *args):
+    while not func(*args):
+        ControlTimeout()
+        Sleep(LONG_SLEEP)
 
 
 def PrepareData(raw: list, sheet_name: str, column_names: list):
@@ -127,12 +125,6 @@ def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
     else:
         print(Fore.GREEN + f"Switching success." + Style.RESET_ALL)
         return True
-
-
-
-def ParseCurrentHeading(config, heading: str):
-    token = config[heading]['Token']
-    return token
 
 
 def ParseConfig():

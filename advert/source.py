@@ -11,12 +11,13 @@ from pathlib import Path
 from colorama import Fore, Style, init
 
 init()
-URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v0/adverts'
+URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
 URL_STAT = 'https://advert-api.wb.ru/adv/v1/fullstat'
 START = time.time()
 TIMEOUT = 3600*6
-SHORT_SLEEP = 10
+SHORT_SLEEP = 6
 LONG_SLEEP = 300
+BLANK_ROWS = 100000
 MSG = 'No data'
 SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])

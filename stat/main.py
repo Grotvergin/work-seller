@@ -7,35 +7,33 @@ def main():
 
     for heading in sections:
         print(Fore.YELLOW + f'Start of processing {heading}...' + Style.RESET_ALL)
-        token, date_from, date_to, blank_rows, spreadsheet_id = ParseCurrentHeading(config, heading)
-        print(Fore.LIGHTBLUE_EX + f'Configuration: \nToken = {token}\nDateFrom = {date_from}\nDateTo = {date_to}\nBlank rows = {blank_rows}\nSpreadsheet ID = {spreadsheet_id}' + Style.RESET_ALL)
+        token, date_from, date_to, spreadsheet_id = ParseCurrentHeading(config, heading)
+        print(Fore.LIGHTBLUE_EX + f'Configuration: \nToken = {token}\nDateFrom = {date_from}\nDateTo = {date_to}\nSpreadsheet ID = {spreadsheet_id}' + Style.RESET_ALL)
 
         for sheet, url in SHEETS_AND_URL.items():
-            while not SwitchIndicator(RED, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
-                ControlTimeout()
-                Sleep(LONG_SLEEP)
-            empty = PrepareEmpty(len(SHEETS_AND_COLS[sheet]), blank_rows)
-            while not UploadData(empty, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
-                ControlTimeout()
-                Sleep(LONG_SLEEP)
+            ExecuteRetry(SwitchIndicator, RED, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
+            empty = PrepareEmpty(len(SHEETS_AND_COLS[sheet]))
+            ExecuteRetry(UploadData, empty, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
             raw = GetData(url, token, date_from, date_to)
             if raw:
                 raw = Normalize(raw)
                 if sheet == 'Realisations':
                     raw = SortByRRD_ID(raw)
                 prepared = PrepareData(raw, sheet, SHEETS_AND_COLS[sheet])
-                while not UploadData(prepared, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
-                    ControlTimeout()
-                    Sleep(LONG_SLEEP)
+                ExecuteRetry(UploadData, prepared, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
             else:
                 print(Fore.LIGHTBLUE_EX + f"Sheet {sheet} is empty from {date_from} to {date_to}." + Style.RESET_ALL)
             Sleep(LONG_SLEEP)
-            while not SwitchIndicator(GREEN, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service):
-                ControlTimeout()
-                Sleep(LONG_SLEEP)
+            ExecuteRetry(SwitchIndicator, GREEN, sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def ExecuteRetry(func, *args):
+    while not func(*args):
+        ControlTimeout()
+        Sleep(LONG_SLEEP)
 
 
 def ControlTimeout():
@@ -73,14 +71,15 @@ def ParseConfig():
 
 def ParseCurrentHeading(config, heading: str):
     token = config[heading]['Token']
-    date_from = config[heading]['DateFrom']
-    blank_rows = int(config[heading]['BlankSpace'])
     spreadsheet_id = config[heading]['SpreadsheetID']
+    date_from = config[heading]['DateFrom']
+    if date_from[0] == 'X':
+        date_from = datetime.datetime.now().strftime("%Y-%m") + '-01'
     try:
         date_to = config[heading]['DateTo']
     except KeyError:
         date_to = datetime.datetime.now().strftime("%Y-%m-%d")
-    return token, date_from, date_to, blank_rows, spreadsheet_id
+    return token, date_from, date_to, spreadsheet_id
 
 
 def BuildService():
@@ -158,10 +157,10 @@ def Sleep(timer: int):
             time.sleep(1)
 
 
-def PrepareEmpty(width: int, blank_rows: int):
+def PrepareEmpty(width: int):
     list_of_empty = []
     one_row = [''] * width
-    for k in range(blank_rows):
+    for k in range(BLANK_ROWS):
         list_of_empty.append(one_row)
     return list_of_empty
 

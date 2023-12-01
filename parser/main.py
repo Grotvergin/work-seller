@@ -4,19 +4,14 @@ from source import *
 def main():
     config, sections = ParseConfig()
     service = BuildService()
-
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
-        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
         row = 2
         words = config[heading]['Words'].split(',')
         print(Fore.LIGHTBLUE_EX + f"Words: {', '.join(words)}" + Style.RESET_ALL)
         empty = PrepareEmpty(COLUMNS)
-        while not UploadData(empty, heading, row, service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(UploadData, empty, heading, row, service)
         for word in words:
             print(Fore.LIGHTBLUE_EX + f"Current word is: {word}" + Style.RESET_ALL)
             for page in range(1, PAGES_QUANTITY + 1):
@@ -26,19 +21,21 @@ def main():
                 raw = GetData(URL)
                 if raw:
                     prepared = PrepareData(raw, heading, COLUMNS, word, page)
-                    while not UploadData(prepared, heading, row, service):
-                        ControlTimeout()
-                        Sleep(LONG_SLEEP)
+                    ExecuteRetry(UploadData, prepared, heading, row, service)
                     row += len(prepared)
                 else:
                     print(Fore.LIGHTMAGENTA_EX + f'Page {page} is empty.')
                 Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def ExecuteRetry(func, *args):
+    while not func(*args):
+        ControlTimeout()
+        Sleep(LONG_SLEEP)
 
 
 def ControlTimeout():

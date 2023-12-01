@@ -9,31 +9,29 @@ def main():
         login, password = ParseCurrentHeading(config, heading)
         DATA_AUTH['email'] = login
         DATA_AUTH['password'] = password
-        while not SwitchIndicator(RED, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
         empty = PrepareEmpty(COLUMNS)
-        while not UploadData(empty, heading, 2, service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(UploadData, empty, heading, 2, service)
         session = requests.Session()
         session = Authorize(session)
         Sleep(SHORT_SLEEP)
         raw = GetData(session)
         if raw:
             prepared = PrepareData(raw, heading, COLUMNS)
-            while not UploadData(prepared, heading, 2, service):
-                ControlTimeout()
-                Sleep(LONG_SLEEP)
+            ExecuteRetry(UploadData, prepared, heading, 2, service)
         else:
             print(Fore.LIGHTMAGENTA_EX + f'Sheet {heading} is empty.')
         Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
-        while not SwitchIndicator(GREEN, heading, len(COLUMNS), service):
-            ControlTimeout()
-            Sleep(LONG_SLEEP)
+        ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def ExecuteRetry(func, *args):
+    while not func(*args):
+        ControlTimeout()
+        Sleep(LONG_SLEEP)
 
 
 def ParseCurrentHeading(config, heading: str):

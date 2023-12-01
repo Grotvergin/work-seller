@@ -18,6 +18,7 @@ CREDS = service_account.Credentials.from_service_account_file('keys.json', scope
 PERC_COMM = 0.022249
 LONG_SLEEP = 90
 SHORT_SLEEP = 5
+BLANK_ROWS = 50000
 
 SHEETS_AND_URL = {
     'Realisations': 'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
