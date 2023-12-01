@@ -17,7 +17,7 @@ init()
 START = time.time()
 SHORT_SLEEP = 30
 LONG_SLEEP = 300
-TIMEOUT = 3600 * 6
+TIMEOUT = 3600 * 3
 BLANK_ROWS = 10000
 PAGES_QUANTITY = 5
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'

@@ -1,6 +1,7 @@
 import time
 import sys
 import socket
+import datetime
 from googleapiclient.discovery import build
 import requests
 import httplib2
@@ -16,8 +17,12 @@ URL_STAT = 'https://advert-api.wb.ru/adv/v1/fullstat'
 START = time.time()
 TIMEOUT = 3600*6
 SHORT_SLEEP = 6
-LONG_SLEEP = 300
-BLANK_ROWS = 100000
+LONG_SLEEP = 90
+BLANK_ROWS = 60000
+MONTH_BLANK = 20000
+START_OF_MONTH = datetime.datetime.now().strftime("%Y-%m") + '-01'
+YEAR = datetime.datetime.now().strftime("%Y")
+MONTH = datetime.datetime.now().strftime("%m")
 MSG = 'No data'
 SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])

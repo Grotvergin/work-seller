@@ -7,11 +7,13 @@ def main():
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
+        ExecuteRetry(SwitchIndicator, RED, 'NoLog' + heading, len(COLUMNS), service)
         row = 2
         words = config[heading]['Words'].split(',')
         print(Fore.LIGHTBLUE_EX + f"Words: {', '.join(words)}" + Style.RESET_ALL)
         empty = PrepareEmpty(COLUMNS)
         ExecuteRetry(UploadData, empty, heading, row, service)
+        ExecuteRetry(UploadData, empty, 'NoLog' + heading, row, service)
         for word in words:
             print(Fore.LIGHTBLUE_EX + f"Current word is: {word}" + Style.RESET_ALL)
             for page in range(1, PAGES_QUANTITY + 1):
@@ -20,14 +22,16 @@ def main():
                 PARAMS['query'] = word
                 raw = GetData(URL)
                 if raw:
-                    prepared = PrepareData(raw, heading, COLUMNS, word, page)
-                    ExecuteRetry(UploadData, prepared, heading, row, service)
-                    row += len(prepared)
+                    with_log, of_real = PrepareData(raw, heading, COLUMNS, word, page)
+                    ExecuteRetry(UploadData, with_log, heading, row, service)
+                    ExecuteRetry(UploadData, of_real, 'NoLog' + heading, row, service)
+                    row += len(with_log)
                 else:
                     print(Fore.LIGHTMAGENTA_EX + f'Page {page} is empty.')
                 Sleep(SHORT_SLEEP)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
+        ExecuteRetry(SwitchIndicator, GREEN, 'NoLog' + heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
@@ -94,31 +98,39 @@ def PrepareData(raw: dict, sheet_name: str, column_names: list, word: str, page:
         print(Fore.LIGHTMAGENTA_EX + f'For sheet {sheet_name} found NO products!' + Style.RESET_ALL)
     else:
         print(Fore.GREEN + f'For sheet {sheet_name} found {height} products.' + Style.RESET_ALL)
-
-    list_of_rows = []
+    list_of_real = []
+    list_with_log = []
     for i in range(height):
-        one_row = []
+        row_with_log = []
+        row_of_real = []
         for column in column_names:
             match column:
                 case 'id':
-                    one_row.append(str(raw['data']['products'][i]['id']))
+                    row_with_log.append(str(raw['data']['products'][i]['id']))
+                    row_of_real.append(str(raw['data']['products'][i]['id']))
                 case 'name':
-                    one_row.append(str(raw['data']['products'][i]['name']))
+                    row_with_log.append(str(raw['data']['products'][i]['name']))
+                    row_of_real.append(str(raw['data']['products'][i]['name']))
                 case 'word':
-                    one_row.append(word)
+                    row_with_log.append(word)
+                    row_of_real.append(word)
                 case 'page':
-                    one_row.append(str(page))
+                    row_with_log.append(str(page))
+                    row_of_real.append(str(page))
                 case 'place':
+                    row_of_real.append(str(i + 1))
                     try:
                         index_from_log = raw['data']['products'][i]['log']['position']
                     except KeyError:
-                        one_row.append(str(i + 1))
+                        row_with_log.append(str(i + 1))
                     else:
-                        one_row.append(str(index_from_log + 1))
+                        row_with_log.append(str(index_from_log + 1))
                 case 'time':
-                    one_row.append(str(datetime.now().strftime('%m-%d %H:%M')))
-        list_of_rows.append(one_row)
-    return list_of_rows
+                    row_with_log.append(str(datetime.now().strftime('%m-%d %H:%M')))
+                    row_of_real.append(str(datetime.now().strftime('%m-%d %H:%M')))
+        list_with_log.append(row_with_log)
+        list_of_real.append(row_of_real)
+    return list_with_log, list_of_real
 
 
 def PrepareEmpty(column_names: dict):

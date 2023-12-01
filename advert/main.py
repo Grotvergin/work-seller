@@ -1,5 +1,4 @@
 from source import *
-from pprint import pprint
 
 
 def main():
@@ -8,10 +7,13 @@ def main():
     for heading in sections:
         print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
+        ExecuteRetry(SwitchIndicator, RED, 'Month' + heading, len(COLUMNS), service)
         token = config[heading]['Token']
         print(Fore.LIGHTBLUE_EX + f"Configuration: \nToken = {token}" + Style.RESET_ALL)
-        empty = PrepareEmpty(len(COLUMNS))
-        ExecuteRetry(UploadData, empty, heading, len(COLUMNS), 2, service)
+        empty_all = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
+        empty_month = PrepareEmpty(len(COLUMNS), MONTH_BLANK)
+        ExecuteRetry(UploadData, empty_all, heading, len(COLUMNS), 2, service)
+        ExecuteRetry(UploadData, empty_month, 'Month' + heading, len(COLUMNS), 2, service)
         campaigns = PrepareCampaigns(token)
         if campaigns:
             ProcessData(campaigns, heading, COLUMNS, token, service)
@@ -19,6 +21,7 @@ def main():
             print(Fore.LIGHTBLUE_EX + f"Sheet {heading} is empty." + Style.RESET_ALL)
         print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
+        ExecuteRetry(SwitchIndicator, GREEN, 'Month' + heading, len(COLUMNS), service)
     ControlTimeout()
     print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
@@ -29,7 +32,6 @@ def PrepareCampaigns(token):
     for advert in raw['adverts']:
         for lst in advert['advert_list']:
             list_of_campaigns.append(lst['advertId'])
-    pprint(list_of_campaigns)
     return list_of_campaigns
 
 
@@ -113,7 +115,8 @@ def Sleep(timer: int):
 
 def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, service):
     width = len(column_names)
-    row = 2
+    row_all = 2
+    row_month = 2
     try:
         campaigns_number = len(raw)
     except TypeError:
@@ -127,7 +130,8 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
         data = GetData(URL_STAT, token, 'id', raw[i])
         Sleep(SHORT_SLEEP)
 
-        list_of_rows = []
+        list_of_all = []
+        list_of_month = []
         try:
             days_number = len(data['days'])
         except TypeError:
@@ -176,9 +180,19 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
                                 one_row.append(MSG)
                         else:
                             one_row.append(value.replace('.', ','))
-                    list_of_rows.append(one_row)
-        ExecuteRetry(UploadData, list_of_rows, sheet_name, width, row, service)
-        row += len(list_of_rows)
+                    list_of_all.append(one_row)
+                    if CheckCurMonth(one_row[1]):
+                        list_of_month.append(one_row)
+        ExecuteRetry(UploadData, list_of_all, sheet_name, width, row_all, service)
+        ExecuteRetry(UploadData, list_of_month, 'Month' + sheet_name, width, row_month, service)
+        row_all += len(list_of_all)
+        row_month += len(list_of_month)
+
+
+def CheckCurMonth(cur_date: str):
+    if cur_date[:4] == YEAR and cur_date[5:7] == MONTH:
+        return True
+    return False
 
 
 def UploadData(list_of_rows: list, sheet_name: str, width: int, row: int, service):
@@ -205,10 +219,10 @@ def ParseConfig():
     return config, sections
 
 
-def PrepareEmpty(width: int):
+def PrepareEmpty(width: int, blank_rows: int):
     list_of_empty = []
     one_row = [''] * width
-    for k in range(BLANK_ROWS):
+    for k in range(blank_rows):
         list_of_empty.append(one_row)
     return list_of_empty
 
