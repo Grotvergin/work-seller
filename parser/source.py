@@ -15,8 +15,8 @@ import socket
 random.seed()
 init()
 START = time.time()
-SHORT_SLEEP = 30
-LONG_SLEEP = 300
+SHORT_SLEEP = 6
+LONG_SLEEP = 45
 TIMEOUT = 3600 * 3
 BLANK_ROWS = 10000
 PAGES_QUANTITY = 5

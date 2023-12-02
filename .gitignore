@@ -5,3 +5,4 @@ keys.json
 config.ini
 __pycache__/
 .idea
+*.ps1
