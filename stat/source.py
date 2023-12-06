@@ -11,6 +11,8 @@ from pathlib import Path
 import socket
 from datetime import datetime
 from colorama import Fore, Style, init
+import smtplib
+from email.mime.multipart import MIMEMultipart
 
 init()
 START = time.time()

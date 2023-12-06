@@ -20,7 +20,25 @@ def main():
         print(Fore.YELLOW + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"End of processing {heading}." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
     ControlTimeout()
+    SendEmail(f'Prices OK: elapsed time is {int(time.time() - START)}')
     print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'All data was uploaded successfully!' + Style.RESET_ALL)
+
+
+def SendEmail(theme:str):
+    user = 'kyliancromwell@gmail.com'
+    password = 'cgyv tsjl fvgv exne'
+    receiver = 'mishenin_r@mail.ru'
+    try:
+        smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
+        smtp_server.starttls()
+        smtp_server.login(user, password)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + 'Gmail authorization success.' + Style.RESET_ALL)
+        msg = MIMEMultipart()
+        msg['Subject'] = theme
+        smtp_server.sendmail(user, receiver, msg.as_string())
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + 'Gmail letter sending success.' + Style.RESET_ALL)
+    except Exception:
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + "Error during sending email!" + Style.RESET_ALL)
 
 
 def ExecuteRetry(func, *args):
@@ -105,6 +123,7 @@ def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
         print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        SendEmail(f'Prices FAIL: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!')
         sys.exit()
     else:
         print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)

@@ -11,6 +11,8 @@ from colorama import Fore, Style, init
 import random
 from datetime import datetime
 import socket
+import smtplib
+from email.mime.multipart import MIMEMultipart
 
 random.seed()
 init()

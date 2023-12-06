@@ -11,6 +11,8 @@ import socket
 from colorama import Fore, Style, init
 import random
 from datetime import datetime
+import smtplib
+from email.mime.multipart import MIMEMultipart
 
 init()
 URL = 'https://suppliers-api.wildberries.ru/public/api/v1/info'
