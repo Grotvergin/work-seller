@@ -1,7 +1,7 @@
 import time
 import sys
 import socket
-import datetime
+from datetime import datetime
 from googleapiclient.discovery import build
 import requests
 import httplib2
@@ -20,9 +20,9 @@ SHORT_SLEEP = 6
 LONG_SLEEP = 90
 BLANK_ROWS = 60000
 MONTH_BLANK = 20000
-START_OF_MONTH = datetime.datetime.now().strftime("%Y-%m") + '-01'
-YEAR = datetime.datetime.now().strftime("%Y")
-MONTH = datetime.datetime.now().strftime("%m")
+START_OF_MONTH = datetime.now().strftime("%Y-%m") + '-01'
+YEAR = datetime.now().strftime("%Y")
+MONTH = datetime.now().strftime("%m")
 MSG = 'No data'
 SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])

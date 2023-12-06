@@ -5,11 +5,11 @@ def main():
     config, sections = ParseConfig()
     service = BuildService()
     for heading in sections:
-        print(Fore.YELLOW + f"Start of processing {heading}..." + Style.RESET_ALL)
+        print(Fore.YELLOW + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"Start of processing {heading}..." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, RED, heading, len(COLUMNS), service)
         ExecuteRetry(SwitchIndicator, RED, 'Month' + heading, len(COLUMNS), service)
         token = config[heading]['Token']
-        print(Fore.LIGHTBLUE_EX + f"Configuration: \nToken = {token}" + Style.RESET_ALL)
+        print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"Configuration: \nToken = {token}" + Style.RESET_ALL)
         empty_all = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
         empty_month = PrepareEmpty(len(COLUMNS), MONTH_BLANK)
         ExecuteRetry(UploadData, empty_all, heading, len(COLUMNS), 2, service)
@@ -18,12 +18,12 @@ def main():
         if campaigns:
             ProcessData(campaigns, heading, COLUMNS, token, service)
         else:
-            print(Fore.LIGHTBLUE_EX + f"Sheet {heading} is empty." + Style.RESET_ALL)
-        print(Fore.YELLOW + f"End of processing {heading}." + Style.RESET_ALL)
+            print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"Sheet {heading} is empty." + Style.RESET_ALL)
+        print(Fore.YELLOW + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"End of processing {heading}." + Style.RESET_ALL)
         ExecuteRetry(SwitchIndicator, GREEN, heading, len(COLUMNS), service)
         ExecuteRetry(SwitchIndicator, GREEN, 'Month' + heading, len(COLUMNS), service)
     ControlTimeout()
-    print(Fore.GREEN + f'All data was uploaded successfully!' + Style.RESET_ALL)
+    print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
 def PrepareCampaigns(token):
@@ -48,13 +48,13 @@ def SwitchIndicator(color: dict, sheet_name: str, width:int, service):
         color['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get('sheetId')
         service.spreadsheets().batchUpdate(spreadsheetId=SHEET_ID, body=color).execute()
     except HttpError as err:
-        print(Fore.RED + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Error status = {err} on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        print(Fore.RED + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Connection error on switching indicator for sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
-        print(Fore.GREEN + f"Switching success." + Style.RESET_ALL)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"Switching success." + Style.RESET_ALL)
         return True
 
 
@@ -72,24 +72,24 @@ def MakeColumnIndexes():
 def GetData(url: str, token:str, key='', value=''):
     headers = {'Authorization': token}
     params = {key: value}
-    print(Fore.LIGHTBLUE_EX + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
+    print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
     try:
         if key != '' and value != '':
             response = requests.get(url, headers=headers, params=params)
         else:
             response = requests.get(url, headers=headers)
     except requests.ConnectionError:
-        print(Fore.RED + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
         ControlTimeout()
         raw = GetData(url, token, key, value)
     else:
         ControlTimeout()
         if response.status_code == 200:
-            print(Fore.GREEN + f'Success status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
+            print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Success status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
             raw = response.json()
         else:
-            print(Fore.RED + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
+            print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
             Sleep(LONG_SLEEP)
             raw = GetData(url, token, key, value)
     return raw
@@ -98,14 +98,14 @@ def GetData(url: str, token:str, key='', value=''):
 def ControlTimeout():
     current = time.time()
     if (current - START) > TIMEOUT:
-        print(Fore.RED + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Timeout error: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}!' + Style.RESET_ALL)
         sys.exit()
     else:
-        print(Fore.GREEN + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Timeout OK: elapsed time is {int(current - START)}, while allowed is {TIMEOUT}.' + Style.RESET_ALL)
 
 
 def Sleep(timer: int):
-    print(Fore.LIGHTBLUE_EX + f'Sleeping for {timer} seconds...')
+    print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Sleeping for {timer} seconds...')
     if timer == SHORT_SLEEP:
         time.sleep(SHORT_SLEEP)
     else:
@@ -121,12 +121,12 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
         campaigns_number = len(raw)
     except TypeError:
         campaigns_number = 0
-        print(Fore.LIGHTMAGENTA_EX + f'For sheet {sheet_name} found NO companies!' + Style.RESET_ALL)
+        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'For sheet {sheet_name} found NO companies!' + Style.RESET_ALL)
     else:
-        print(Fore.GREEN + f'For sheet {sheet_name} found {campaigns_number} companies.' + Style.RESET_ALL)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'For sheet {sheet_name} found {campaigns_number} companies.' + Style.RESET_ALL)
 
     for i in range(campaigns_number):
-        print(f'Processing campaign {i} out of {campaigns_number}...')
+        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Processing campaign {i} out of {campaigns_number}...' + Style.RESET_ALL)
         data = GetData(URL_STAT, token, 'id', raw[i])
         Sleep(SHORT_SLEEP)
 
@@ -136,29 +136,27 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
             days_number = len(data['days'])
         except TypeError:
             days_number = 0
-            print(Fore.LIGHTMAGENTA_EX + f"For AdvertID {raw[i]} found NO days!" + Style.RESET_ALL)
+            print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {raw[i]} found NO days!" + Style.RESET_ALL)
         else:
-            print(Fore.GREEN + f"For AdvertID {raw[i]} found {days_number} days." + Style.RESET_ALL)
+            print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {raw[i]} found {days_number} days." + Style.RESET_ALL)
 
         for j in range(days_number):
             try:
                 app_number = len(data['days'][j]['apps'])
             except TypeError:
                 app_number = 0
-                print(Fore.LIGHTMAGENTA_EX + f"For date {data['days'][j]['date']} found NO apps!" + Style.RESET_ALL)
+                print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data['days'][j]['date']} found NO apps!" + Style.RESET_ALL)
             else:
-                print(Fore.GREEN + f"For date {data['days'][j]['date']} found {app_number} apps." + Style.RESET_ALL)
+                print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data['days'][j]['date']} found {app_number} apps." + Style.RESET_ALL)
 
             for k in range(app_number):
                 try:
                     nm_number = len(data['days'][j]['apps'][k]['nm'])
                 except TypeError:
                     nm_number = 0
-                    print(
-                        Fore.LIGHTMAGENTA_EX + f"For app {data['days'][j]['apps'][k]['appType']} found NO nm_numbers!" + Style.RESET_ALL)
+                    print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data['days'][j]['apps'][k]['appType']} found NO nm_numbers!" + Style.RESET_ALL)
                 else:
-                    print(
-                        Fore.GREEN + f"For app {data['days'][j]['apps'][k]['appType']} found {nm_number} nm_numbers." + Style.RESET_ALL)
+                    print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data['days'][j]['apps'][k]['appType']} found {nm_number} nm_numbers." + Style.RESET_ALL)
 
                 for nm in range(nm_number):
                     one_row = []
@@ -202,13 +200,13 @@ def UploadData(list_of_rows: list, sheet_name: str, width: int, row: int, servic
                                                      range=f'{sheet_name}!A{row}:{column_indexes[width]}{row + len(list_of_rows)}',
                                                      valueInputOption='USER_ENTERED', body=body).execute()
     except HttpError as err:
-        print(Fore.RED + f'Error status = {err} on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Error status = {err} on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        print(Fore.RED + f'Connection error on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Connection error on uploading data to sheet {sheet_name}!' + Style.RESET_ALL)
         return False
     else:
-        print(Fore.GREEN + f"Uploading success: {res.get('updatedRows')} rows in range {res.get('updatedRange')}." + Style.RESET_ALL)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"Uploading success: {res.get('updatedRows')} rows in range {res.get('updatedRange')}." + Style.RESET_ALL)
         return True
 
 
@@ -228,16 +226,16 @@ def PrepareEmpty(width: int, blank_rows: int):
 
 
 def BuildService():
-    print(Fore.LIGHTBLUE_EX + f'Trying to build service...' + Style.RESET_ALL)
+    print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Trying to build service...' + Style.RESET_ALL)
     try:
         service = build('sheets', 'v4', credentials=CREDS)
     except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        print(Fore.RED + f'Connection error on building service!' + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Connection error on building service!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
         ControlTimeout()
         BuildService()
     else:
-        print(Fore.GREEN + f'Built service successfully.' + Style.RESET_ALL)
+        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Built service successfully.' + Style.RESET_ALL)
         return service
 
 
