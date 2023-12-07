@@ -1,5 +1,5 @@
 import sys
-import datetime
+from datetime import datetime
 import time
 from googleapiclient.discovery import build
 import httplib2
