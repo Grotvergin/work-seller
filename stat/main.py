@@ -93,11 +93,11 @@ def ParseCurrentHeading(config, heading: str):
     spreadsheet_id = config[heading]['SpreadsheetID']
     date_from = config[heading]['DateFrom']
     if date_from[0] == 'X':
-        date_from = datetime.datetime.now().strftime("%Y-%m") + '-01'
+        date_from = datetime.now().strftime("%Y-%m") + '-01'
     try:
         date_to = config[heading]['DateTo']
     except KeyError:
-        date_to = datetime.datetime.now().strftime("%Y-%m-%d")
+        date_to = datetime.now().strftime("%Y-%m-%d")
     return token, date_from, date_to, spreadsheet_id
 
 
