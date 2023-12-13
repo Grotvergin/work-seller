@@ -1,3 +1,5 @@
+import json
+
 from source import *
 
 
@@ -24,7 +26,7 @@ def main():
         ExecuteRetry(SwitchIndicator, GREEN, 'Month' + heading, len(COLUMNS), service)
     ControlTimeout()
     SendEmail(f'Advert OK: elapsed time is {int(time.time() - START)}')
-    print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'All data was uploaded successfully!' + Style.RESET_ALL)
+    print(Fore.YELLOW + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'All data was uploaded successfully!' + Style.RESET_ALL)
 
 
 def SendEmail(theme:str):
@@ -41,7 +43,7 @@ def SendEmail(theme:str):
         smtp_server.sendmail(user, receiver, msg.as_string())
         print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + 'Gmail letter sending success.' + Style.RESET_ALL)
     except Exception:
-        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + "Error during sending email!" + Style.RESET_ALL)
+        print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + 'Error during sending email!' + Style.RESET_ALL)
 
 
 def PrepareCampaigns(token):
@@ -87,20 +89,18 @@ def MakeColumnIndexes():
     return indexes
 
 
-def GetData(url: str, token:str, key='', value=''):
-    headers = {'Authorization': token}
-    params = {key: value}
+def GetData(url: str, token:str, body=''):
     print(Fore.LIGHTBLUE_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Trying to connect WB URL: {url}...' + Style.RESET_ALL)
     try:
-        if key != '' and value != '':
-            response = requests.get(url, headers=headers, params=params)
+        if body == '':
+            response = requests.get(url, headers={'Authorization': token})
         else:
-            response = requests.get(url, headers=headers)
+            response = requests.post(url, headers={'Authorization': token}, data=body)
     except requests.ConnectionError:
         print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Connection error on WB URL: {url}!' + Style.RESET_ALL)
         Sleep(LONG_SLEEP)
         ControlTimeout()
-        raw = GetData(url, token, key, value)
+        raw = GetData(url, token, body)
     else:
         ControlTimeout()
         if response.status_code == 200:
@@ -109,7 +109,7 @@ def GetData(url: str, token:str, key='', value=''):
         else:
             print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
             Sleep(LONG_SLEEP)
-            raw = GetData(url, token, key, value)
+            raw = GetData(url, token, body)
     return raw
 
 
@@ -144,62 +144,66 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
     else:
         print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'For sheet {sheet_name} found {campaigns_number} companies.' + Style.RESET_ALL)
 
-    for i in range(campaigns_number):
-        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Processing campaign {i} out of {campaigns_number}...' + Style.RESET_ALL)
-        data = GetData(URL_STAT, token, 'id', raw[i])
+    for i in range(0, campaigns_number, PORTION):
+        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Processing a {PORTION} campaigns starting from {i} out of {campaigns_number}...' + Style.RESET_ALL)
+        portion_of_campaigns = raw[i:i + PORTION]
+        list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
+        json_for_request = json.dumps(list_for_request, indent=2)
+        data = GetData(URL_STAT, token, json_for_request)
         Sleep(SHORT_SLEEP)
 
         list_of_all = []
         list_of_month = []
-        try:
-            days_number = len(data['days'])
-        except TypeError:
-            days_number = 0
-            print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {raw[i]} found NO days!" + Style.RESET_ALL)
-        else:
-            print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {raw[i]} found {days_number} days." + Style.RESET_ALL)
-
-        for j in range(days_number):
+        for t in range(len(data)):
             try:
-                app_number = len(data['days'][j]['apps'])
+                days_number = len(data[t]['days'])
             except TypeError:
-                app_number = 0
-                print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data['days'][j]['date']} found NO apps!" + Style.RESET_ALL)
+                days_number = 0
+                print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {data[t]['advertId']} found NO days!" + Style.RESET_ALL)
             else:
-                print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data['days'][j]['date']} found {app_number} apps." + Style.RESET_ALL)
+                print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For AdvertID {data[t]['advertId']} found {days_number} days." + Style.RESET_ALL)
 
-            for k in range(app_number):
+            for j in range(days_number):
                 try:
-                    nm_number = len(data['days'][j]['apps'][k]['nm'])
+                    app_number = len(data[t]['days'][j]['apps'])
                 except TypeError:
-                    nm_number = 0
-                    print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data['days'][j]['apps'][k]['appType']} found NO nm_numbers!" + Style.RESET_ALL)
+                    app_number = 0
+                    print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data[t]['days'][j]['date']} found NO apps!" + Style.RESET_ALL)
                 else:
-                    print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data['days'][j]['apps'][k]['appType']} found {nm_number} nm_numbers." + Style.RESET_ALL)
+                    print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For date {data[t]['days'][j]['date']} found {app_number} apps." + Style.RESET_ALL)
 
-                for nm in range(nm_number):
-                    one_row = []
-                    for key, value in column_names.items():
-                        if value == '+':
-                            try:
-                                one_row.append(str(data['days'][j]['apps'][k]['nm'][nm][key]).replace('.', ','))
-                            except KeyError:
-                                one_row.append(MSG)
-                        elif key == 'advertId':
-                            try:
-                                one_row.append(str(data[key]))
-                            except KeyError:
-                                one_row.append(MSG)
-                        elif key == 'date':
-                            try:
-                                one_row.append(str(data['days'][j][key]))
-                            except KeyError:
-                                one_row.append(MSG)
-                        else:
-                            one_row.append(value.replace('.', ','))
-                    list_of_all.append(one_row)
-                    if CheckCurMonth(one_row[1]):
-                        list_of_month.append(one_row)
+                for k in range(app_number):
+                    try:
+                        nm_number = len(data[t]['days'][j]['apps'][k]['nm'])
+                    except TypeError:
+                        nm_number = 0
+                        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data[t]['days'][j]['apps'][k]['appType']} found NO nm_numbers!" + Style.RESET_ALL)
+                    else:
+                        print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f"For app {data[t]['days'][j]['apps'][k]['appType']} found {nm_number} nm_numbers." + Style.RESET_ALL)
+
+                    for nm in range(nm_number):
+                        one_row = []
+                        for key, value in column_names.items():
+                            if value == '+':
+                                try:
+                                    one_row.append(str(data[t]['days'][j]['apps'][k]['nm'][nm][key]).replace('.', ','))
+                                except KeyError:
+                                    one_row.append(MSG)
+                            elif key == 'advertId':
+                                try:
+                                    one_row.append(str(data[t]['advertId']))
+                                except KeyError:
+                                    one_row.append(MSG)
+                            elif key == 'date':
+                                try:
+                                    one_row.append(str(data[t]['days'][j]['date']))
+                                except KeyError:
+                                    one_row.append(MSG)
+                            else:
+                                one_row.append(value.replace('.', ','))
+                        list_of_all.append(one_row)
+                        if CheckCurMonth(one_row[1]):
+                            list_of_month.append(one_row)
         ExecuteRetry(UploadData, list_of_all, sheet_name, width, row_all, service)
         ExecuteRetry(UploadData, list_of_month, 'Month' + sheet_name, width, row_month, service)
         row_all += len(list_of_all)

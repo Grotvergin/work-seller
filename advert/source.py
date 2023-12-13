@@ -15,16 +15,19 @@ from email.mime.multipart import MIMEMultipart
 
 init()
 URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
-URL_STAT = 'https://advert-api.wb.ru/adv/v1/fullstat'
+URL_STAT = 'https://advert-api.wb.ru/adv/v2/fullstats'
 START = time.time()
 TIMEOUT = 3600*6
-SHORT_SLEEP = 6
+SHORT_SLEEP = 65
 LONG_SLEEP = 90
 BLANK_ROWS = 60000
 MONTH_BLANK = 20000
-START_OF_MONTH = datetime.now().strftime("%Y-%m") + '-01'
-YEAR = datetime.now().strftime("%Y")
-MONTH = datetime.now().strftime("%m")
+PORTION = 100
+BEGIN = '2023-01-01'
+START_OF_MONTH = datetime.now().strftime('%Y-%m') + '-01'
+YEAR = datetime.now().strftime('%Y')
+MONTH = datetime.now().strftime('%m')
+TODAY = datetime.now().strftime('%Y-%m-%d')
 MSG = 'No data'
 SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
