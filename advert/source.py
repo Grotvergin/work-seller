@@ -12,6 +12,7 @@ from pathlib import Path
 from colorama import Fore, Style, init
 import smtplib
 from email.mime.multipart import MIMEMultipart
+import json
 
 init()
 URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
