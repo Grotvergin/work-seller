@@ -1,18 +1,4 @@
-import time
-import sys
-from googleapiclient.discovery import build
-import requests
-import httplib2
-from google.oauth2 import service_account
-from googleapiclient.errors import HttpError
-import configparser
-from pathlib import Path
-from datetime import datetime
-import socket
-from colorama import Fore, Style, init
-import random
-import smtplib
-from email.mime.multipart import MIMEMultipart
+from common import *
 
 init()
 URL_AUTH = 'https://app.topvtop.pro/api/auth/callback/credentials'
@@ -23,7 +9,6 @@ LONG_SLEEP = 300
 TIMEOUT = 3600*1
 BLANK_ROWS = 10000 
 SHEET_ID = '1kQNuedNt7xFU6m4HJe8Lm6he0bokWvwwqN5FeoNGAHY'
-CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 COLUMNS = ['_id', 'article', 'basisoperation', 'comment', 'dataoperation', 'refRewarded', 'summ', 'type', 'typeoperations', 'user']
 MSG = 'NoData'
 COOKIES_AUTH = {
@@ -92,54 +77,4 @@ PARAMS_GET = {
     'type': 'all',
     'limit': '5000',
     'skip': '0',
-}
-
-RED = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 1.0,
-                            'green': 0.0,
-                            'blue': 0.0,
-                            'alpha': 0.5
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
-}
-
-GREEN = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 0.0,
-                            'green': 1.0,
-                            'blue': 0.0,
-                            'alpha': 0.2
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
 }
