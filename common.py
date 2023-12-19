@@ -16,6 +16,9 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+init()
+random.seed()
+START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 
 
@@ -27,8 +30,12 @@ def PrepareEmpty(width: int, blank: int):
     return list_of_empty
 
 
-def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, width: int, service, row=2):
+def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=2):
     body = {'values': list_of_rows}
+    try:
+        width = len(list_of_rows[0])
+    except IndexError:
+        width = 1
     try:
         res = service.spreadsheets().values().update(spreadsheetId=sheet_id,
                                                      range=f'{sheet_name}!A{row}:{COLUMN_INDEXES[width]}{row + len(list_of_rows)}',
@@ -37,7 +44,7 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, width: int, s
         Stamp(f'Status = {err} on uploading data to sheet {sheet_name}', 'e')
         return False
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        Stamp(f'Connction on uploading data to sheet {sheet_name}', 'e')
+        Stamp(f'Connection on uploading data to sheet {sheet_name}', 'e')
         return False
     else:
         Stamp(f'On uploading: {res.get('updatedRows')} rows in range {res.get('updatedRange')}', 's')
@@ -129,16 +136,14 @@ def ControlTimeout(start: int, timeout: int, name: str):
 
 def ParseConfig(direct: str):
     config = configparser.ConfigParser()
-    current_dir = Path.cwd()
-    top_dir = current_dir / direct
-    config.read(top_dir / 'config.ini', encoding='utf-8')
+    config.read(Path.cwd() / direct / 'config.ini', encoding='utf-8')
     sections = config.sections()
     return config, sections
 
 
 def ParseGmailConfig():
     config = configparser.ConfigParser()
-    config.read(Path(Path.cwd(), 'config.ini'), encoding='utf-8')
+    config.read(Path.cwd() / 'config.ini', encoding='utf-8')
     user = config['Gmail']['Login']
     password = config['Gmail']['Password']
     receiver = config['Gmail']['Receiver']
@@ -171,11 +176,11 @@ def Stamp(message: str, level: str):
         case 'i':
             print(Fore.LIGHTBLUE_EX + time_stamp + '[INF] ' + message + '.' + Style.RESET_ALL)
         case 'w':
-            print(Fore.LIGHTMAGENTA_EX + time_stamp + '[WAR] ' + message + '.' + Style.RESET_ALL)
+            print(Fore.LIGHTMAGENTA_EX + time_stamp + '[WAR] ' + message + '!' + Style.RESET_ALL)
         case 's':
             print(Fore.LIGHTGREEN_EX + time_stamp + '[SUC] ' + message + '.' + Style.RESET_ALL)
         case 'e':
-            print(Fore.RED + time_stamp + '[ERR] ' + message + '!' + Style.RESET_ALL)
+            print(Fore.RED + time_stamp + '[ERR] ' + message + '!!!' + Style.RESET_ALL)
         case 'l':
             print(Fore.WHITE + time_stamp + '[SLE] ' + message + '...' + Style.RESET_ALL)
         case 'b':

@@ -6,25 +6,25 @@ def main():
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
+        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
         login, password = ParseCurrentHeading(config, heading)
         DATA_AUTH['email'] = login
         DATA_AUTH['password'] = password
-        ExecuteRetry(START, TIMEOUT, 'Top', LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
         empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(START, TIMEOUT, 'Top', LONG_SLEEP, UploadData, empty, heading, SHEET_ID, len(COLUMNS), service)
+        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, SHEET_ID, service)
         session = Authorize()
         raw = GetData(session)
         if raw:
             prepared = PrepareData(raw, heading, COLUMNS)
-            ExecuteRetry(START, TIMEOUT, 'Top', LONG_SLEEP, UploadData, prepared, heading, SHEET_ID, len(COLUMNS), service)
+            ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, SHEET_ID, service)
         else:
             Stamp(f'Sheet {heading} is empty', 'w')
-        Sleep(SHORT_SLEEP, 0.5)
+        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
         Stamp(f'End of processing {heading}', 'b')
-        ExecuteRetry(START, TIMEOUT, 'Top', LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
-    ControlTimeout(START, TIMEOUT, 'Top')
-    SendEmail(f'Top OK: elapsed {int(time.time() - START)}')
-    Stamp('All data was uploaded successfully!', 'b')
+        Sleep(SHORT_SLEEP, 0.5)
+    ControlTimeout(START, TIMEOUT, NAME)
+    SendEmail(f'{NAME} OK: elapsed {int(time.time() - START)}')
+    Stamp('All data was uploaded successfully', 'b')
 
 
 def ParseCurrentHeading(config, heading: str):
@@ -86,7 +86,11 @@ def GetData(session: requests.Session):
     else:
         if str(response.status_code)[0] == '2':
             Stamp(f'Status = {response.status_code} on TopVTop URL: {URL_DATA}', 's')
-            raw = response.json()
+            if response.content:
+                raw = response.json()
+            else:
+                Stamp('Response in empty', 'w')
+                raw = {}
         else:
             Stamp(f'Status = {response.status_code} on TopVTop URL: {URL_DATA}', 'e')
             Sleep(LONG_SLEEP)

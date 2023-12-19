@@ -104,6 +104,9 @@ def GetData(url: str, token:str, body=''):
         if response.status_code == 200:
             print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Success status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
             raw = response.json()
+        elif response.status_code == 204:
+            print(Fore.MAGENTA + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Empty data status = {response.status_code} on WB URL: {url}.' + Style.RESET_ALL)
+            raw = {}
         else:
             print(Fore.RED + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Error status = {response.status_code} on WB URL: {url}!' + Style.RESET_ALL)
             Sleep(LONG_SLEEP)
@@ -143,7 +146,7 @@ def ProcessData(raw: list, sheet_name: str, column_names: dict, token: str, serv
         print(Fore.GREEN + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'For sheet {sheet_name} found {campaigns_number} companies.' + Style.RESET_ALL)
 
     for i in range(0, campaigns_number, PORTION):
-        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Processing a {PORTION} campaigns starting from {i} out of {campaigns_number}...' + Style.RESET_ALL)
+        print(Fore.LIGHTMAGENTA_EX + datetime.now().strftime('[%m-%d|%H:%M:%S] ') + f'Processing {PORTION} campaigns starting from {i} out of {campaigns_number}...' + Style.RESET_ALL)
         portion_of_campaigns = raw[i:i + PORTION]
         list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
         json_for_request = json.dumps(list_for_request, indent=2)
