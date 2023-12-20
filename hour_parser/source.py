@@ -1,6 +1,6 @@
 from common import *
 
-SHORT_SLEEP = 6
+SHORT_SLEEP = 5
 LONG_SLEEP = 45
 TIMEOUT = 3600 * 3
 BLANK_ROWS = 10000

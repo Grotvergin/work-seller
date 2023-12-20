@@ -6,8 +6,8 @@ def main():
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
-        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
-        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
         barcodes = GetColumn(config[heading]['Column'], service, 'Barcodes')
         words = GetColumn(config[heading]['Column'], service, 'Words')
         row = len(GetColumn('A', service, heading)) + 2
@@ -17,23 +17,21 @@ def main():
                 Stamp(f'Processing page {page}', 'i')
                 PARAMS['page'] = page
                 PARAMS['query'] = word
-                raw = GetData(URL)
+                raw = GetData()
                 if raw:
-                    advertise, real = ProcessData(raw, heading, COLUMNS, word, page)
+                    advertise, real = ProcessData(raw, heading, word, page)
                     advertise = FilterByBarcode(advertise, barcodes)
                     real = FilterByBarcode(real, barcodes)
-                    ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, UploadData, advertise, heading, SHEET_ID, service, row)
-                    ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, UploadData, real, PREFIX + heading, SHEET_ID, service, row)
+                    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, advertise, heading, SHEET_ID, service, row)
+                    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, real, PREFIX + heading, SHEET_ID, service, row)
                     row += len(advertise)
                 else:
                     Stamp(f'Page {page} is empty', 'w')
                 Sleep(SHORT_SLEEP, ratio=0.5)
-        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
-        ExecuteRetry(START, TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
         Stamp(f'End of processing {heading}', 'b')
-    ControlTimeout(START, TIMEOUT, NAME)
-    SendEmail(f'{NAME} OK: elapsed {int(time.time() - START)}')
-    Stamp('All data was uploaded successfully', 'b')
+    Finish(TIMEOUT, NAME)
 
 
 def FilterByBarcode(list_for_filter: list, barcodes: list):
@@ -44,14 +42,14 @@ def FilterByBarcode(list_for_filter: list, barcodes: list):
     return filtered_list
 
 
-def GetColumn(column: str, service, sheet_name):
+def GetColumn(column: str, service, sheet_name: str):
     Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
+    ControlTimeout(TIMEOUT, NAME)
     try:
         res = service.spreadsheets().values().get(spreadsheetId=SHEET_ID,
                                                   range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError) as err:
         Stamp(f'Status = {err} on getting column from sheet {sheet_name}', 'e')
-        ControlTimeout(START, TIMEOUT, NAME)
         Sleep(LONG_SLEEP)
         res = GetColumn(column, service, sheet_name)
     else:
@@ -63,32 +61,31 @@ def GetColumn(column: str, service, sheet_name):
     return res
 
 
-def GetData(url: str):
-    Stamp(f'Trying to connect WB URL: {url}', 'i')
+def GetData():
+    Stamp(f'Trying to connect WB URL: {URL}', 'i')
+    ControlTimeout(TIMEOUT, NAME)
     try:
-        response = requests.get(url, params=PARAMS, headers=HEADERS)
+        response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
-        ControlTimeout(START, TIMEOUT, NAME)
-        Stamp(f'Connection on WB URL: {url}', 'e')
+        Stamp(f'Connection on WB URL: {URL}', 'e')
         Sleep(LONG_SLEEP)
-        raw = GetData(url)
+        raw = GetData()
     else:
-        ControlTimeout(START, TIMEOUT, NAME)
         if str(response.status_code)[0] == '2':
-            Stamp(f'Status = {response.status_code} on WB URL: {url}', 's')
+            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 's')
             if response.content:
                 raw = response.json()
             else:
                 Stamp('Response in empty', 'w')
                 raw = {}
         else:
-            Stamp(f'Status = {response.status_code} on WB URL: {url}', 'e')
+            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 'e')
             Sleep(LONG_SLEEP)
-            raw = GetData(url)
+            raw = GetData()
     return raw
 
 
-def ProcessData(raw: dict, sheet_name: str, column_names: list, word: str, page: int):
+def ProcessData(raw: dict, sheet_name: str, word: str, page: int):
     try:
         height = len(raw['data']['products'])
     except TypeError:
@@ -101,7 +98,7 @@ def ProcessData(raw: dict, sheet_name: str, column_names: list, word: str, page:
     for i in range(height):
         row_advertise = []
         row_real = []
-        for column in column_names:
+        for column in COLUMNS:
             match column:
                 case 'id':
                     row_advertise.append(str(raw['data']['products'][i]['id']))

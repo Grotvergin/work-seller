@@ -22,6 +22,12 @@ START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 
 
+def Finish(timeout: int, name: str):
+    ControlTimeout(timeout, name)
+    SendEmail(f'{name} OK: elapsed {int(time.time() - START)}')
+    Stamp('All data was uploaded successfully', 'b')
+
+
 def PrepareEmpty(width: int, blank: int):
     list_of_empty = []
     one_row = [''] * width
@@ -111,9 +117,9 @@ def BuildService():
         return service
 
 
-def ExecuteRetry(start: int, timeout: int, name: str, timer: int, func, *args, ratio=0.0):
+def ExecuteRetry(timeout: int, name: str, timer: int, func, *args, ratio=0.0):
     while not func(*args):
-        ControlTimeout(start, timeout, name)
+        ControlTimeout(timeout, name)
         Sleep(timer, ratio)
 
 
@@ -124,8 +130,8 @@ def Sleep(timer: int, ratio=0.0):
         time.sleep(1)
 
 
-def ControlTimeout(start: int, timeout: int, name: str):
-    elapsed = int(time.time() - start)
+def ControlTimeout(timeout: int, name: str):
+    elapsed = int(time.time() - START)
     if elapsed > timeout:
         Stamp(f'Timeout: elapsed {elapsed}, while allowed is {timeout}', 'e')
         SendEmail(f'{name} FAIL: elapsed {elapsed}, allowed {timeout}!')
