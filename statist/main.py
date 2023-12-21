@@ -15,7 +15,8 @@ def main():
             data = GetData(url[0], token, date_from, date_to)
             if sheet == 'Realisations':
                 # data += GetData(url[1], token, date_from, date_to)
-                data = SortByRRD_ID(data)
+                if data:
+                    data = SortByRRD_ID(data)
             if data:
                 data = ProcessData(Normalize(data), sheet)
                 ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, spreadsheet_id, service)

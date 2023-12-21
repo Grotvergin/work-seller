@@ -1,4 +1,4 @@
-from parsers.common import *
+from parsers.parsers_common import *
 
 TIMEOUT = 3600 * 3
 BLANK_ROWS = 10000

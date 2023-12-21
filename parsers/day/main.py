@@ -8,9 +8,9 @@ def main():
         Stamp(f'Start of processing {heading}', 'b')
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
-        barcodes = GetColumn(config[heading]['Column'], service, 'Barcodes', TIMEOUT, NAME, SHEET_ID)
-        words = GetColumn(config[heading]['Column'], service, 'Words', TIMEOUT, NAME, SHEET_ID)
-        row = len(GetColumn('A', service, heading, TIMEOUT, NAME, SHEET_ID)) + 2
+        barcodes = GetColumn(config[heading]['Column'], service, 'Barcodes', TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
+        words = GetColumn(config[heading]['Column'], service, 'Words', TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
+        row = len(GetColumn('A', service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)) + 2
         for word in words:
             Stamp(f'Processing template: {word}', 'i')
             for page in range(1, PAGES_QUANTITY + 1):

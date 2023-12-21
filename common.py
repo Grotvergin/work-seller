@@ -22,6 +22,46 @@ init()
 random.seed()
 START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
+MAX_ROW = 10000
+
+
+def GetRow(row: int, service, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int):
+    Stamp(f'Trying to get row {row} from sheet {sheet_name}', 'i')
+    ControlTimeout(timeout, name)
+    last_index = list(COLUMN_INDEXES.keys())[-1]
+    try:
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
+                                                  range=f'{sheet_name}!A{row}:{last_index}{row}').execute().get('values', [])
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
+        Stamp(f'Status = {err} on getting row {row} from sheet {sheet_name}', 'e')
+        Sleep(timer)
+        res = GetRow(row, service, sheet_name, timeout, name, sheet_id, timer)
+    else:
+        if not res:
+            Stamp(f'No elements in row {row} sheet {sheet_name} found', 'w')
+        else:
+            res = res[0]
+            Stamp(f'Found {len(res)} elements from row {row} sheet {sheet_name}', 's')
+    return res
+
+
+def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int):
+    Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
+    ControlTimeout(timeout, name)
+    try:
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
+                                                  range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
+        Stamp(f'Status = {err} on getting column {column} from sheet {sheet_name}', 'e')
+        Sleep(timer)
+        res = GetColumn(column, service, sheet_name, timeout, name, sheet_id, timer)
+    else:
+        if not res:
+            Stamp(f'No elements in column {column} sheet {sheet_name} found', 'w')
+        else:
+            Stamp(f'Found {len(res)} elements from column {column} sheet {sheet_name}', 's')
+            res = [item for sublist in res for item in sublist]
+    return res
 
 
 def Finish(timeout: int, name: str):
@@ -191,12 +231,15 @@ def Stamp(message: str, level: str):
             print(Fore.WHITE + time_stamp + '[UNK] ' + message + '?' + Style.RESET_ALL)
 
 
-COLUMN_INDEXES = {
-    0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J',
-    10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S', 19: 'T',
-    20: 'U', 21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z', 26: 'AA', 27: 'AB', 28: 'AC', 29: 'AD',
-    30: 'AE', 31: 'AF', 32: 'AG', 33: 'AH', 34: 'AI', 35: 'AJ', 36: 'AK', 37: 'AL', 38: 'AM', 39: 'AN',
-    40: 'AO', 41: 'AP', 42: 'AQ', 43: 'AR', 44: 'AS', 45: 'AT', 46: 'AU', 47: 'AV', 48: 'AW', 49: 'AX',
-    50: 'AY', 51: 'AZ', 52: 'BA', 53: 'BB', 54: 'BC', 55: 'BD', 56: 'BE', 57: 'BF', 58: 'BG', 59: 'BH',
-    60: 'BI', 61: 'BJ', 62: 'BK', 63: 'BL', 64: 'BM', 65: 'BN', 66: 'BO', 67: 'BP', 68: 'BQ', 69: 'BR'
-}
+def MakeColumnIndexes():
+    indexes = {}
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    for i, letter in enumerate(alphabet):
+        indexes[i] = letter
+    for i in range(len(alphabet)):
+        for j in range(len(alphabet)):
+            indexes[len(alphabet) + i * len(alphabet) + j] = alphabet[i] + alphabet[j]
+    return indexes
+
+
+COLUMN_INDEXES = MakeColumnIndexes()

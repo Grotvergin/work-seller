@@ -1,32 +1,10 @@
-import ssl
+from common import *
 
-from ..common import *
-
-MAX_ROW = 1000
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
 SHORT_SLEEP = 5
 LONG_SLEEP = 45
-
-
-def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sheet_id: str):
-    Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
-    ControlTimeout(timeout, name)
-    try:
-        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
-                                                  range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
-    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
-        Stamp(f'Status = {err} on getting column from sheet {sheet_name}', 'e')
-        Sleep(LONG_SLEEP)
-        res = GetColumn(column, service, sheet_name, timeout, name, sheet_id)
-    else:
-        if not res:
-            Stamp(f'No elements in column {column} sheet {sheet_name} found', 'w')
-        else:
-            Stamp(f'Found {len(res)} elements from column {column} sheet {sheet_name}', 's')
-            res = [item for sublist in res for item in sublist]
-    return res
 
 
 def GetData(timeout: int, name: str):
