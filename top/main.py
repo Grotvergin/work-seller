@@ -31,7 +31,7 @@ def ParseCurrentHeading(config, heading: str):
 
 def Authorize():
     session = requests.Session()
-    Stamp(f'Trying to authorize TopVTop URL: {URL_AUTH}', 'i')
+    Stamp(f'Trying to authorize {URL_AUTH}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
         response = session.post(URL_AUTH, headers=HEADERS_AUTH, data=DATA_AUTH, cookies=COOKIES_AUTH)
@@ -50,24 +50,24 @@ def Authorize():
 
 
 def GetData(session: requests.Session):
-    Stamp(f'Trying to connect TopVTop URL: {URL_DATA}', 'i')
+    Stamp(f'Trying to connect {URL_DATA}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
         response = session.get(URL_DATA, headers=HEADERS_GET, params=PARAMS_GET, cookies=COOKIES_GET)
     except requests.ConnectionError:
-        Stamp(f'Connection on TopVTop URL: {URL_DATA}', 'e')
+        Stamp(f'Connection on {URL_DATA}', 'e')
         Sleep(LONG_SLEEP)
         raw = GetData(session)
     else:
         if str(response.status_code)[0] == '2':
-            Stamp(f'Status = {response.status_code} on TopVTop URL: {URL_DATA}', 's')
+            Stamp(f'Status = {response.status_code} on {URL_DATA}', 's')
             if response.content:
                 raw = response.json()
             else:
                 Stamp('Response in empty', 'w')
                 raw = {}
         else:
-            Stamp(f'Status = {response.status_code} on TopVTop URL: {URL_DATA}', 'e')
+            Stamp(f'Status = {response.status_code} on {URL_DATA}', 'e')
             Sleep(LONG_SLEEP)
             raw = GetData(session)
     return raw

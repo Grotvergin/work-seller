@@ -1,4 +1,6 @@
 import configparser
+import ssl
+
 import httplib2
 import json
 import random
@@ -46,11 +48,8 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=
         res = service.spreadsheets().values().update(spreadsheetId=sheet_id,
                                                      range=f'{sheet_name}!A{row}:{COLUMN_INDEXES[width]}{row + len(list_of_rows)}',
                                                      valueInputOption='USER_ENTERED', body=body).execute()
-    except HttpError as err:
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on uploading data to sheet {sheet_name}', 'e')
-        return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        Stamp(f'Connection on uploading data to sheet {sheet_name}', 'e')
         return False
     else:
         Stamp(f'On uploading: {res.get('updatedRows')} rows in range {res.get('updatedRange')}', 's')
@@ -93,11 +92,8 @@ def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, serv
         sample['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get(
             'sheetId')
         service.spreadsheets().batchUpdate(spreadsheetId=sheet_id, body=sample).execute()
-    except HttpError as err:
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on switching indicator for sheet {sheet_name}', 'e')
-        return False
-    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        Stamp(f'Connection on switching indicator for sheet {sheet_name}', 'e')
         return False
     else:
         Stamp(f'On switching sheet {sheet_name}', 's')
@@ -108,9 +104,9 @@ def BuildService():
     Stamp(f'Trying to build service', 'i')
     try:
         service = build('sheets', 'v4', credentials=CREDS)
-    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror):
-        Stamp('Connection error on building service', 'e')
-        Sleep(60, 0)
+    except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, ssl.SSLEOFError) as err:
+        Stamp(f'Status = {err} on building service', 'e')
+        Sleep(60)
         BuildService()
     else:
         Stamp('Built service successfully', 's')

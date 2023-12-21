@@ -23,24 +23,24 @@ def main():
 
 
 def GetData(token: str):
-    Stamp(f'Trying to connect WB URL: {URL}', 'i')
+    Stamp(f'Trying to connect {URL}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
         response = requests.get(URL, headers={'Authorization': token})
     except requests.ConnectionError:
-        Stamp(f'Connection on WB URL: {URL}', 'e')
+        Stamp(f'Connection on {URL}', 'e')
         Sleep(LONG_SLEEP)
         raw = GetData(token)
     else:
         if str(response.status_code)[0] == '2':
-            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 's')
+            Stamp(f'Status = {response.status_code} on {URL}', 's')
             if response.content:
                 raw = response.json()
             else:
                 Stamp('Response in empty', 'w')
                 raw = {}
         else:
-            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 'e')
+            Stamp(f'Status = {response.status_code} on {URL}', 'e')
             Sleep(LONG_SLEEP)
             raw = GetData(token)
     return raw

@@ -1,25 +1,9 @@
-import time
-import sys
-import socket
-from datetime import datetime
-from googleapiclient.discovery import build
-import requests
-import httplib2
-from google.oauth2 import service_account
-from googleapiclient.errors import HttpError
-import configparser
-from pathlib import Path
-from colorama import Fore, Style, init
-import smtplib
-from email.mime.multipart import MIMEMultipart
-import json
+from common import *
 
-init()
 URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
 URL_STAT = 'https://advert-api.wb.ru/adv/v2/fullstats'
-START = time.time()
-TIMEOUT = 3600*6
-SHORT_SLEEP = 65
+TIMEOUT = 3600*4
+SHORT_SLEEP = 60
 LONG_SLEEP = 90
 BLANK_ROWS = 60000
 MONTH_BLANK = 20000
@@ -31,7 +15,8 @@ MONTH = datetime.now().strftime('%m')
 TODAY = datetime.now().strftime('%Y-%m-%d')
 MSG = 'No data'
 SHEET_ID = '1yizHdvJXXdAcQ_P0d0fXJPOb0PaZS1-D85PczZ0cuWI'
-CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
+NAME = 'Advert'
+PREFIX = 'Month'
 
 COLUMNS = {'advertId': 'SPEC',
            'date': 'SPEC',
@@ -47,53 +32,3 @@ COLUMNS = {'advertId': 'SPEC',
            'cr': '+',
            'shks': '+',
            'sum_price': '+'}
-
-RED = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 1.0,
-                            'green': 0.0,
-                            'blue': 0.0,
-                            'alpha': 0.5
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
-}
-
-GREEN = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 0.0,
-                            'green': 1.0,
-                            'blue': 0.0,
-                            'alpha': 0.2
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
-}

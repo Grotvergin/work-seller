@@ -1,33 +1,22 @@
-import sys
-from datetime import datetime
-import time
-from googleapiclient.discovery import build
-import httplib2
-import requests
-from google.oauth2 import service_account
-from googleapiclient.errors import HttpError
-import configparser
-from pathlib import Path
-import socket
-from datetime import datetime
-from colorama import Fore, Style, init
-import smtplib
-from email.mime.multipart import MIMEMultipart
+from common import *
 
-init()
-START = time.time()
 TIMEOUT = 3600*2
-CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 PERC_COMM = 0.022249
 LONG_SLEEP = 90
-SHORT_SLEEP = 5
+SHORT_SLEEP = 65
 BLANK_ROWS = 50000
+NAME = 'Statistics'
+PREFIX = 'Month'
+DATE_FROM = '2023-06-06'
+DATE_X = '2023-11-27'
 
+# TODO Change for v2 below, when the method will be ready + uncomment in main
 SHEETS_AND_URL = {
-    'Realisations': 'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
-    'Orders': 'https://statistics-api.wildberries.ru/api/v1/supplier/orders',
-    'Sales': 'https://statistics-api.wildberries.ru/api/v1/supplier/sales',
-    'Warehouse': 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks'
+    'Realisations': ['https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
+                     'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod'],
+    'Orders': ['https://statistics-api.wildberries.ru/api/v1/supplier/orders'],
+    'Sales': ['https://statistics-api.wildberries.ru/api/v1/supplier/sales'],
+    'Warehouse': ['https://statistics-api.wildberries.ru/api/v1/supplier/stocks']
 }
 
 SHEETS_AND_COLS = {
@@ -141,54 +130,4 @@ SHEETS_AND_COLS = {
                   'Price': '+',
                   'Discount': '+',
                   'WarehouseID': ''}
-}
-
-RED = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 1.0,
-                            'green': 0.0,
-                            'blue': 0.0,
-                            'alpha': 0.5
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
-}
-
-GREEN = {
-    'requests': [
-        {
-            'repeatCell': {
-                'range': {
-                    'startRowIndex': 0,
-                    'endRowIndex': 1,
-                    'startColumnIndex': 0
-                },
-                'cell': {
-                    'userEnteredFormat': {
-                        'backgroundColor': {
-                            'red': 0.0,
-                            'green': 1.0,
-                            'blue': 0.0,
-                            'alpha': 0.2
-                        }
-                    }
-                },
-                'fields': 'userEnteredFormat.backgroundColor'
-            }
-        }
-    ]
 }

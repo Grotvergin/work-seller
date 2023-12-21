@@ -1,49 +1,25 @@
-from hour_parser.source import *
+import ssl
+
+from ..common import *
+
+MAX_ROW = 1000
+URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
+COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
+PREFIX = 'NoLog'
+SHORT_SLEEP = 5
+LONG_SLEEP = 45
 
 
-def main():
-    config, sections = ParseConfig('hour_parser')
-    service = BuildService()
-    for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
-        row = 2
-        words = GetColumn(config[heading]['Column'], service, 'Words')
-        empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, SHEET_ID, service, row)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, PREFIX + heading, SHEET_ID, service, row)
-        for word in words:
-            Stamp(f'Processing template: {word}', 'i')
-            for page in range(1, PAGES_QUANTITY + 1):
-                Stamp(f'Processing page {page}', 'i')
-                PARAMS['page'] = page
-                PARAMS['query'] = word
-                raw = GetData()
-                if raw:
-                    advertise, real = ProcessData(raw, heading, word, page)
-                    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, advertise, heading, SHEET_ID, service, row)
-                    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, real, PREFIX + heading, SHEET_ID, service, row)
-                    row += len(advertise)
-                else:
-                    Stamp(f'Page {page} is empty', 'w')
-                Sleep(SHORT_SLEEP, 0.5)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
-        Stamp(f'End of processing {heading}', 'b')
-    Finish(TIMEOUT, NAME)
-
-
-def GetColumn(column: str, service, sheet_name: str):
+def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sheet_id: str):
     Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
+    ControlTimeout(timeout, name)
     try:
-        res = service.spreadsheets().values().get(spreadsheetId=SHEET_ID,
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
                                                   range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
-    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError) as err:
+    except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on getting column from sheet {sheet_name}', 'e')
         Sleep(LONG_SLEEP)
-        res = GetColumn(column, service, sheet_name)
+        res = GetColumn(column, service, sheet_name, timeout, name, sheet_id)
     else:
         if not res:
             Stamp(f'No elements in column {column} sheet {sheet_name} found', 'w')
@@ -53,27 +29,27 @@ def GetColumn(column: str, service, sheet_name: str):
     return res
 
 
-def GetData():
-    Stamp(f'Trying to connect WB URL: {URL}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
+def GetData(timeout: int, name: str):
+    Stamp(f'Trying to connect {URL}', 'i')
+    ControlTimeout(timeout, name)
     try:
         response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
-        Stamp(f'Connection on WB URL: {URL}', 'e')
+        Stamp(f'Connection on {URL}', 'e')
         Sleep(LONG_SLEEP)
-        raw = GetData()
+        raw = GetData(timeout, name)
     else:
         if str(response.status_code)[0] == '2':
-            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 's')
+            Stamp(f'Status = {response.status_code} on {URL}', 's')
             if response.content:
                 raw = response.json()
             else:
                 Stamp('Response in empty', 'w')
                 raw = {}
         else:
-            Stamp(f'Status = {response.status_code} on WB URL: {URL}', 'e')
+            Stamp(f'Status = {response.status_code} on {URL}', 'e')
             Sleep(LONG_SLEEP)
-            raw = GetData()
+            raw = GetData(timeout, name)
     return raw
 
 
@@ -120,5 +96,31 @@ def ProcessData(raw: dict, sheet_name: str, word: str, page: int):
     return list_advertise, list_real
 
 
-if __name__ == '__main__':
-    main()
+PARAMS = {
+    'TestGroup': 'control',
+    'TestID': '367',
+    'appType': '1',
+    'curr': 'rub',
+    'dest': '-1257786',
+    'resultset': 'catalog',
+    'sort': 'popular',
+    'spp': '28',
+    'suppressSpellcheck': 'false',
+}
+
+HEADERS = {
+    'Accept': '*/*',
+    'Accept-Language': 'ru,en;q=0.9,cy;q=0.8',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Origin': 'https://www.wildberries.ru',
+    'Pragma': 'no-cache',
+    'Referer': 'https://www.wildberries.ru/catalog/0/search.aspx?search=%D1%82%D0%B0%D1%80%D0%B5%D0%BB%D0%BA%D0%B8',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'cross-site',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.888 YaBrowser/23.9.2.888 Yowser/2.5 Safari/537.36',
+    'sec-ch-ua': '"Chromium";v="116", "Not)A;Brand";v="24", "YaBrowser";v="23"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+}

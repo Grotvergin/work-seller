@@ -1,8 +1,10 @@
 */*.ico
+*/*/*.ico
 */*.spec
 */*.exe
 */keys.json
 */config.ini
+*/*/config.ini
 */__pycache__/
 .idea
 *.ps1
