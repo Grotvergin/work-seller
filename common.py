@@ -99,7 +99,7 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=
         Stamp(f'Status = {err} on uploading data to sheet {sheet_name}', 'e')
         return False
     else:
-        Stamp(f'On uploading: {res.get('updatedRows')} rows in range {res.get('updatedRange')}', 's')
+        Stamp(f"On uploading: {res.get('updatedRows')} rows in range {res.get('updatedRange')}", 's')
         return True
 
 
