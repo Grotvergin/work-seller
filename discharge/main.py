@@ -6,17 +6,16 @@ def main():
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
-        token, client_id = ParseCurrentHeading(config, heading)
+        token, client_id, sheet_id = ParseCurrentHeading(config, heading)
         for sheet in SHEETS.keys():
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS[sheet]['Columns']), SHEET_ID, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
             empty = PrepareEmpty(len(SHEETS[sheet]['Columns']), BLANK_ROWS)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, SHEET_ID, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, sheet_id, service)
             if sheet == 'Transactions':
-                ProcessTransactions(token, client_id, service)
+                ProcessTransactions(token, client_id, sheet_id, service)
             else:
-                ProcessProductsWarehouse(token, client_id, sheet, service)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS[sheet]['Columns']), SHEET_ID, service)
-            Sleep(SHORT_SLEEP)
+                ProcessProductsWarehouse(token, client_id, sheet, sheet_id, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
         Stamp(f'End of processing {heading}', 'b')
     Finish(TIMEOUT, NAME)
 
@@ -24,10 +23,11 @@ def main():
 def ParseCurrentHeading(config, heading: str):
     token = config[heading]['Token']
     client_id = config[heading]['ClientID']
-    return token, client_id
+    sheet_id = config[heading]['SheetID']
+    return token, client_id, sheet_id
 
 
-def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, service):
+def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: str, service):
     list_of_products = GetData(SHEETS[sheet]['GetAll'], token, client_id)
     product_ids = [item['product_id'] for item in list_of_products['result']['items']]
     body_id = {'product_id': product_ids}
@@ -38,10 +38,19 @@ def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, service):
             products_sku.append(str(item['sku']))
         else:
             products_sku.append(str(item['fbo_sku']))
-    body_sku = {'skus': products_sku}
-    list_of_ratings = GetData(SHEETS[sheet]['GetRating'], token, client_id, body_sku)
+    list_of_ratings = GetAllSkus(products_sku, GetData, SHEETS[sheet]['GetRating'], token, client_id)
     prepared = PrepareData(list_of_info, list_of_ratings, sheet)
-    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, sheet, SHEET_ID, service)
+    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, sheet, sheet_id, service)
+
+
+def GetAllSkus(big_list, func, *args):
+    all_data = []
+    for i in range(0, len(big_list), CHUNK_SIZE):
+        chunk = big_list[i:i+CHUNK_SIZE]
+        body_sku = {'skus': chunk}
+        data = func(*args, body_sku)
+        all_data += data['products']
+    return all_data
 
 
 def GetIntermediateDates():
@@ -54,7 +63,7 @@ def GetIntermediateDates():
     return date_pairs
 
 
-def ProcessTransactions(token: str, client_id: str, service):
+def ProcessTransactions(token: str, client_id: str, sheet_id: str, service):
     row = 2
     intermediate_pairs = GetIntermediateDates()
     for gap in intermediate_pairs:
@@ -99,20 +108,13 @@ def ProcessTransactions(token: str, client_id: str, service):
                             case _:
                                 one_row.append(str(raw['result']['operations'][k][column]).replace('.', ','))
                     list_of_rows.append(one_row)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_rows, 'Transactions', SHEET_ID, service, row)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_rows, 'Transactions', sheet_id, service, row)
         row += len(list_of_rows)
 
 
-def PrepareData(main_data: dict, ratings: dict, sheet_name: str):
-    try:
-        height = len(main_data['result']['items'])
-    except TypeError:
-        height = 0
-        Stamp(f'For sheet {sheet_name} found NO rows', 'w')
-    else:
-        Stamp(f'For sheet {sheet_name} found {height} rows', 'i')
+def PrepareData(main_data: dict, ratings: list, sheet_name: str):
     list_of_rows = []
-    for i in range(height):
+    for i in range(SmartLen(main_data['result']['items'])):
         one_row = []
         for column in SHEETS[sheet_name]['Columns']:
             match column:
@@ -121,11 +123,11 @@ def PrepareData(main_data: dict, ratings: dict, sheet_name: str):
                         main_data['result']['items'][i][column] = main_data['result']['items'][i]['fbo_sku']
                     one_row.append(str(main_data['result']['items'][i][column]))
                 case 'rating':
-                    for product in ratings['products']:
+                    for product in ratings:
                         if int(product['sku']) == int(main_data['result']['items'][i]['sku']):
                             one_row.append(str(product['rating']).replace('.', ','))
                 case 'brand':
-                    one_row.append('Foodteria')
+                    one_row.append('')
                 case 'state':
                     one_row.append(str(main_data['result']['items'][i]['status']['state_name']))
                 case 'present' | 'reserved':
@@ -137,8 +139,8 @@ def PrepareData(main_data: dict, ratings: dict, sheet_name: str):
 
 
 def GetData(url: str, token: str, client_id: str, body=None):
-    headers = {'Api-Key': token, 'Client-Id': client_id}
     Stamp(f'Trying to connect {url}', 'i')
+    headers = {'Api-Key': token, 'Client-Id': client_id}
     ControlTimeout(TIMEOUT, NAME)
     try:
         if body is None:

@@ -9,15 +9,12 @@ def main():
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
         token = config[heading]['Token']
-        empty_all = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        empty_month = PrepareEmpty(len(COLUMNS), MONTH_BLANK)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty_all, heading, SHEET_ID, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty_month, PREFIX + heading, SHEET_ID, service)
+        big_empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
+        small_empty = PrepareEmpty(len(COLUMNS), int(0.2 * BLANK_ROWS))
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, big_empty, heading, SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, small_empty, PREFIX + heading, SHEET_ID, service)
         campaigns = PrepareCampaigns(token)
-        if campaigns:
-            ProcessData(campaigns, heading, token, service)
-        else:
-            Stamp(f'Sheet {heading} is empty', 'w')
+        ProcessData(campaigns, heading, token, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), SHEET_ID, service)
         Stamp(f'End of processing {heading}', 'b')
@@ -39,11 +36,11 @@ def PrepareCampaigns(token):
     return list_of_campaigns
 
 
-def GetData(url: str, token:str, body=''):
+def GetData(url: str, token:str, body=None):
     Stamp(f'Trying to connect {url}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
-        if body == '':
+        if body is None:
             response = requests.get(url, headers={'Authorization': token})
         else:
             response = requests.post(url, headers={'Authorization': token}, data=body)
@@ -69,37 +66,18 @@ def GetData(url: str, token:str, body=''):
 def ProcessData(raw: list, sheet_name: str, token: str, service):
     row_all = 2
     row_month = 2
-    try:
-        campaigns_number = len(raw)
-    except TypeError:
-        campaigns_number = 0
-        Stamp(f'For sheet {sheet_name} found NO companies', 'w')
-    else:
-        Stamp(f'For sheet {sheet_name} found {campaigns_number} companies', 'i')
-    for i in range(0, campaigns_number, PORTION):
-        Stamp(f'Processing {PORTION} campaigns from {i} out of {campaigns_number}', 'i')
+    Stamp(f'For sheet {sheet_name} found {SmartLen(raw)} companies', 'i')
+    for i in range(0, SmartLen(raw), PORTION):
+        Stamp(f'Processing {PORTION} campaigns from {i} out of {SmartLen(raw)}', 'i')
         portion_of_campaigns = raw[i:i + PORTION]
         list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
-        json_for_request = json.dumps(list_for_request, indent=2)
-        data = GetData(URL_STAT, token, json_for_request)
+        data = GetData(URL_STAT, token, json.dumps(list_for_request, indent=2))
         list_of_all = []
         list_of_month = []
-        for t in range(len(data)):
-            try:
-                days_number = len(data[t]['days'])
-            except TypeError:
-                days_number = 0
-            for j in range(days_number):
-                try:
-                    app_number = len(data[t]['days'][j]['apps'])
-                except TypeError:
-                    app_number = 0
-                for k in range(app_number):
-                    try:
-                        nm_number = len(data[t]['days'][j]['apps'][k]['nm'])
-                    except TypeError:
-                        nm_number = 0
-                    for nm in range(nm_number):
+        for t in range(SmartLen(data)):
+            for j in range(SmartLen(data[t]['days'])):
+                for k in range(SmartLen(data[t]['days'][j]['apps'])):
+                    for nm in range(SmartLen(data[t]['days'][j]['apps'][k]['nm'])):
                         one_row = []
                         for key, value in COLUMNS.items():
                             try:

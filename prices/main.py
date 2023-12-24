@@ -11,11 +11,8 @@ def main():
         empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, SHEET_ID, service)
         raw = GetData(token)
-        if raw:
-            prepared = ProcessData(raw, heading)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, SHEET_ID, service)
-        else:
-            Stamp(f'Sheet {heading} is empty', 'w')
+        prepared = ProcessData(raw)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, SHEET_ID, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
         Stamp(f'End of processing {heading}', 'b')
         Sleep(SHORT_SLEEP)
@@ -46,16 +43,9 @@ def GetData(token: str):
     return raw
 
 
-def ProcessData(raw: dict, sheet_name: str):
-    try:
-        height = len(raw)
-    except TypeError:
-        height = 0
-        Stamp(f'For sheet {sheet_name} found NO rows', 'w')
-    else:
-        Stamp(f'For sheet {sheet_name} found {height} rows', 'i')
+def ProcessData(raw: dict):
     list_of_rows = []
-    for i in range(height):
+    for i in range(SmartLen(raw)):
         one_row = []
         for column in COLUMNS:
             if column == 'time':

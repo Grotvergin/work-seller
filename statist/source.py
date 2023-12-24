@@ -12,6 +12,7 @@ DATE_X = '2023-11-27'
 
 # TODO Change for v2 below, when the method will be ready + uncomment in main
 SHEETS_AND_URL = {
+    'Incomes': ['https://statistics-api.wildberries.ru/api/v1/supplier/incomes'],
     'Realisations': ['https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
                      'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod'],
     'Orders': ['https://statistics-api.wildberries.ru/api/v1/supplier/orders'],
@@ -20,6 +21,21 @@ SHEETS_AND_URL = {
 }
 
 SHEETS_AND_COLS = {
+    'Incomes': {
+        'incomeId': '+',
+        'number': '+',
+        'date': '+',
+        'lastChangeDate': '+',
+        'supplierArticle': '+',
+        'techSize': '+',
+        'barcode': '+',
+        'quantity': '+',
+        'totalPrice': '+',
+        'dateClose': '+',
+        'warehouseName': '+',
+        'nmId': '+',
+        'status': '+'
+    },
     'Realisations': {'realizationreport_id': '+',
                      'suppliercontract_code': 'SPEC',
                      'rrd_id': '+',

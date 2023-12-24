@@ -6,8 +6,8 @@ SHORT_SLEEP = 5
 BLANK_ROWS = 50000
 MONTHS_HISTORY = 14
 DAYS_IN_MONTH = 28
+CHUNK_SIZE = 100
 TODAY = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-SHEET_ID = '19Cxlu8rPETt58hdYGQOjiYXZ_GIxI-veqktkjwzjBDI'
 NAME = 'Discharge'
 
 SHEETS = {

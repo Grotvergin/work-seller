@@ -15,13 +15,9 @@ def main():
             data = GetData(url[0], token, date_from, date_to)
             if sheet == 'Realisations':
                 # data += GetData(url[1], token, date_from, date_to)
-                if data:
-                    data = SortByRRD_ID(data)
-            if data:
-                data = ProcessData(Normalize(data), sheet)
-                ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, spreadsheet_id, service)
-            else:
-                Stamp(f'Sheet {sheet} is empty from {date_from} to {date_to}', 'w')
+                data = SortByRRD_ID(data)
+            data = ProcessData(Normalize(data), sheet)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, spreadsheet_id, service)
             ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
             Sleep(SHORT_SLEEP)
         Stamp(f'End of processing {heading}', 'b')
@@ -65,33 +61,27 @@ def ParseCurrentHeading(config, heading: str):
 
 
 def Normalize(raw: list):
-    Stamp('Start of data normalising', 'i')
-    unique_keys = set()
-    for dataset in raw:
-        unique_keys.update(dataset.keys())
-    for dataset in raw:
-        for key in unique_keys:
-            if key not in dataset:
-                dataset[key] = '0'
-    for dataset in raw:
-        for key, value in dataset.items():
-            if value is None:
-                dataset[key] = '0'
-    Stamp('End of data normalising', 'i')
+    if SmartLen(raw) > 0:
+        Stamp('Start of data normalising', 'i')
+        unique_keys = set()
+        for dataset in raw:
+            unique_keys.update(dataset.keys())
+        for dataset in raw:
+            for key in unique_keys:
+                if key not in dataset:
+                    dataset[key] = '0'
+        for dataset in raw:
+            for key, value in dataset.items():
+                if value is None:
+                    dataset[key] = '0'
+        Stamp('End of data normalising', 'i')
     return raw
 
 
 def ProcessData(raw: list, sheet_name: str):
-    try:
-        height = len(raw)
-    except TypeError:
-        height = 0
-        Stamp(f'For sheet {sheet_name} found NO rows', 'w')
-    else:
-        Stamp(f'For sheet {sheet_name} found {height} rows', 'i')
     num = 2
     list_of_rows = []
-    for i in range(height):
+    for i in range(SmartLen(raw)):
         one_row = []
         for key, value in SHEETS_AND_COLS[sheet_name].items():
             if value == '+':
@@ -136,15 +126,16 @@ def ProcessData(raw: list, sheet_name: str):
 
 
 def SortByRRD_ID(raw: list):
-    Stamp('Sorting by rrd_id started', 'i')
-    swap = True
-    while swap:
-        swap = False
-        for i in range(len(raw) - 1):
-            if raw[i]['rrd_id'] > raw[i + 1]['rrd_id']:
-                raw[i], raw[i + 1] = raw[i + 1], raw[i]
-                swap = True
-    Stamp('Sorting by rrd_id finished', 'i')
+    if SmartLen(raw) > 1:
+        Stamp('Sorting by rrd_id started', 'i')
+        swap = True
+        while swap:
+            swap = False
+            for i in range(len(raw) - 1):
+                if raw[i]['rrd_id'] > raw[i + 1]['rrd_id']:
+                    raw[i], raw[i + 1] = raw[i + 1], raw[i]
+                    swap = True
+        Stamp('Sorting by rrd_id finished', 'i')
     return raw
 
 

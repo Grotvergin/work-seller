@@ -3,8 +3,19 @@ from common import *
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
-SHORT_SLEEP = 5
+SHORT_SLEEP = 4
 LONG_SLEEP = 45
+PAGES_QUANTITY = 10
+TIMEOUT = 3600 * 5
+BLANK_ROWS = 10000
+
+
+def FilterByBarcode(list_for_filter: list, barcodes: list):
+    filtered_list = []
+    for sublist in list_for_filter:
+        if sublist[0] in barcodes:
+            filtered_list.append(sublist)
+    return filtered_list
 
 
 def GetData(timeout: int, name: str):
@@ -31,17 +42,10 @@ def GetData(timeout: int, name: str):
     return raw
 
 
-def ProcessData(raw: dict, sheet_name: str, word: str, page: int):
-    try:
-        height = len(raw['data']['products'])
-    except TypeError:
-        height = 0
-        Stamp(f'For sheet {sheet_name} found NO products', 'w')
-    else:
-        Stamp(f'For sheet {sheet_name} found {height} products', 's')
+def ProcessData(raw: dict, word: str, page: int):
     list_real = []
     list_advertise = []
-    for i in range(height):
+    for i in range(SmartLen(raw['data']['products'])):
         row_advertise = []
         row_real = []
         for column in COLUMNS:

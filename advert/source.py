@@ -2,11 +2,10 @@ from common import *
 
 URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
 URL_STAT = 'https://advert-api.wb.ru/adv/v2/fullstats'
-TIMEOUT = 3600*4
+TIMEOUT = 3600
 SHORT_SLEEP = 60
 LONG_SLEEP = 90
-BLANK_ROWS = 60000
-MONTH_BLANK = 20000
+BLANK_ROWS = 50000
 PORTION = 100
 BEGIN = '2023-01-01'
 START_OF_MONTH = datetime.now().strftime('%Y-%m') + '-01'

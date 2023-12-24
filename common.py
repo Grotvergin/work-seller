@@ -1,6 +1,5 @@
 import configparser
 import ssl
-
 import httplib2
 import json
 import random
@@ -23,6 +22,14 @@ random.seed()
 START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 MAX_ROW = 10000
+
+
+def SmartLen(data):
+    try:
+        length = len(data)
+    except TypeError:
+        length = 0
+    return length
 
 
 def GetRow(row: int, service, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int):
@@ -97,6 +104,7 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=
 
 
 def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, service):
+    Stamp(f'Trying to switch sheet {sheet_name}', 'i')
     sample = {
         'requests': [
             {
@@ -133,7 +141,7 @@ def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, serv
             'sheetId')
         service.spreadsheets().batchUpdate(spreadsheetId=sheet_id, body=sample).execute()
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
-        Stamp(f'Status = {err} on switching indicator for sheet {sheet_name}', 'e')
+        Stamp(f'Status = {err} on switching sheet {sheet_name}', 'e')
         return False
     else:
         Stamp(f'On switching sheet {sheet_name}', 's')
@@ -176,16 +184,14 @@ def ControlTimeout(timeout: int, name: str):
         Stamp(f'Timeout OK: elapsed time is {elapsed}, while allowed is {timeout}', 'i')
 
 
-def ParseConfig(direct: str):
+def ParseConfig(direct=''):
     config = configparser.ConfigParser()
     config.read(Path.cwd() / direct / 'config.ini', encoding='utf-8')
     sections = config.sections()
     return config, sections
 
 
-def ParseGmailConfig():
-    config = configparser.ConfigParser()
-    config.read(Path.cwd() / 'config.ini', encoding='utf-8')
+def ParseGmailConfig(config):
     user = config['Gmail']['Login']
     password = config['Gmail']['Password']
     receiver = config['Gmail']['Receiver']
@@ -193,11 +199,12 @@ def ParseGmailConfig():
 
 
 def SendEmail(theme: str):
-    user, password, receiver = ParseGmailConfig()
+    config, sections = ParseConfig()
+    user, password, receiver = ParseGmailConfig(config)
     msg = MIMEMultipart()
     msg['Subject'] = theme
+    Stamp('Trying to send the letter', 'i')
     try:
-        Stamp('Trying to send the letter', 'i')
         smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
         smtp_server.starttls()
         smtp_server.login(user, password)
@@ -209,7 +216,7 @@ def SendEmail(theme: str):
     except smtplib.SMTPRecipientsRefused:
         Stamp('Server refused the recipient address', 'e')
     except Exception as e:
-        Stamp('An error occurred: ' + str(e), 'e')
+        Stamp(f'An error occurred: {e}', 'e')
 
 
 def Stamp(message: str, level: str):

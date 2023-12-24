@@ -30,7 +30,7 @@ def Check(prev: dict, cur: dict):
     list_of_differences = []
     for key in prev:
         if key not in cur:
-            list_of_differences.append(f'Произошла ошибка: key from prev: {key} is not in cur')
+            list_of_differences.append(f'Отсутствует комбинация товар – склад: *{key}*')
         elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
             list_of_differences.append(
                 f'{key} – было *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*')
