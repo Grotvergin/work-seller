@@ -28,7 +28,7 @@ def main():
 
 
 def ProcessData(raw: dict, sheet_name: str):
-    Stamp(f'For sheet {sheet_name} found {SmartLen(raw['result']['data'])} datasets', 'i')
+    Stamp(f"For sheet {sheet_name} found {SmartLen(raw['result']['data'])} datasets", 'i')
     list_of_rows = []
     for i in range(SmartLen(raw['result']['data'])):
         one_row = []
