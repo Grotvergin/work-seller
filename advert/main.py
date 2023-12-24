@@ -30,9 +30,9 @@ def CheckCurMonth(cur_date: str):
 def PrepareCampaigns(token):
     raw = GetData(URL_CAMPAIGNS, token)
     list_of_campaigns = []
-    for advert in raw['adverts']:
-        for lst in advert['advert_list']:
-            list_of_campaigns.append(lst['advertId'])
+    for i in range(SmartLen(raw['adverts'])):
+        for j in range(SmartLen(raw['adverts'][i]['advert_list'])):
+            list_of_campaigns.append(raw['adverts'][i]['advert_list'][j]['advertId'])
     return list_of_campaigns
 
 
