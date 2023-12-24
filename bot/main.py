@@ -11,7 +11,7 @@ def main():
         Stamp(f'Start of processing {heading}', 'b')
         token = config[heading]['Token']
         data = GetData(token)
-        data = ProcessDataPackage(data, heading)
+        data = ProcessDataPackage(data)
         row = len(GetColumn('A', service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)) + 2
         prev_quantities = GetRow(row - 1, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
         prev_articles = GetRow(row - 2, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
@@ -30,10 +30,10 @@ def Check(prev: dict, cur: dict):
     list_of_differences = []
     for key in prev:
         if key not in cur:
-            list_of_differences.append(f'Отсутствует комбинация товар – склад: *{key}*')
+            list_of_differences.append(f'Закончился товар на складе:\n*{key}*')
         elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
             list_of_differences.append(
-                f'{key} – было *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*')
+                f'{key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*')
     return list_of_differences
 
 
@@ -61,18 +61,11 @@ def GetData(token: str):
     return raw
 
 
-def ProcessDataPackage(raw: list, heading: str):
-    try:
-        height = len(raw)
-    except TypeError:
-        height = 0
-        Stamp(f'For sheet {heading} found NO rows', 'w')
-    else:
-        Stamp(f'For sheet {heading} found {height} rows', 'i')
+def ProcessDataPackage(raw: list):
     list_of_articles = []
     list_of_quantities = []
     list_of_time = []
-    for i in range(height):
+    for i in range(SmartLen(raw)):
         for row in ROWS:
             match row:
                 case 'supplierArticle':
@@ -92,9 +85,6 @@ def Pend(message):
         bot.send_message(message.from_user.id, f'Произошли такие изменения:\n{formatted_result}', parse_mode='Markdown')
     else:
         bot.send_message(message.from_user.id, f'Ничего не изменилось с прошлого обновления...')
-
-
-bot = telebot.TeleBot('6833627182:AAFlKnO1BOsGn1P9eIqNlNNmpNPCz6R6D1M')
 
 
 @bot.message_handler(content_types=['text'])

@@ -38,7 +38,7 @@ def ProcessData(raw: dict, sheet_name: str):
                     one_row.append(str(raw['result']['data'][i]['dimensions'][0][key]))
                 case _:
                     try:
-                        one_row.append(str(raw['result']['data'][i]['metrics'][value]).replace('.', ','))
+                        one_row.append(str(int(raw['result']['data'][i]['metrics'][value])).replace('.', ','))
                     except IndexError:
                         one_row.append(MSG)
         list_of_rows.append(one_row)
