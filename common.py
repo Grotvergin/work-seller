@@ -89,7 +89,7 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=
     body = {'values': list_of_rows}
     try:
         width = len(list_of_rows[0])
-    except IndexError:
+    except (IndexError, KeyError):
         width = 1
     try:
         res = service.spreadsheets().values().update(spreadsheetId=sheet_id,
