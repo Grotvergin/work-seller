@@ -1,111 +1,101 @@
 from bot.source import *
-import logging
 
 
-# TODO Improve safety by the depth of recursion
 def main():
-    config, sections = ParseConfig('bot')
-    service = BuildService()
-    message = []
-    for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
-        token = config[heading]['Token']
-        data = GetData(token)
-        data = ProcessDataPackage(data)
-        row = len(GetColumn('A', service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)) + 2
-        prev_quantities = GetRow(row - 1, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
-        prev_articles = GetRow(row - 2, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
-        prev_dict = dict(zip(prev_articles, prev_quantities))
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, heading, SHEET_ID, service, row)
-        cur_quantities = GetRow(row + 2, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
-        cur_articles = GetRow(row + 1, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
-        cur_dict = dict(zip(cur_articles, cur_quantities))
-        list_of_differences = Check(prev_dict, cur_dict)
-        message.append(list_of_differences)
-        Stamp(f'End of processing {heading}', 'b')
-    return message
+    main_thread = Thread(target=MainThread)
+    another_thread = Thread(target=PollingThread)
+    another_thread.start()
+    main_thread.start()
+    another_thread.join()
+    main_thread.join()
 
 
-def Check(prev: dict, cur: dict):
-    list_of_differences = []
-    for key in prev:
-        if key not in cur:
-            list_of_differences.append(f'Закончился товар на складе:\n*{key}*')
-        elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
-            list_of_differences.append(
-                f'{key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*')
-    return list_of_differences
+def PollingThread():
+    while True:
+        try:
+            bot.polling(none_stop=True, interval=1)
+        except Exception as e:
+            Stamp(str(e), 'e')
 
 
-def GetData(token: str):
-    Stamp(f'Trying to connect {URL}', 'i')
-    # TODO Control the depth of recursion
-    try:
-        response = requests.get(URL, headers={'Authorization': token}, params={'dateFrom': DATE_FROM})
-    except requests.ConnectionError:
-        Stamp(f'On connection {URL}', 'e')
-        Sleep(LONG_SLEEP)
-        raw = GetData(token)
+def MainThread():
+    while True:
+        time.sleep(1)
+        if datetime.now().strftime('%M:%S') == '00:00':
+            Stamp('Time to send message', 'i')
+            SendMessage('bot/chats.txt')
+
+
+def CallbackStart(user: int):
+    Stamp(f'User id {user} requested /start', 'i')
+    if AddToDatabase(user, 'bot/chats.txt'):
+        bot.send_message(user, '🟡 Вы уже подписаны на уведомления')
     else:
-        if str(response.status_code)[0] == '2':
-            Stamp(f'Status = {response.status_code} on {URL}', 's')
-            if response.content:
-                raw = response.json()
-            else:
-                Stamp('Response in empty', 'w')
-                raw = []
+        bot.send_message(user, '🟢 Режим автоматической отправки сообщений включён')
+
+
+def CallbackEnd(user: int):
+    Stamp(f'User id {user} requested /stop', 'i')
+    if RemoveFromDatabase(user, 'bot/chats.txt'):
+        bot.send_message(user, '🟢 Уведомления для Вас приостановлены')
+    else:
+        bot.send_message(user, '🟡 Вы не были подписаны на уведомления')
+
+
+def AddToDatabase(user_id: int, path: str):
+    Stamp(f'Adding user id {user_id} to DB', 'i')
+    found = False
+    with open(Path.cwd() / path, 'r') as f:
+        for line in f:
+            if line.strip() == str(user_id):
+                found = True
+                break
+    if not found:
+        with open(Path.cwd() / path, 'a') as f:
+            f.write(str(user_id) + '\n')
+    return found
+
+
+def RemoveFromDatabase(user_id: int, path: str):
+    Stamp(f'Removing user id {user_id} from DB', 'i')
+    found = False
+    with open(Path.cwd() / path, 'r') as f:
+        lines = f.readlines()
+    for line in lines:
+        if line.strip() == str(user_id):
+            found = True
+            break
+    if found:
+        with open(Path.cwd() / path, 'w') as f:
+            for line in lines:
+                if line.strip() != str(user_id):
+                    f.write(line)
+    return found
+
+
+def SendMessage(path: str):
+    Stamp('Preparing and sending message', 'i')
+    msg = PrepareMessage()
+    with open(Path.cwd() / path, 'r') as f:
+        user_ids = f.readlines()
+    for user in user_ids:
+        if msg:
+            bot.send_message(user, msg, parse_mode='Markdown')
         else:
-            Stamp(f'Status = {response.status_code} on {URL}', 'e')
-            Sleep(LONG_SLEEP)
-            raw = GetData(token)
-    return raw
-
-
-def ProcessDataPackage(raw: list):
-    list_of_articles = []
-    list_of_quantities = []
-    list_of_time = []
-    for i in range(SmartLen(raw)):
-        for row in ROWS:
-            match row:
-                case 'supplierArticle':
-                    list_of_articles.append(str(raw[i][row]) + ' – ' + str(raw[i]['warehouseName']))
-                case 'quantity':
-                    list_of_quantities.append(str(raw[i][row]))
-                case 'time':
-                    list_of_time.append(str(datetime.now().strftime('%m-%d %H:%M')))
-    return [list_of_time, list_of_articles, list_of_quantities]
-
-
-def Pend(message):
-    bot.send_message(message.from_user.id, f'Сверяю данные...\nМаксимальное отклонение = {MAX_DIFF}')
-    result = main()
-    formatted_result = '\n'.join(str(item) for sublist in result for item in sublist if item)
-    if formatted_result:
-        bot.send_message(message.from_user.id, f'Произошли такие изменения:\n{formatted_result}', parse_mode='Markdown')
-    else:
-        bot.send_message(message.from_user.id, f'Ничего не изменилось с прошлого обновления...')
+            bot.send_message(user, f'🔸 Нет изменений с последнего обновления')
 
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if message.text.lower() == 'привет':
-        bot.send_message(message.from_user.id, 'Привет, я великолепный бот-помогатор. Напиши /help')
-    elif message.text.lower() == '/pend':
-        Pend(message)
-    elif message.text.lower() == '/auto':
-        while True:
-            Pend(message)
-            Sleep(INTERVAL)
-    elif message.text.lower() == '/help':
-        bot.send_message(message.from_user.id, f'/auto – автоматическое обновление раз в {INTERVAL / 3600} час(а)\n'
-                                               f'/pend – узнать текущую ситуацию')
+    user = message.from_user.id
+    Stamp(f'Got message from user id {user} – {message.text}', 'i')
+    if message.text.lower() == '/start':
+        CallbackStart(user)
+    elif message.text.lower() == '/stop':
+        CallbackEnd(user)
     else:
-        bot.send_message(message.from_user.id, 'Я тебя не понимаю. Напиши /help')
+        bot.send_message(user, '🔴 Я вас не понял...\n/start – подписаться на уведомления\n/stop – отписаться от уведомлений')
 
 
-while True:
-    try:
-        bot.polling(none_stop=True, interval=0)
-    except Exception as e:
-        logging.error(e)
+if __name__ == '__main__':
+    main()

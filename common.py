@@ -10,18 +10,33 @@ import time
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
+from functools import wraps
+
 
 import requests
 from colorama import Fore, Style, init
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import telebot
 
 init()
 random.seed()
 START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 MAX_ROW = 10000
+MAX_RECURSION = 10
+
+
+def ControlRecursion(func, maximum=MAX_RECURSION):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        Stamp(f"Level of recursion = {kwargs.get('depth', 0)}, allowed = {maximum}", 'i')
+        if kwargs.get('depth', 0) >= maximum:
+            Stamp('Max level of recursion reached', 'e')
+            return None
+        return func(*args, depth=kwargs.get('depth', 0) + 1, **kwargs)
+    return wrapper
 
 
 def SmartLen(data):
@@ -37,8 +52,7 @@ def GetRow(row: int, service, sheet_name: str, timeout: int, name: str, sheet_id
     ControlTimeout(timeout, name)
     last_index = list(COLUMN_INDEXES.keys())[-1]
     try:
-        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
-                                                  range=f'{sheet_name}!A{row}:{last_index}{row}').execute().get('values', [])
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=f'{sheet_name}!A{row}:{last_index}{row}').execute().get('values', [])
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on getting row {row} from sheet {sheet_name}', 'e')
         Sleep(timer)
@@ -56,8 +70,7 @@ def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sh
     Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
     ControlTimeout(timeout, name)
     try:
-        res = service.spreadsheets().values().get(spreadsheetId=sheet_id,
-                                                  range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on getting column {column} from sheet {sheet_name}', 'e')
         Sleep(timer)
@@ -135,10 +148,8 @@ def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, serv
         sample['requests'][0]['repeatCell']['cell']['userEnteredFormat']['backgroundColor']['green'] = 1.0
     sample['requests'][0]['repeatCell']['range']['endColumnIndex'] = width
     try:
-        response = service.spreadsheets().get(spreadsheetId=sheet_id, ranges=[sheet_name],
-                                              includeGridData=False).execute()
-        sample['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get(
-            'sheetId')
+        response = service.spreadsheets().get(spreadsheetId=sheet_id, ranges=[sheet_name], includeGridData=False).execute()
+        sample['requests'][0]['repeatCell']['range']['sheetId'] = response.get('sheets')[0].get('properties').get('sheetId')
         service.spreadsheets().batchUpdate(spreadsheetId=sheet_id, body=sample).execute()
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on switching sheet {sheet_name}', 'e')
