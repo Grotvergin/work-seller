@@ -56,7 +56,7 @@ def CallbackReport(message):
     if not VerifyDate(body):
         bot.send_message(user, '🔴 Ошибка в предоставленной дате')
     else:
-        bot.send_message(user, f'🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}')
+        bot.send_message(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
         bot.send_message(user, PrepareReport(body), parse_mode='Markdown')
 
 
