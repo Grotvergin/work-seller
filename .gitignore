@@ -11,3 +11,6 @@
 __pycache__/
 config.ini
 keys.json
+*.txt
+*/*.txt
+*/*/*.txt

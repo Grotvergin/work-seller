@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from functools import wraps
+from threading import Thread
 
 
 import requests
