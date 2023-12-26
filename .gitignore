@@ -14,3 +14,4 @@ keys.json
 *.txt
 */*.txt
 */*/*.txt
+bot/single_message_sender.py

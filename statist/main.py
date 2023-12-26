@@ -28,8 +28,7 @@ def GetData(url: str, token: str, date_from: str, date_to: str):
     Stamp(f'Trying to connect {url}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
-        response = requests.get(url, headers={'Authorization': token},
-                                params={'dateFrom': date_from, 'dateTo': date_to})
+        response = requests.get(url, headers={'Authorization': token}, params={'dateFrom': date_from, 'dateTo': date_to})
     except requests.ConnectionError:
         Stamp(f'On connection {url}', 'e')
         Sleep(LONG_SLEEP)

@@ -42,6 +42,24 @@ def CallbackEnd(user: int):
         bot.send_message(user, '🟡 Вы не были подписаны на уведомления')
 
 
+def VerifyDate(day: str):
+    try:
+        datetime(datetime.now().year, datetime.now().month, int(day))
+        return True
+    except ValueError:
+        return False
+
+
+def CallbackReport(message):
+    body = message.text.lower()
+    user = message.from_user.id
+    if not VerifyDate(body):
+        bot.send_message(user, '🔴 Ошибка в предоставленной дате')
+    else:
+        bot.send_message(user, f'🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}')
+        bot.send_message(user, PrepareReport(body), parse_mode='Markdown')
+
+
 def AddToDatabase(user_id: int, path: str):
     Stamp(f'Adding user id {user_id} to DB', 'i')
     found = False
@@ -86,15 +104,19 @@ def SendMessage(path: str):
 
 
 @bot.message_handler(content_types=['text'])
-def get_text_messages(message):
+def GetOther(message):
     user = message.from_user.id
+    body = message.text.lower()
     Stamp(f'Got message from user id {user} – {message.text}', 'i')
-    if message.text.lower() == '/start':
+    if body == '/start':
         CallbackStart(user)
-    elif message.text.lower() == '/stop':
+    elif body == '/stop':
         CallbackEnd(user)
+    elif body == '/report':
+        bot.send_message(user, '❔ Введите число текущего месяца:')
+        bot.register_next_step_handler(message, CallbackReport)
     else:
-        bot.send_message(user, '🔴 Я вас не понял...\n/start – подписаться на уведомления\n/stop – отписаться от уведомлений')
+        bot.send_message(user, '🔴 Я вас не понял...\n/start – подписаться на уведомления\n/stop – отписаться от уведомлений\n/report – получить отчёт')
 
 
 if __name__ == '__main__':
