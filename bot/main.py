@@ -98,7 +98,11 @@ def SendMessage(path: str):
         user_ids = f.readlines()
     for user in user_ids:
         if msg:
-            bot.send_message(user, msg, parse_mode='Markdown')
+            if len(msg) > MAX_LEN:
+                for x in range(0, len(msg), MAX_LEN):
+                    bot.send_message(user, msg[x:x+MAX_LEN], parse_mode='Markdown')
+            else:
+                bot.send_message(user, msg, parse_mode='Markdown')
         else:
             bot.send_message(user, f'🔸 Нет изменений с последнего обновления')
 
