@@ -98,31 +98,14 @@ def RemoveFromDatabase(user: int, path: str):
     
 def SendMessage(user: int, msg: str):
     Stamp(f'Sending message to user {user}', 'i')
-    split_msg = SplitString(msg)
-    if split_msg:
-        for message in split_msg:
-            bot.send_message(user, message, parse_mode='Markdown')
+    if msg:
+        if len(msg) > MAX_LEN:
+            for x in range(0, len(msg), MAX_LEN):
+                bot.send_message(user, msg[x:x + MAX_LEN], parse_mode='Markdown')
+        else:
+            bot.send_message(user, msg, parse_mode='Markdown')
     else:
         bot.send_message(user, '▪️Нет изменений', parse_mode='Markdown')
-
-
-def SplitString(string: str):
-    messages = []
-    while string.encode('utf-8'):
-        if len(string.encode('utf-8')) <= MAX_LEN:
-            messages.append(string)
-            break
-        else:
-            for i in range(MAX_LEN, 0, -1):
-                try:
-                    part = string[:i]
-                    part.encode('utf-8')
-                    messages.append(part)
-                    string = string[i:]
-                    break
-                except UnicodeEncodeError:
-                    continue
-    return messages
 
 
 def SendMessageAll(path: str, msg: str):

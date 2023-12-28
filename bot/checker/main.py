@@ -34,11 +34,11 @@ def Check(prev: dict, cur: dict, heading: str):
     differences = []
     for key in prev:
         if key not in cur:
-            differences.append(f'🔺{key}\nЭтот товар *закончился* на складе')
+            differences.append(f'{key}\nЗакончился на складе')
         elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
-            differences.append(f'▫️{key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*')
+            differences.append(f'{key}\nБыло {prev[key]}, сейчас {cur[key]}, разница {int(cur[key]) - int(prev[key])}')
     if differences:
-        differences.insert(0, f'🔳 *{heading}*')
+        differences.insert(0, f'\n\t{heading.upper()}\n')
     formatted = '\n'.join(str(item) for item in differences if item)
     Stamp(f'End of checking differences for {heading}', 'i')
     return formatted
