@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from functools import wraps
 from threading import Thread
+from typing import Union
 
 
 import requests

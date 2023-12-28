@@ -4,7 +4,7 @@ from bot.checker.source import *
 def PrepareChecker():
     config, sections = ParseConfig('bot/checker')
     service = BuildService()
-    temp = ''
+    list_of_differences = []
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
         token = config[heading]['Token']
@@ -12,11 +12,24 @@ def PrepareChecker():
         row, old = CreateDict(heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP, service)
         ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, heading, SHEET_ID, service, row)
         row, new = CreateDict(heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP, service)
-        differences = Check(old, new, heading)
-        if differences:
-            temp += differences + '\n'
+        list_of_differences.append(Check(old, new, heading))
         Stamp(f'End of processing {heading}', 'b')
-    return temp
+    return PrepareMessages(list_of_differences)
+
+
+def PrepareMessages(list_of_differences: list):
+    total = [item for sublist in list_of_differences for item in sublist]
+    messages = []
+    current = ''
+    for item in total:
+        if len(current + item) < MAX_LEN:
+            current += item
+        else:
+            messages.append(current)
+            current = item
+    if current:
+        messages.append(current)
+    return messages
 
 
 def CreateDict(heading: str, timeout: int, name: str, sheet_id: str, timer: int, service):
@@ -34,14 +47,13 @@ def Check(prev: dict, cur: dict, heading: str):
     differences = []
     for key in prev:
         if key not in cur:
-            differences.append(f'{key}\nЗакончился на складе')
+            differences.append(f'▪️ {key}\nЗакончился\n')
         elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
-            differences.append(f'{key}\nБыло {prev[key]}, сейчас {cur[key]}, разница {int(cur[key]) - int(prev[key])}')
+            differences.append(f'▫️ {key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*\n')
     if differences:
-        differences.insert(0, f'\n\t{heading.upper()}\n')
-    formatted = '\n'.join(str(item) for item in differences if item)
+        differences.insert(0, f'\n🔳 {heading.upper()}\n\n')
     Stamp(f'End of checking differences for {heading}', 'i')
-    return formatted
+    return differences
 
 
 @ControlRecursion

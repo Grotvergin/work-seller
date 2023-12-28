@@ -96,19 +96,18 @@ def RemoveFromDatabase(user: int, path: str):
     return found
     
     
-def SendMessage(user: int, msg: str):
+def SendMessage(user: int, msg: Union[str, list[str]]):
     Stamp(f'Sending message to user {user}', 'i')
-    if msg:
-        if len(msg) > MAX_LEN:
-            for x in range(0, len(msg), MAX_LEN):
-                bot.send_message(user, msg[x:x + MAX_LEN], parse_mode='Markdown')
-        else:
-            bot.send_message(user, msg, parse_mode='Markdown')
+    if isinstance(msg, str):
+        bot.send_message(user, msg, parse_mode='Markdown')
+    elif msg:
+        for m in msg:
+            bot.send_message(user, m, parse_mode='Markdown')
     else:
         bot.send_message(user, '▪️Нет изменений', parse_mode='Markdown')
 
 
-def SendMessageAll(path: str, msg: str):
+def SendMessageAll(path: str, msg: Union[str, list[str]]):
     Stamp('Sending message to all users', 'i')
     with open(Path.cwd() / path, 'r') as f:
         users = f.readlines()
