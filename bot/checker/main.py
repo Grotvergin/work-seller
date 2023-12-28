@@ -1,7 +1,7 @@
 from bot.checker.source import *
 
 
-def PrepareMessage():
+def PrepareChecker():
     config, sections = ParseConfig('bot/checker')
     service = BuildService()
     temp = ''
@@ -45,7 +45,7 @@ def Check(prev: dict, cur: dict, heading: str):
 
 
 @ControlRecursion
-def GetData(token: str, depth=0):
+def GetData(token: str):
     Stamp(f'Trying to connect {URL}', 'i')
     try:
         response = requests.get(URL, headers={'Authorization': token}, params={'dateFrom': DATE_FROM})

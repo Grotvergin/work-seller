@@ -30,13 +30,18 @@ MAX_RECURSION = 10
 
 
 def ControlRecursion(func, maximum=MAX_RECURSION):
+    func.recursion_depth = 0
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        Stamp(f"Level of recursion = {kwargs.get('depth', 0)}, allowed = {maximum}", 'i')
-        if kwargs.get('depth', 0) >= maximum:
+        if func.recursion_depth >= maximum:
             Stamp('Max level of recursion reached', 'e')
             return None
-        return func(*args, depth=kwargs.get('depth', 0) + 1, **kwargs)
+        func.recursion_depth += 1
+        Stamp(f"Recursion = {func.recursion_depth}, allowed = {maximum}", 'i')
+        result = func(*args, **kwargs)
+        func.recursion_depth -= 1
+        return result
     return wrapper
 
 

@@ -1,7 +1,10 @@
 from bot.checker.main import *
 from bot.report.main import *
 
-main = '6833627182:AAFlKnO1BOsGn1P9eIqNlNNmpNPCz6R6D1M'
-test = '6811526530:AAHKNIrSMjvyfd-4u_zGPcpLVrYXTGBr4pI'
-bot = telebot.TeleBot(main)
-MAX_LEN = 4000
+
+config, sections = ParseConfig('bot')
+bot = telebot.TeleBot(config[sections[0]]['Token'])
+MAX_LEN = 3000
+TIME_CHECKER = '00:00'
+TIME_REPORT = '17:05:00'
+PATH_TO_DB = 'bot/chats.txt'

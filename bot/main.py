@@ -2,15 +2,15 @@ from bot.source import *
 
 
 def main():
-    main_thread = Thread(target=MainThread)
-    another_thread = Thread(target=PollingThread)
-    another_thread.start()
-    main_thread.start()
-    another_thread.join()
-    main_thread.join()
+    polling_thr = Thread(target=Polling)
+    time_thr = Thread(target=Timetable)
+    polling_thr.start()
+    time_thr.start()
+    polling_thr.join()
+    time_thr.join()
 
 
-def PollingThread():
+def Polling():
     while True:
         try:
             bot.polling(none_stop=True, interval=1)
@@ -18,28 +18,33 @@ def PollingThread():
             Stamp(str(e), 'e')
 
 
-def MainThread():
+def Timetable():
     while True:
         time.sleep(1)
-        if datetime.now().strftime('%M:%S') == '00:00':
-            Stamp('Time to send message', 'i')
-            SendMessage('bot/chats.txt')
+        if datetime.now().strftime('%M:%S') == TIME_CHECKER:
+            Stamp('Time for checker message', 'i')
+            SendMessageAll(PATH_TO_DB, PrepareChecker())
+        elif datetime.now().strftime('%H:%M:%S') == TIME_REPORT:
+            Stamp('Time for report message', 'i')
+            date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+            SendMessageAll(PATH_TO_DB, f'🟢 Отображаю отчёт за {date}')
+            SendMessageAll(PATH_TO_DB, PrepareReport(date[8:10]))
 
 
 def CallbackStart(user: int):
-    Stamp(f'User id {user} requested /start', 'i')
-    if AddToDatabase(user, 'bot/chats.txt'):
-        bot.send_message(user, '🟡 Вы уже подписаны на уведомления')
+    Stamp(f'User {user} requested /start', 'i')
+    if AddToDatabase(user, PATH_TO_DB):
+        SendMessage(user, '🟡 Вы уже подписаны на уведомления')
     else:
-        bot.send_message(user, '🟢 Режим автоматической отправки сообщений включён')
+        SendMessage(user, '🟢 Режим автоматической отправки сообщений включён')
 
 
-def CallbackEnd(user: int):
-    Stamp(f'User id {user} requested /stop', 'i')
-    if RemoveFromDatabase(user, 'bot/chats.txt'):
-        bot.send_message(user, '🟢 Уведомления для Вас приостановлены')
+def CallbackStop(user: int):
+    Stamp(f'User {user} requested /stop', 'i')
+    if RemoveFromDatabase(user, PATH_TO_DB):
+        SendMessage(user, '🟢 Уведомления для Вас приостановлены')
     else:
-        bot.send_message(user, '🟡 Вы не были подписаны на уведомления')
+        SendMessage(user, '🟡 Вы не были подписаны на уведомления')
 
 
 def VerifyDate(day: str):
@@ -51,76 +56,101 @@ def VerifyDate(day: str):
 
 
 def CallbackReport(message):
-    body = message.text.lower()
     user = message.from_user.id
+    body = message.text.lower()
     if not VerifyDate(body):
-        bot.send_message(user, '🔴 Ошибка в предоставленной дате')
+        SendMessage(user, '🔴 Ошибка в предоставленной дате')
     else:
-        bot.send_message(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
-        bot.send_message(user, PrepareReport(body), parse_mode='Markdown')
+        SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
+        SendMessage(user, PrepareReport(body))
 
 
-def AddToDatabase(user_id: int, path: str):
-    Stamp(f'Adding user id {user_id} to DB', 'i')
+def AddToDatabase(user: int, path: str):
+    Stamp(f'Adding user {user} to DB', 'i')
     found = False
     with open(Path.cwd() / path, 'r') as f:
         for line in f:
-            if line.strip() == str(user_id):
+            if int(line.strip()) == user:
                 found = True
                 break
     if not found:
         with open(Path.cwd() / path, 'a') as f:
-            f.write(str(user_id) + '\n')
+            f.write(str(user) + '\n')
     return found
 
 
-def RemoveFromDatabase(user_id: int, path: str):
-    Stamp(f'Removing user id {user_id} from DB', 'i')
+def RemoveFromDatabase(user: int, path: str):
+    Stamp(f'Removing user {user} from DB', 'i')
     found = False
     with open(Path.cwd() / path, 'r') as f:
         lines = f.readlines()
     for line in lines:
-        if line.strip() == str(user_id):
+        if int(line.strip()) == user:
             found = True
             break
     if found:
         with open(Path.cwd() / path, 'w') as f:
             for line in lines:
-                if line.strip() != str(user_id):
+                if int(line.strip()) != user:
                     f.write(line)
     return found
+    
+    
+def SendMessage(user: int, msg: str):
+    Stamp(f'Sending message to user {user}', 'i')
+    split_msg = SplitString(msg)
+    if split_msg:
+        for message in split_msg:
+            bot.send_message(user, message, parse_mode='Markdown')
+    else:
+        bot.send_message(user, '▪️Нет изменений', parse_mode='Markdown')
 
 
-def SendMessage(path: str):
-    Stamp('Preparing and sending message', 'i')
-    msg = PrepareMessage()
-    with open(Path.cwd() / path, 'r') as f:
-        user_ids = f.readlines()
-    for user in user_ids:
-        if msg:
-            if len(msg) > MAX_LEN:
-                for x in range(0, len(msg), MAX_LEN):
-                    bot.send_message(user, msg[x:x+MAX_LEN], parse_mode='Markdown')
-            else:
-                bot.send_message(user, msg, parse_mode='Markdown')
+def SplitString(string: str):
+    messages = []
+    while string.encode('utf-8'):
+        if len(string.encode('utf-8')) <= MAX_LEN:
+            messages.append(string)
+            break
         else:
-            bot.send_message(user, f'🔸 Нет изменений с последнего обновления')
+            for i in range(MAX_LEN, 0, -1):
+                try:
+                    part = string[:i]
+                    part.encode('utf-8')
+                    messages.append(part)
+                    string = string[i:]
+                    break
+                except UnicodeEncodeError:
+                    continue
+    return messages
+
+
+def SendMessageAll(path: str, msg: str):
+    Stamp('Sending message to all users', 'i')
+    with open(Path.cwd() / path, 'r') as f:
+        users = f.readlines()
+    for user in users:
+        SendMessage(int(user), msg)
 
 
 @bot.message_handler(content_types=['text'])
-def GetOther(message):
+def MessageAccept(message):
     user = message.from_user.id
     body = message.text.lower()
-    Stamp(f'Got message from user id {user} – {message.text}', 'i')
-    if body == '/start':
-        CallbackStart(user)
-    elif body == '/stop':
-        CallbackEnd(user)
-    elif body == '/report':
-        bot.send_message(user, '❔ Введите число текущего месяца:')
-        bot.register_next_step_handler(message, CallbackReport)
-    else:
-        bot.send_message(user, '🔴 Я вас не понял...\n/start – подписаться на уведомления\n/stop – отписаться от уведомлений\n/report – получить отчёт')
+    Stamp(f'Got message from user {user} – {body}', 'i')
+    match body:
+        case '/start':
+            CallbackStart(user)
+        case '/stop':
+            CallbackStop(user)
+        case '/report':
+            SendMessage(user, '❔ Введите число текущего месяца:')
+            bot.register_next_step_handler(message, CallbackReport)
+        case _:
+            SendMessage(user, '🔴 Я вас не понял...\n'
+                              '/start – подписаться на уведомления\n'
+                              '/stop – отписаться от уведомлений\n'
+                              '/report – получить отчёт')
 
 
 if __name__ == '__main__':

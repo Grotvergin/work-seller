@@ -13,11 +13,40 @@ def main():
             ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, sheet_id, service)
             if sheet == 'Transactions':
                 ProcessTransactions(token, client_id, sheet_id, service)
+            elif sheet == 'Orders':
+                ProcessOrders(token, client_id, sheet_id, service)
             else:
                 ProcessProductsWarehouse(token, client_id, sheet, sheet_id, service)
             ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
         Stamp(f'End of processing {heading}', 'b')
     Finish(TIMEOUT, NAME)
+
+
+def ProcessOrders(token: str, client_id: str, sheet_id: str, service):
+    body = SECOND_SAMPLE.copy()
+    current_portion = GetData(SHEETS['Orders']['GetData'], token, client_id, body)
+    offset = 0
+    row = 2
+    while SmartLen(current_portion['result']):
+        Stamp(f'Processing portion with offset = {offset}', 'i')
+        list_of_rows = []
+        for i in range(SmartLen(current_portion['result'])):
+            for j in range(SmartLen(current_portion['result'][i]['products'])):
+                one_row = []
+                for column in SHEETS['Orders']['Columns']:
+                    match column:
+                        case 'created_at' | 'in_process_at':
+                            one_row.append(str(current_portion['result'][i][column])[:16])
+                        case 'sku' | 'quantity' | 'price':
+                            one_row.append(str(current_portion['result'][i]['products'][j][column]).replace('.', ','))
+                        case 'commission_amount' | 'commission_percent' | 'payout':
+                            one_row.append(str(current_portion['result'][i]['financial_data']['products'][j][column]).replace('.', ','))
+                list_of_rows.append(one_row)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_rows, 'Orders', sheet_id, service, row)
+        row += SmartLen(list_of_rows)
+        offset += 1000
+        body['offset'] = offset
+        current_portion = GetData(SHEETS['Orders']['GetData'], token, client_id, body)
 
 
 def ParseCurrentHeading(config, heading: str):
@@ -39,7 +68,7 @@ def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: st
         else:
             products_sku.append(str(item['fbo_sku']))
     list_of_ratings = GetAllSkus(products_sku, GetData, SHEETS[sheet]['GetRating'], token, client_id)
-    prepared = PrepareData(list_of_info, list_of_ratings, sheet)
+    prepared = PrepareProductsWarehouse(list_of_info, list_of_ratings, sheet)
     ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, sheet, sheet_id, service)
 
 
@@ -68,7 +97,7 @@ def ProcessTransactions(token: str, client_id: str, sheet_id: str, service):
     intermediate_pairs = GetIntermediateDates()
     for gap in intermediate_pairs:
         list_of_rows = []
-        body = SAMPLE.copy()
+        body = FIRST_SAMPLE.copy()
         body['filter']['date']['from'] = gap[0]
         body['filter']['date']['to'] = gap[1]
         body['page'] = 1
@@ -112,7 +141,7 @@ def ProcessTransactions(token: str, client_id: str, sheet_id: str, service):
         row += len(list_of_rows)
 
 
-def PrepareData(main_data: dict, ratings: list, sheet_name: str):
+def PrepareProductsWarehouse(main_data: dict, ratings: list, sheet_name: str):
     list_of_rows = []
     for i in range(SmartLen(main_data['result']['items'])):
         one_row = []
