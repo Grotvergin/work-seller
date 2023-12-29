@@ -51,7 +51,7 @@ def Check(prev: dict, cur: dict, heading: str):
         elif int(cur[key]) - int(prev[key]) > MAX_DIFF:
             differences.append(f'▫️ {key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*\n')
     if differences:
-        differences.insert(0, f'\n🔳 {heading.upper()}\n\n')
+        differences.insert(0, f'\n🔳 *{heading.upper()}*\n\n')
     Stamp(f'End of checking differences for {heading}', 'i')
     return differences
 

@@ -8,5 +8,5 @@ NAME = 'BotChecker'
 URL = 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks'
 ROWS = ['supplierArticle', 'quantity', 'time']
 DATE_FROM = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
-# SHEET_ID = '1QfRcVy8pnxG3ZISe1x751akTh49FcMOu53FerNzXFQg'
-SHEET_ID = '1rmXz1joBFlYDkPK4gY0BkbNaqAzhQ9F6Nle6xe-w4LE'
+SHEET_ID = '1QfRcVy8pnxG3ZISe1x751akTh49FcMOu53FerNzXFQg'
+#SHEET_ID = '1rmXz1joBFlYDkPK4gY0BkbNaqAzhQ9F6Nle6xe-w4LE'

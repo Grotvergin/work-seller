@@ -31,8 +31,20 @@ def Timetable():
             SendMessageAll(PATH_TO_DB, PrepareReport(date[8:10]))
 
 
-def CallbackStart(user: int):
-    Stamp(f'User {user} requested /start', 'i')
+def CallbackStart(message):
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=False)
+    btn_report = telebot.types.KeyboardButton('Отчёт по дате 📊')
+    btn_sub = telebot.types.KeyboardButton('Подписаться ✅')
+    btn_stop = telebot.types.KeyboardButton('Отписаться ❌')
+    markup.row(btn_report)
+    markup.row(btn_sub, btn_stop)
+    bot.send_message(message.from_user.id, '/sub – подписаться на уведомления\n'
+                                           '/stop – отписаться от уведомлений\n'
+                                           '/report – получить отчёт по выбранной дате', reply_markup=markup)
+
+
+def CallbackSub(user: int):
+    Stamp(f'User {user} requested /sub', 'i')
     if AddToDatabase(user, PATH_TO_DB):
         SendMessage(user, '🟡 Вы уже подписаны на уведомления')
     else:
@@ -94,8 +106,8 @@ def RemoveFromDatabase(user: int, path: str):
                 if int(line.strip()) != user:
                     f.write(line)
     return found
-    
-    
+
+
 def SendMessage(user: int, msg: Union[str, list[str]]):
     Stamp(f'Sending message to user {user}', 'i')
     if isinstance(msg, str):
@@ -122,17 +134,18 @@ def MessageAccept(message):
     Stamp(f'Got message from user {user} – {body}', 'i')
     match body:
         case '/start':
-            CallbackStart(user)
-        case '/stop':
+            SendMessage(user, f'Здравствуй, {message.from_user.first_name}!')
+            CallbackStart(message)
+        case '/sub' | 'подписаться ✅':
+            CallbackSub(user)
+        case '/stop' | 'отписаться ❌':
             CallbackStop(user)
-        case '/report':
+        case '/report' | 'отчёт по дате 📊':
             SendMessage(user, '❔ Введите число текущего месяца:')
             bot.register_next_step_handler(message, CallbackReport)
         case _:
-            SendMessage(user, '🔴 Я вас не понял...\n'
-                              '/start – подписаться на уведомления\n'
-                              '/stop – отписаться от уведомлений\n'
-                              '/report – получить отчёт')
+            SendMessage(user, '🔴 Я вас не понял...')
+            CallbackStart(message)
 
 
 if __name__ == '__main__':
