@@ -49,7 +49,7 @@ def GetData(token: str, period: dict, page: int):
 
 def GetAllPages(token: str, period: dict):
     list_of_pages = []
-    Stamp(f'Trying to get all pages from {period['Start']} to {period['Finish']}', 'i')
+    Stamp(f"Trying to get all pages from {period['Start']} to {period['Finish']}", 'i')
     page = 1
     portion = GetData(token, period, page)
     list_of_pages.append(portion['data'])
