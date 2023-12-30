@@ -1,5 +1,6 @@
 from common import *
 
+
 URL_AUTH = 'https://app.topvtop.pro/api/auth/callback/credentials'
 URL_DATA = 'https://app.topvtop.pro/api/paymenthistory/get'
 SHORT_SLEEP = 50
@@ -7,7 +8,6 @@ LONG_SLEEP = 300
 TIMEOUT = 1800
 BLANK_ROWS = 10000
 NAME = 'Top'
-SHEET_ID = '1kQNuedNt7xFU6m4HJe8Lm6he0bokWvwwqN5FeoNGAHY'
 COLUMNS = ['_id', 'article', 'basisoperation', 'comment', 'dataoperation', 'refRewarded', 'summ', 'type', 'typeoperations', 'user']
 MSG = 'NoData'
 

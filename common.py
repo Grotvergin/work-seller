@@ -1,5 +1,6 @@
-import configparser
 import ssl
+
+import googleapiclient.discovery
 import httplib2
 import json
 import random
@@ -7,12 +8,13 @@ import smtplib
 import socket
 import sys
 import time
+from configparser import ConfigParser
 from datetime import datetime, timedelta, date
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from functools import wraps
 from threading import Thread
-from typing import Union
+from typing import Union, Callable, Any, List, Dict
 from pprint import pprint
 
 
@@ -29,9 +31,10 @@ START = time.time()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 MAX_ROW = 10000
 MAX_RECURSION = 10
+BUILD_SLEEP = 60
 
 
-def ControlRecursion(func, maximum=MAX_RECURSION):
+def ControlRecursion(func: Callable[..., Any], maximum: int = MAX_RECURSION) -> Callable[..., Any]:
     func.recursion_depth = 0
 
     @wraps(func)
@@ -47,7 +50,7 @@ def ControlRecursion(func, maximum=MAX_RECURSION):
     return wrapper
 
 
-def SmartLen(data):
+def SmartLen(data: Union[List, Dict]) -> int:
     try:
         length = len(data)
     except TypeError:
@@ -55,7 +58,7 @@ def SmartLen(data):
     return length
 
 
-def GetRow(row: int, service, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int):
+def GetRow(row: int, service: googleapiclient.discovery.Resource, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int) -> list:
     Stamp(f'Trying to get row {row} from sheet {sheet_name}', 'i')
     ControlTimeout(timeout, name)
     last_index = list(COLUMN_INDEXES.keys())[-1]
@@ -74,7 +77,7 @@ def GetRow(row: int, service, sheet_name: str, timeout: int, name: str, sheet_id
     return res
 
 
-def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int):
+def GetColumn(column: str, service: googleapiclient.discovery.Resource, sheet_name: str, timeout: int, name: str, sheet_id: str, timer: int) -> list:
     Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
     ControlTimeout(timeout, name)
     try:
@@ -92,13 +95,13 @@ def GetColumn(column: str, service, sheet_name: str, timeout: int, name: str, sh
     return res
 
 
-def Finish(timeout: int, name: str):
+def Finish(timeout: int, name: str) -> None:
     ControlTimeout(timeout, name)
     SendEmail(f'{name} OK: elapsed {int(time.time() - START)}')
     Stamp('All data was uploaded successfully', 'b')
 
 
-def PrepareEmpty(width: int, blank: int):
+def PrepareEmpty(width: int, blank: int) -> list:
     list_of_empty = []
     one_row = [''] * width
     for k in range(blank):
@@ -106,7 +109,7 @@ def PrepareEmpty(width: int, blank: int):
     return list_of_empty
 
 
-def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=2):
+def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service: googleapiclient.discovery.Resource, row: int = 2) -> bool:
     body = {'values': list_of_rows}
     try:
         width = len(list_of_rows[0])
@@ -124,7 +127,7 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service, row=
         return True
 
 
-def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, service):
+def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, service: googleapiclient.discovery.Resource) -> bool:
     Stamp(f'Trying to switch sheet {sheet_name}', 'i')
     sample = {
         'requests': [
@@ -167,33 +170,33 @@ def SwitchIndicator(color: str, sheet_name: str, width: int, sheet_id: str, serv
         return True
 
 
-def BuildService():
+def BuildService() -> googleapiclient.discovery.Resource:
     Stamp(f'Trying to build service', 'i')
     try:
         service = build('sheets', 'v4', credentials=CREDS)
     except (HttpError, TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on building service', 'e')
-        Sleep(60)
+        Sleep(BUILD_SLEEP)
         BuildService()
     else:
         Stamp('Built service successfully', 's')
         return service
 
 
-def ExecuteRetry(timeout: int, name: str, timer: int, func, *args, ratio=0.0):
+def ExecuteRetry(timeout: int, name: str, timer: int, func, *args, ratio: float = 0.0) -> None:
     while not func(*args):
         ControlTimeout(timeout, name)
         Sleep(timer, ratio)
 
 
-def Sleep(timer: int, ratio=0.0):
+def Sleep(timer: int, ratio: float = 0.0) -> None:
     rand_time = random.randint(int((1 - ratio) * timer), int((1 + ratio) * timer))
     Stamp(f'Sleeping for {rand_time} seconds', 'l')
     for _ in range(rand_time):
         time.sleep(1)
 
 
-def ControlTimeout(timeout: int, name: str):
+def ControlTimeout(timeout: int, name: str) -> None:
     elapsed = int(time.time() - START)
     if elapsed > timeout:
         Stamp(f'Timeout: elapsed {elapsed}, while allowed is {timeout}', 'e')
@@ -203,21 +206,21 @@ def ControlTimeout(timeout: int, name: str):
         Stamp(f'Timeout OK: elapsed time is {elapsed}, while allowed is {timeout}', 'i')
 
 
-def ParseConfig(direct=''):
-    config = configparser.ConfigParser()
+def ParseConfig(direct: str = '') -> (ConfigParser, list):
+    config = ConfigParser()
     config.read(Path.cwd() / direct / 'config.ini', encoding='utf-8')
     sections = config.sections()
     return config, sections
 
 
-def ParseGmailConfig(config):
-    user = config['Gmail']['Login']
-    password = config['Gmail']['Password']
-    receiver = config['Gmail']['Receiver']
+def ParseGmailConfig(config: ConfigParser) -> (str, str, str):
+    user = config['DEFAULT']['Login']
+    password = config['DEFAULT']['Password']
+    receiver = config['DEFAULT']['Receiver']
     return user, password, receiver
 
 
-def SendEmail(theme: str):
+def SendEmail(theme: str) -> None:
     config, sections = ParseConfig()
     user, password, receiver = ParseGmailConfig(config)
     msg = MIMEMultipart()
@@ -238,7 +241,7 @@ def SendEmail(theme: str):
         Stamp(f'An error occurred: {e}', 'e')
 
 
-def Stamp(message: str, level: str):
+def Stamp(message: str, level: str) -> None:
     time_stamp = datetime.now().strftime('[%m-%d|%H:%M:%S]')
     match level:
         case 'i':
@@ -257,7 +260,7 @@ def Stamp(message: str, level: str):
             print(Fore.WHITE + time_stamp + '[UNK] ' + message + '?' + Style.RESET_ALL)
 
 
-def MakeColumnIndexes():
+def MakeColumnIndexes() -> dict:
     indexes = {}
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     for i, letter in enumerate(alphabet):

@@ -1,32 +1,33 @@
 from top.source import *
 
 
-def main():
-    config, sections = ParseConfig('top')
+def Main() -> None:
+    config, sections = ParseConfig(NAME.lower())
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), SHEET_ID, service)
-        ParseCurrentHeading(config, heading)
+        sheet_id = ParseCurrentHeading(config, heading)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), sheet_id, service)
         empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, SHEET_ID, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, sheet_id, service)
         raw = GetData(Authorize())
         prepared = ProcessData(raw)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, SHEET_ID, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), SHEET_ID, service)
-        Stamp(f'End of processing {heading}', 'b')
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, sheet_id, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), sheet_id, service)
         Sleep(SHORT_SLEEP, 0.5)
     Finish(TIMEOUT, NAME)
 
 
-def ParseCurrentHeading(config, heading: str):
+def ParseCurrentHeading(config: ConfigParser, heading: str) -> str:
     login = config[heading]['Login']
-    password = config[heading]['Password']
+    password = config['DEFAULT']['Password']
+    sheet_id = config['DEFAULT']['SheetID']
     DATA_AUTH['email'] = login
     DATA_AUTH['password'] = password
+    return sheet_id
 
 
-def Authorize():
+def Authorize() -> requests.Session:
     session = requests.Session()
     Stamp(f'Trying to authorize {URL_AUTH}', 'i')
     ControlTimeout(TIMEOUT, NAME)
@@ -46,7 +47,7 @@ def Authorize():
     return session
 
 
-def GetData(session: requests.Session):
+def GetData(session: requests.Session) -> list:
     Stamp(f'Trying to connect {URL_DATA}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
@@ -70,7 +71,7 @@ def GetData(session: requests.Session):
     return raw
 
 
-def ProcessData(raw: dict):
+def ProcessData(raw: list) -> list:
     list_of_rows = []
     for i in range(SmartLen(raw)):
         one_row = []
@@ -87,4 +88,4 @@ def ProcessData(raw: dict):
 
 
 if __name__ == '__main__':
-    main()
+    Main()
