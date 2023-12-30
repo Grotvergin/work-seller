@@ -3,7 +3,7 @@ from common import *
 LONG_SLEEP = 90
 MAX_DIFF = 10
 MAX_LEN = 3500
-TIMEOUT = 100000
+TIMEOUT = 100000000
 NAME = 'BotChecker'
 URL = 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks'
 ROWS = ['supplierArticle', 'quantity', 'time']
