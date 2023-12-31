@@ -1,23 +1,28 @@
 from bot.checker.source import *
 
 
-def PrepareChecker():
-    config, sections = ParseConfig('bot/checker')
+def PrepareChecker() -> list:
+    config, sections = ParseConfig('bot/' + NAME.lower())
     service = BuildService()
     list_of_differences = []
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
-        token = config[heading]['Token']
+        token, sheet_id = ParseCurrentHeading(config, heading, TYPOLOGY)
         data = ProcessDataPackage(GetData(token))
-        row, old = CreateDict(heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, heading, SHEET_ID, service, row)
-        row, new = CreateDict(heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP, service)
+        row, old = CreateDict(heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP, service)
+        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, heading, sheet_id, service, row)
+        row, new = CreateDict(heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP, service)
         list_of_differences.append(Check(old, new, heading))
-        Stamp(f'End of processing {heading}', 'b')
     return PrepareMessages(list_of_differences)
 
 
-def PrepareMessages(list_of_differences: list):
+def ParseCurrentHeading(config: ConfigParser, heading: str, typage: str) -> (str, str):
+    token = config[heading]['Token']
+    sheet_id = config['DEFAULT'][typage + 'SheetID']
+    return token, sheet_id
+
+
+def PrepareMessages(list_of_differences: list) -> list:
     total = [item for sublist in list_of_differences for item in sublist]
     messages = []
     current = ''
@@ -32,18 +37,17 @@ def PrepareMessages(list_of_differences: list):
     return messages
 
 
-def CreateDict(heading: str, timeout: int, name: str, sheet_id: str, timer: int, service):
-    Stamp(f'Start of creating dictionary', 'i')
+def CreateDict(heading: str, timeout: int, name: str, sheet_id: str, timer: int, service: googleapiclient.discovery.Resource) -> (int, dict):
+    Stamp(f'Creating dictionary', 'i')
     row = len(GetColumn('A', service, heading, timeout, name, sheet_id, timer)) + 2
-    quantities = GetRow(row - 1, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
-    articles = GetRow(row - 2, service, heading, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
+    quantities = GetRow(row - 1, service, heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
+    articles = GetRow(row - 2, service, heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
     dictionary = dict(zip(articles, quantities))
-    Stamp('End of creating dictionary', 'i')
     return row, dictionary
 
 
-def Check(prev: dict, cur: dict, heading: str):
-    Stamp(f'Start of checking differences for {heading}','i')
+def Check(prev: dict, cur: dict, heading: str) -> list:
+    Stamp(f'Checking differences for {heading}','i')
     differences = []
     for key in prev:
         if key not in cur:
@@ -52,12 +56,11 @@ def Check(prev: dict, cur: dict, heading: str):
             differences.append(f'▫️ {key}\nБыло *{prev[key]}*, сейчас *{cur[key]}*, разница *{int(cur[key]) - int(prev[key])}*\n')
     if differences:
         differences.insert(0, f'\n🔳 *{heading.upper()}*\n\n')
-    Stamp(f'End of checking differences for {heading}', 'i')
     return differences
 
 
 @ControlRecursion
-def GetData(token: str):
+def GetData(token: str) -> list:
     Stamp(f'Trying to connect {URL}', 'i')
     try:
         response = requests.get(URL, headers={'Authorization': token}, params={'dateFrom': DATE_FROM})
@@ -80,7 +83,7 @@ def GetData(token: str):
     return raw
 
 
-def ProcessDataPackage(raw: list):
+def ProcessDataPackage(raw: list) -> [list, list, list]:
     Stamp('Start of processing data', 'i')
     list_of_articles = []
     list_of_quantities = []
@@ -94,5 +97,4 @@ def ProcessDataPackage(raw: list):
                     list_of_quantities.append(str(raw[i][row]))
                 case 'time':
                     list_of_time.append(str(datetime.now().strftime('%m-%d %H:%M')))
-    Stamp('End of processing data', 'i')
     return [list_of_time, list_of_articles, list_of_quantities]

@@ -1,9 +1,11 @@
 from bot.report.source import *
 
 
-def PrepareReport(date: str):
+def PrepareReport(req_date: str) -> str:
     service = BuildService()
-    result = GetColumn(COLUMN_INDEXES[int(date) + 1], service, SHEET_NAME, TIMEOUT, NAME, SHEET_ID, LONG_SLEEP)
+    config, _ = ParseConfig('bot/' + NAME.lower())
+    sheet_id = config['DEFAULT']['SheetID']
+    result = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, SHEET_NAME, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
     formatted = ''
     headers = ('Посуда', 'Сантехника', 'Бижутерия', 'Освещение')
     for i in range(1, 36, 9):

@@ -1,7 +1,7 @@
 from bot.source import *
 
 
-def main():
+def Main() -> None:
     polling_thr = Thread(target=Polling)
     time_thr = Thread(target=Timetable)
     polling_thr.start()
@@ -10,7 +10,7 @@ def main():
     time_thr.join()
 
 
-def Polling():
+def Polling() -> None:
     while True:
         try:
             bot.polling(none_stop=True, interval=1)
@@ -18,7 +18,7 @@ def Polling():
             Stamp(str(e), 'e')
 
 
-def Timetable():
+def Timetable() -> None:
     while True:
         time.sleep(1)
         if datetime.now().strftime('%M:%S') == TIME_CHECKER:
@@ -31,7 +31,7 @@ def Timetable():
             SendMessageAll(PATH_TO_DB, PrepareReport(date[8:10]))
 
 
-def CallbackStart(message):
+def CallbackStart(message: telebot.types.Message) -> None:
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=False)
     btn_report = telebot.types.KeyboardButton('Отчёт по дате 📊')
     btn_sub = telebot.types.KeyboardButton('Подписаться ✅')
@@ -43,7 +43,7 @@ def CallbackStart(message):
                                            '/report – получить отчёт по выбранной дате', reply_markup=markup)
 
 
-def CallbackSub(user: int):
+def CallbackSub(user: int) -> None:
     Stamp(f'User {user} requested /sub', 'i')
     if AddToDatabase(user, PATH_TO_DB):
         SendMessage(user, '🟡 Вы уже подписаны на уведомления')
@@ -51,7 +51,7 @@ def CallbackSub(user: int):
         SendMessage(user, '🟢 Режим автоматической отправки сообщений включён')
 
 
-def CallbackStop(user: int):
+def CallbackStop(user: int) -> None:
     Stamp(f'User {user} requested /stop', 'i')
     if RemoveFromDatabase(user, PATH_TO_DB):
         SendMessage(user, '🟢 Уведомления для Вас приостановлены')
@@ -59,7 +59,7 @@ def CallbackStop(user: int):
         SendMessage(user, '🟡 Вы не были подписаны на уведомления')
 
 
-def VerifyDate(day: str):
+def VerifyDate(day: str) -> bool:
     try:
         datetime(datetime.now().year, datetime.now().month, int(day))
         return True
@@ -67,7 +67,7 @@ def VerifyDate(day: str):
         return False
 
 
-def CallbackReport(message):
+def CallbackReport(message: telebot.types.Message) -> None:
     user = message.from_user.id
     body = message.text.lower()
     if not VerifyDate(body):
@@ -77,7 +77,7 @@ def CallbackReport(message):
         SendMessage(user, PrepareReport(body))
 
 
-def AddToDatabase(user: int, path: str):
+def AddToDatabase(user: int, path: str) -> bool:
     Stamp(f'Adding user {user} to DB', 'i')
     found = False
     with open(Path.cwd() / path, 'r') as f:
@@ -91,7 +91,7 @@ def AddToDatabase(user: int, path: str):
     return found
 
 
-def RemoveFromDatabase(user: int, path: str):
+def RemoveFromDatabase(user: int, path: str) -> bool:
     Stamp(f'Removing user {user} from DB', 'i')
     found = False
     with open(Path.cwd() / path, 'r') as f:
@@ -108,7 +108,7 @@ def RemoveFromDatabase(user: int, path: str):
     return found
 
 
-def SendMessage(user: int, msg: Union[str, list[str]]):
+def SendMessage(user: int, msg: Union[str, list[str]]) -> None:
     Stamp(f'Sending message to user {user}', 'i')
     if isinstance(msg, str):
         bot.send_message(user, msg, parse_mode='Markdown')
@@ -119,7 +119,7 @@ def SendMessage(user: int, msg: Union[str, list[str]]):
         bot.send_message(user, '▪️Нет изменений', parse_mode='Markdown')
 
 
-def SendMessageAll(path: str, msg: Union[str, list[str]]):
+def SendMessageAll(path: str, msg: Union[str, list[str]]) -> None:
     Stamp('Sending message to all users', 'i')
     with open(Path.cwd() / path, 'r') as f:
         users = f.readlines()
@@ -128,7 +128,7 @@ def SendMessageAll(path: str, msg: Union[str, list[str]]):
 
 
 @bot.message_handler(content_types=['text'])
-def MessageAccept(message):
+def MessageAccept(message: telebot.types.Message) -> None:
     user = message.from_user.id
     body = message.text.lower()
     Stamp(f'Got message from user {user} – {body}', 'i')
@@ -149,4 +149,4 @@ def MessageAccept(message):
 
 
 if __name__ == '__main__':
-    main()
+    Main()
