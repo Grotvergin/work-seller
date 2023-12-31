@@ -3,14 +3,21 @@ from common import *
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
+NAME = 'Parsers'
 SHORT_SLEEP = 4
 LONG_SLEEP = 45
 PAGES_QUANTITY = 10
-TIMEOUT = 3600 * 5
+TIMEOUT = 3600 * 3
 BLANK_ROWS = 10000
 
 
-def FilterByBarcode(list_for_filter: list, barcodes: list):
+def ParseCurrentHeading(config: ConfigParser, heading: str, gap_name: str) -> (str, str):
+    column = config[heading]['Column']
+    sheet_id = config['DEFAULT'][gap_name + 'SheetID']
+    return column, sheet_id
+
+
+def FilterByBarcode(list_for_filter: list, barcodes: list) -> list:
     filtered_list = []
     for sublist in list_for_filter:
         if sublist[0] in barcodes:
@@ -18,7 +25,7 @@ def FilterByBarcode(list_for_filter: list, barcodes: list):
     return filtered_list
 
 
-def GetData(timeout: int, name: str):
+def GetData(timeout: int, name: str) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
     ControlTimeout(timeout, name)
     try:
@@ -33,7 +40,7 @@ def GetData(timeout: int, name: str):
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = {}
         else:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')
@@ -42,7 +49,7 @@ def GetData(timeout: int, name: str):
     return raw
 
 
-def ProcessData(raw: dict, word: str, page: int):
+def ProcessData(raw: dict, word: str, page: int) -> (list, list):
     list_real = []
     list_advertise = []
     for i in range(SmartLen(raw['data']['products'])):
