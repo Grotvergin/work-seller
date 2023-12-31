@@ -1,30 +1,28 @@
 from statist.source import *
 
 
-def main():
-    config, sections = ParseConfig('statist')
+def Main() -> None:
+    config, sections = ParseConfig(NAME.lower())
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
-        token, date_from, date_to, spreadsheet_id = ParseCurrentHeading(config, heading)
+        token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading)
         for sheet, url in SHEETS_AND_URL.items():
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS_AND_COLS[sheet]),
-                         spreadsheet_id, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS_AND_COLS[sheet]), sheet_id, service)
             empty = PrepareEmpty(len(SHEETS_AND_COLS[sheet]), BLANK_ROWS)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, spreadsheet_id, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, sheet_id, service)
             data = GetData(url[0], token, date_from, date_to)
             if sheet == 'Realisations':
                 # data += GetData(url[1], token, date_from, date_to)
                 data = SortByRRD_ID(data)
             data = ProcessData(Normalize(data), sheet)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, spreadsheet_id, service)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS_AND_COLS[sheet]), spreadsheet_id, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, sheet_id, service)
+            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS_AND_COLS[sheet]), sheet_id, service)
             Sleep(SHORT_SLEEP)
-        Stamp(f'End of processing {heading}', 'b')
     Finish(TIMEOUT, NAME)
 
 
-def GetData(url: str, token: str, date_from: str, date_to: str):
+def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
     Stamp(f'Trying to connect {url}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     try:
@@ -48,20 +46,20 @@ def GetData(url: str, token: str, date_from: str, date_to: str):
     return raw
 
 
-def ParseCurrentHeading(config, heading: str):
+def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str, str):
     token = config[heading]['Token']
-    spreadsheet_id = config[heading]['SpreadsheetID']
+    sheet_id = config[heading]['SheetID']
     date_to = datetime.now().strftime("%Y-%m-%d")
     if heading[0:5] == PREFIX:
         date_from = datetime.now().strftime("%Y-%m") + '-01'
     else:
         date_from = DATE_FROM
-    return token, date_from, date_to, spreadsheet_id
+    return token, date_from, date_to, sheet_id
 
 
-def Normalize(raw: list):
+def Normalize(raw: list) -> list:
     if SmartLen(raw) > 0:
-        Stamp('Start of data normalising', 'i')
+        Stamp('Data normalising', 'i')
         unique_keys = set()
         for dataset in raw:
             unique_keys.update(dataset.keys())
@@ -73,17 +71,16 @@ def Normalize(raw: list):
             for key, value in dataset.items():
                 if value is None:
                     dataset[key] = '0'
-        Stamp('End of data normalising', 'i')
     return raw
 
 
-def ProcessData(raw: list, sheet_name: str):
+def ProcessData(raw: list, sheet_name: str) -> list:
     num = 2
     list_of_rows = []
     for i in range(SmartLen(raw)):
         one_row = []
         for key, value in SHEETS_AND_COLS[sheet_name].items():
-            if value == '+':
+            if value is None:
                 one_row.append(str(raw[i][key]).replace('.', ','))
             elif key == 'quantity' and raw[i]['totalPrice'] < 0:
                 raw[i]['quantity'] = '-' + value
@@ -124,9 +121,9 @@ def ProcessData(raw: list, sheet_name: str):
     return list_of_rows
 
 
-def SortByRRD_ID(raw: list):
+def SortByRRD_ID(raw: list) -> list:
     if SmartLen(raw) > 1:
-        Stamp('Sorting by rrd_id started', 'i')
+        Stamp('Sorting by rrd_id', 'i')
         swap = True
         while swap:
             swap = False
@@ -134,9 +131,8 @@ def SortByRRD_ID(raw: list):
                 if raw[i]['rrd_id'] > raw[i + 1]['rrd_id']:
                     raw[i], raw[i + 1] = raw[i + 1], raw[i]
                     swap = True
-        Stamp('Sorting by rrd_id finished', 'i')
     return raw
 
 
 if __name__ == '__main__':
-    main()
+    Main()
