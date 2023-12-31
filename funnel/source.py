@@ -1,5 +1,6 @@
 from common import *
 
+
 PERIODS = {
     'Yesterday': {'Start': (date.today() - timedelta(days=1)).strftime('%Y-%m-%d') + ' 00:00:00', 'Finish': (date.today() - timedelta(days=1)).strftime('%Y-%m-%d') + ' 23:59:59'},
     'DayBeforeYesterday': {'Start': (date.today() - timedelta(days=2)).strftime('%Y-%m-%d') + ' 00:00:00', 'Finish': (date.today() - timedelta(days=2)).strftime('%Y-%m-%d') + ' 23:59:59'},
@@ -8,7 +9,6 @@ PERIODS = {
     '3Months': {'Start': (date.today() - timedelta(days=91)).strftime('%Y-%m-%d') + ' 00:00:00', 'Finish': datetime.now().strftime('%Y-%m-%d %H:%M:%S')},
     '6-3Months': {'Start': (date.today() - timedelta(days=183)).strftime('%Y-%m-%d') + ' 00:00:00', 'Finish': (date.today() - timedelta(days=91)).strftime('%Y-%m-%d') + ' 23:59:59'}
 }
-
 URL = 'https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail'
 BLANK_ROWS = 1000
 TIMEOUT = 7200

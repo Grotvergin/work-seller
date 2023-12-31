@@ -1,8 +1,10 @@
+import googleapiclient.discovery
+
 from discharge.source import *
 
 
-def main():
-    config, sections = ParseConfig('discharge')
+def Main():
+    config, sections = ParseConfig(NAME.lower())
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
@@ -18,11 +20,10 @@ def main():
             else:
                 ProcessProductsWarehouse(token, client_id, sheet, sheet_id, service)
             ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
-        Stamp(f'End of processing {heading}', 'b')
     Finish(TIMEOUT, NAME)
 
 
-def ProcessOrders(token: str, client_id: str, sheet_id: str, service):
+def ProcessOrders(token: str, client_id: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
     body = SECOND_SAMPLE.copy()
     current_portion = GetData(SHEETS['Orders']['GetData'], token, client_id, body)
     offset = 0
@@ -49,14 +50,14 @@ def ProcessOrders(token: str, client_id: str, sheet_id: str, service):
         current_portion = GetData(SHEETS['Orders']['GetData'], token, client_id, body)
 
 
-def ParseCurrentHeading(config, heading: str):
+def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str):
     token = config[heading]['Token']
     client_id = config[heading]['ClientID']
     sheet_id = config[heading]['SheetID']
     return token, client_id, sheet_id
 
 
-def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: str, service):
+def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
     list_of_products = GetData(SHEETS[sheet]['GetAll'], token, client_id)
     product_ids = [item['product_id'] for item in list_of_products['result']['items']]
     body_id = {'product_id': product_ids}
@@ -72,7 +73,7 @@ def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: st
     ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, sheet, sheet_id, service)
 
 
-def GetAllSkus(big_list, func, *args):
+def GetAllSkus(big_list: list, func, *args) -> list:
     all_data = []
     for i in range(0, len(big_list), CHUNK_SIZE):
         chunk = big_list[i:i+CHUNK_SIZE]
@@ -82,7 +83,7 @@ def GetAllSkus(big_list, func, *args):
     return all_data
 
 
-def GetIntermediateDates():
+def GetIntermediateDates() -> list:
     current_date = datetime.strptime(TODAY, '%Y-%m-%dT%H:%M:%S.%fZ')
     intermediate_dates = [TODAY]
     for i in range(1, MONTHS_HISTORY):
@@ -92,7 +93,7 @@ def GetIntermediateDates():
     return date_pairs
 
 
-def ProcessTransactions(token: str, client_id: str, sheet_id: str, service):
+def ProcessTransactions(token: str, client_id: str, sheet_id: str, service: googleapiclient.discovery.Resource):
     row = 2
     intermediate_pairs = GetIntermediateDates()
     for gap in intermediate_pairs:
@@ -141,7 +142,7 @@ def ProcessTransactions(token: str, client_id: str, sheet_id: str, service):
         row += len(list_of_rows)
 
 
-def PrepareProductsWarehouse(main_data: dict, ratings: list, sheet_name: str):
+def PrepareProductsWarehouse(main_data: dict, ratings: list, sheet_name: str) -> list:
     list_of_rows = []
     for i in range(SmartLen(main_data['result']['items'])):
         one_row = []
@@ -167,7 +168,7 @@ def PrepareProductsWarehouse(main_data: dict, ratings: list, sheet_name: str):
     return list_of_rows
 
 
-def GetData(url: str, token: str, client_id: str, body=None):
+def GetData(url: str, token: str, client_id: str, body: dict = None):
     Stamp(f'Trying to connect {url}', 'i')
     headers = {'Api-Key': token, 'Client-Id': client_id}
     ControlTimeout(TIMEOUT, NAME)
@@ -196,4 +197,4 @@ def GetData(url: str, token: str, client_id: str, body=None):
 
 
 if __name__ == '__main__':
-    main()
+    Main()

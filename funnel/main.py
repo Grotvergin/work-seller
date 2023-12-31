@@ -1,8 +1,8 @@
 from funnel.source import *
 
 
-def main():
-    config, sections = ParseConfig('funnel')
+def Main():
+    config, sections = ParseConfig(NAME.lower())
     service = BuildService()
     for heading in sections:
         Stamp(f'Start of processing {heading}', 'b')
@@ -19,7 +19,7 @@ def main():
     Finish(TIMEOUT, NAME)
 
 
-def GetData(token: str, period: dict, page: int):
+def GetData(token: str, period: dict, page: int) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
     ControlTimeout(TIMEOUT, NAME)
     body = SAMPLE.copy()
@@ -47,7 +47,7 @@ def GetData(token: str, period: dict, page: int):
     return raw
 
 
-def GetAllPages(token: str, period: dict):
+def GetAllPages(token: str, period: dict) -> list:
     list_of_pages = []
     Stamp(f"Trying to get all pages from {period['Start']} to {period['Finish']}", 'i')
     page = 1
@@ -61,7 +61,7 @@ def GetAllPages(token: str, period: dict):
     return list_of_pages
 
 
-def ProcessData(raw: list):
+def ProcessData(raw: list) -> list:
     list_of_rows = []
     for page in raw:
         for card in page['cards']:
@@ -82,11 +82,11 @@ def ProcessData(raw: list):
     return list_of_rows
 
 
-def ParseCurrentHeading(config, heading: str):
+def ParseCurrentHeading(config: ConfigParser, heading: str):
     token = config[heading]['Token']
     sheet_id = config[heading]['SheetID']
     return token, sheet_id
 
 
 if __name__ == '__main__':
-    main()
+    Main()
