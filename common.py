@@ -32,6 +32,11 @@ CREDS = service_account.Credentials.from_service_account_file('keys.json', scope
 MAX_ROW = 10000
 MAX_RECURSION = 10
 BUILD_SLEEP = 60
+MSG = 'NoData'
+START_OF_MONTH = datetime.now().strftime('%Y-%m') + '-01'
+TODAY = datetime.now().strftime('%Y-%m-%d')
+YEAR = datetime.now().strftime('%Y')
+MONTH = datetime.now().strftime('%m')
 
 
 def ControlRecursion(func: Callable[..., Any], maximum: int = MAX_RECURSION) -> Callable[..., Any]:
