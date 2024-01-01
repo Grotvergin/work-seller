@@ -3,9 +3,9 @@ from bot.report.source import *
 
 def PrepareReport(req_date: str) -> str:
     service = BuildService()
-    config, _ = ParseConfig('bot/' + NAME.lower())
+    config, _ = ParseConfig(NAME)
     sheet_id = config['DEFAULT']['SheetID']
-    result = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, SHEET_NAME, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
+    result = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, SHEET_NAME, sheet_id)
     formatted = ''
     headers = ('Посуда', 'Сантехника', 'Бижутерия', 'Освещение')
     for i in range(1, 36, 9):

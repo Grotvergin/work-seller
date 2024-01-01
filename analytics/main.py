@@ -2,26 +2,21 @@ from analytics.source import *
 
 
 def Main() -> None:
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, client_id, sheet_id = ParseCurrentHeading(config, heading)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), sheet_id, service)
-        empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, PREFIX + heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), PREFIX + heading, sheet_id, service)
         data_all = GetData(token, client_id, START_OF_ALL, TODAY)
+        data_all = ProcessData(data_all, heading)
         Sleep(SHORT_SLEEP)
         data_month = GetData(token, client_id, START_OF_MONTH, TODAY)
-        data_all = ProcessData(data_all, heading)
         data_month = ProcessData(data_month, heading)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data_all, heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data_month, PREFIX + heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), sheet_id, service)
-    Finish(TIMEOUT, NAME)
+        UploadData(data_all, heading, sheet_id, service)
+        UploadData(data_month, PREFIX + heading, sheet_id, service)
+    Finish(NAME)
 
 
 def ProcessData(raw: dict, sheet_name: str) -> list:
@@ -49,9 +44,9 @@ def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str):
     return token, client_id, sheet_id
 
 
+@ControlRecursion
 def GetData(token: str, client_id: str, date_from: str, date_to: str) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     body = SAMPLE.copy()
     body['date_from'] = date_from
     body['date_to'] = date_to

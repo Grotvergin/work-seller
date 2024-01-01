@@ -1,14 +1,13 @@
 from common import *
 
+
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
-NAME = 'Parsers'
-SHORT_SLEEP = 4
+NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
+SHORT_SLEEP = 3
 LONG_SLEEP = 45
 PAGES_QUANTITY = 10
-TIMEOUT = 3600 * 3
-BLANK_ROWS = 10000
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str, gap_name: str) -> (str, str):
@@ -25,15 +24,15 @@ def FilterByBarcode(list_for_filter: list, barcodes: list) -> list:
     return filtered_list
 
 
-def GetData(timeout: int, name: str) -> dict:
+@ControlRecursion
+def GetData() -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
-    ControlTimeout(timeout, name)
     try:
         response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
         Stamp(f'Connection on {URL}', 'e')
         Sleep(LONG_SLEEP)
-        raw = GetData(timeout, name)
+        raw = GetData()
     else:
         if str(response.status_code)[0] == '2':
             Stamp(f'Status = {response.status_code} on {URL}', 's')
@@ -45,7 +44,7 @@ def GetData(timeout: int, name: str) -> dict:
         else:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')
             Sleep(LONG_SLEEP)
-            raw = GetData(timeout, name)
+            raw = GetData()
     return raw
 
 

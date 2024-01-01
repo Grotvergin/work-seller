@@ -2,29 +2,26 @@ from statist.source import *
 
 
 def Main() -> None:
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading)
-        for sheet, url in SHEETS_AND_URL.items():
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS_AND_COLS[sheet]), sheet_id, service)
-            empty = PrepareEmpty(len(SHEETS_AND_COLS[sheet]), BLANK_ROWS)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, sheet_id, service)
-            data = GetData(url[0], token, date_from, date_to)
-            if sheet == 'Realisations':
+        for sheet_name in SHEETS.keys():
+            CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
+            data = GetData(SHEETS[sheet_name]['URL'][0], token, date_from, date_to)
+            if sheet_name == 'Realisations':
                 # data += GetData(url[1], token, date_from, date_to)
                 data = SortByRRD_ID(data)
-            data = ProcessData(Normalize(data), sheet)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, sheet, sheet_id, service)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS_AND_COLS[sheet]), sheet_id, service)
+            data = ProcessData(Normalize(data), sheet_name)
+            UploadData(data, sheet_name, sheet_id, service)
             Sleep(SHORT_SLEEP)
-    Finish(TIMEOUT, NAME)
+    Finish(NAME)
 
 
+@ControlRecursion
 def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
     Stamp(f'Trying to connect {url}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     try:
         response = requests.get(url, headers={'Authorization': token}, params={'dateFrom': date_from, 'dateTo': date_to})
     except requests.ConnectionError:
@@ -37,7 +34,7 @@ def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = []
         else:
             Stamp(f'Status = {response.status_code} on {url}', 'e')
@@ -49,9 +46,9 @@ def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str, str):
     token = config[heading]['Token']
     sheet_id = config[heading]['SheetID']
-    date_to = datetime.now().strftime("%Y-%m-%d")
-    if heading[0:5] == PREFIX:
-        date_from = datetime.now().strftime("%Y-%m") + '-01'
+    date_to = TODAY
+    if heading[0:5] == PREFIX_MONTH:
+        date_from = START_OF_MONTH
     else:
         date_from = DATE_FROM
     return token, date_from, date_to, sheet_id
@@ -79,7 +76,7 @@ def ProcessData(raw: list, sheet_name: str) -> list:
     list_of_rows = []
     for i in range(SmartLen(raw)):
         one_row = []
-        for key, value in SHEETS_AND_COLS[sheet_name].items():
+        for key, value in SHEETS[sheet_name]['Columns'].items():
             if value is None:
                 one_row.append(str(raw[i][key]).replace('.', ','))
             elif key == 'quantity' and raw[i]['totalPrice'] < 0:
@@ -123,7 +120,7 @@ def ProcessData(raw: list, sheet_name: str) -> list:
 
 def SortByRRD_ID(raw: list) -> list:
     if SmartLen(raw) > 1:
-        Stamp('Sorting by rrd_id', 'i')
+        Stamp('Sorting by RRD_ID', 'i')
         swap = True
         while swap:
             swap = False

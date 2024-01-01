@@ -2,20 +2,16 @@ from top.source import *
 
 
 def Main() -> None:
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         sheet_id = ParseCurrentHeading(config, heading)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), sheet_id, service)
-        empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), heading, sheet_id, service)
         raw = GetData(Authorize())
-        prepared = ProcessData(raw)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), sheet_id, service)
+        UploadData(ProcessData(raw), heading, sheet_id, service)
         Sleep(SHORT_SLEEP, 0.5)
-    Finish(TIMEOUT, NAME)
+    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> str:
@@ -27,10 +23,10 @@ def ParseCurrentHeading(config: ConfigParser, heading: str) -> str:
     return sheet_id
 
 
+@ControlRecursion
 def Authorize() -> requests.Session:
-    session = requests.Session()
     Stamp(f'Trying to authorize {URL_AUTH}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
+    session = requests.Session()
     try:
         response = session.post(URL_AUTH, headers=HEADERS_AUTH, data=DATA_AUTH, cookies=COOKIES_AUTH)
     except requests.ConnectionError:
@@ -47,9 +43,9 @@ def Authorize() -> requests.Session:
     return session
 
 
+@ControlRecursion
 def GetData(session: requests.Session) -> list:
     Stamp(f'Trying to connect {URL_DATA}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     try:
         response = session.get(URL_DATA, headers=HEADERS_GET, params=PARAMS_GET, cookies=COOKIES_GET)
     except requests.ConnectionError:
@@ -62,7 +58,7 @@ def GetData(session: requests.Session) -> list:
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = {}
         else:
             Stamp(f'Status = {response.status_code} on {URL_DATA}', 'e')

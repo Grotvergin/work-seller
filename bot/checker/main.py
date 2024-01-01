@@ -2,23 +2,23 @@ from bot.checker.source import *
 
 
 def PrepareChecker() -> list:
-    config, sections = ParseConfig('bot/' + NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     list_of_differences = []
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, sheet_id = ParseCurrentHeading(config, heading, TYPOLOGY)
         data = ProcessDataPackage(GetData(token))
-        row, old = CreateDict(heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, data, heading, sheet_id, service, row)
-        row, new = CreateDict(heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP, service)
+        row, old = CreateDict(heading, sheet_id, service)
+        UploadData(data, heading, sheet_id, service, row)
+        row, new = CreateDict(heading, sheet_id, service)
         list_of_differences.append(Check(old, new, heading))
     return PrepareMessages(list_of_differences)
 
 
-def ParseCurrentHeading(config: ConfigParser, heading: str, typage: str) -> (str, str):
+def ParseCurrentHeading(config: ConfigParser, heading: str, typology: str) -> (str, str):
     token = config[heading]['Token']
-    sheet_id = config['DEFAULT'][typage + 'SheetID']
+    sheet_id = config['DEFAULT'][typology + 'SheetID']
     return token, sheet_id
 
 
@@ -37,11 +37,11 @@ def PrepareMessages(list_of_differences: list) -> list:
     return messages
 
 
-def CreateDict(heading: str, timeout: int, name: str, sheet_id: str, timer: int, service: googleapiclient.discovery.Resource) -> (int, dict):
+def CreateDict(heading: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> (int, dict):
     Stamp(f'Creating dictionary', 'i')
-    row = len(GetColumn('A', service, heading, timeout, name, sheet_id, timer)) + 2
-    quantities = GetRow(row - 1, service, heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
-    articles = GetRow(row - 2, service, heading, TIMEOUT, NAME, sheet_id, LONG_SLEEP)
+    row = len(GetColumn('A', service, heading, sheet_id)) + 2
+    quantities = GetRow(row - 1, service, heading, sheet_id)
+    articles = GetRow(row - 2, service, heading, sheet_id)
     dictionary = dict(zip(articles, quantities))
     return row, dictionary
 
@@ -74,7 +74,7 @@ def GetData(token: str) -> list:
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = []
         else:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')

@@ -3,5 +3,5 @@ from common import *
 
 SHEET_NAME = 'Month'
 LONG_SLEEP = 60
-NAME = 'Report'
-TIMEOUT = 100000000000
+PATH = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 2)
+NAME = PATH[1] + '/' + PATH[2]

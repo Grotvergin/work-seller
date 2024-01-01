@@ -2,22 +2,16 @@ from advert.source import *
 
 
 def Main() -> None:
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, sheet_id = ParseCurrentHeading(config, heading)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', PREFIX + heading, len(COLUMNS), sheet_id, service)
-        big_empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        small_empty = PrepareEmpty(len(COLUMNS), int(0.2 * BLANK_ROWS))
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, big_empty, heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, small_empty, PREFIX + heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), PREFIX + heading, sheet_id, service)
         campaigns = PrepareCampaigns(token)
         ProcessData(campaigns, heading, token, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', PREFIX + heading, len(COLUMNS), sheet_id, service)
-    Finish(TIMEOUT, NAME)
+    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
@@ -40,10 +34,9 @@ def PrepareCampaigns(token: str) -> list:
             list_of_campaigns.append(raw['adverts'][i]['advert_list'][j]['advertId'])
     return list_of_campaigns
 
-
+@ControlRecursion
 def GetData(url: str, token:str, body: list = None) -> dict:
     Stamp(f'Trying to connect {url}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     try:
         if body is None:
             response = requests.get(url, headers={'Authorization': token})
@@ -97,8 +90,8 @@ def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: 
                         list_of_all.append(one_row)
                         if CheckCurMonth(one_row[1]):
                             list_of_month.append(one_row)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_all, sheet_name, sheet_id, service, row_all)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_month, PREFIX + sheet_name, sheet_id, service, row_month)
+        UploadData(list_of_all, sheet_name, sheet_id, service, row_all)
+        UploadData(list_of_month, PREFIX + sheet_name, sheet_id, service, row_month)
         row_all += len(list_of_all)
         row_month += len(list_of_month)
         Sleep(SHORT_SLEEP)

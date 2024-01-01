@@ -1,17 +1,14 @@
 from common import *
 
 
-TIMEOUT = 3600
 LONG_SLEEP = 60
 SHORT_SLEEP = 5
-BLANK_ROWS = 50000
 MONTHS_HISTORY = 14
 DAYS_IN_MONTH = 28
 CHUNK_SIZE = 100
 DATE_FROM = '2023-11-11'
-TODAY = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-NAME = 'Discharge'
-
+TODAY_ACCURATE = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
 SHEETS = {
     'Orders': {'GetData': 'https://api-seller.ozon.ru/v2/posting/fbo/list',
                'Columns': ('sku', 'quantity', 'price', 'commission_amount', 'commission_percent', 'payout', 'created_at', 'in_process_at')
@@ -66,7 +63,7 @@ SECOND_SAMPLE = {
     'filter': {
         'since': DATE_FROM + 'T00:00:00.000Z',
         'status': '',
-        'to': TODAY
+        'to': TODAY_ACCURATE
     },
     'limit': 1000,
     'offset': 0,

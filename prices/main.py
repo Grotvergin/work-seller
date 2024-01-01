@@ -2,19 +2,16 @@ from prices.source import *
 
 
 def Main():
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, sheet_id = ParseCurrentHeading(config, heading)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', heading, len(COLUMNS), sheet_id, service)
-        empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), heading, sheet_id, service)
         raw = GetData(token)
         prepared = ProcessData(raw)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, heading, sheet_id, service)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', heading, len(COLUMNS), sheet_id, service)
-    Finish(TIMEOUT, NAME)
+        UploadData(prepared, heading, sheet_id, service)
+    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
@@ -23,9 +20,9 @@ def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
     return token, sheet_id
 
 
+@ControlRecursion
 def GetData(token: str) -> list:
     Stamp(f'Trying to connect {URL}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     try:
         response = requests.get(URL, headers={'Authorization': token})
     except requests.ConnectionError:

@@ -1,26 +1,21 @@
-import googleapiclient.discovery
-
 from discharge.source import *
 
 
 def Main():
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, client_id, sheet_id = ParseCurrentHeading(config, heading)
-        for sheet in SHEETS.keys():
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
-            empty = PrepareEmpty(len(SHEETS[sheet]['Columns']), BLANK_ROWS)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, sheet, sheet_id, service)
-            if sheet == 'Transactions':
+        for sheet_name in SHEETS.keys():
+            CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service)
+            if sheet_name == 'Transactions':
                 ProcessTransactions(token, client_id, sheet_id, service)
-            elif sheet == 'Orders':
+            elif sheet_name == 'Orders':
                 ProcessOrders(token, client_id, sheet_id, service)
             else:
-                ProcessProductsWarehouse(token, client_id, sheet, sheet_id, service)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', sheet, len(SHEETS[sheet]['Columns']), sheet_id, service)
-    Finish(TIMEOUT, NAME)
+                ProcessProductsWarehouse(token, client_id, sheet_name, sheet_id, service)
+    Finish(NAME)
 
 
 def ProcessOrders(token: str, client_id: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
@@ -43,7 +38,7 @@ def ProcessOrders(token: str, client_id: str, sheet_id: str, service: googleapic
                         case 'commission_amount' | 'commission_percent' | 'payout':
                             one_row.append(str(current_portion['result'][i]['financial_data']['products'][j][column]).replace('.', ','))
                 list_of_rows.append(one_row)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_rows, 'Orders', sheet_id, service, row)
+        UploadData(list_of_rows, 'Orders', sheet_id, service, row)
         row += SmartLen(list_of_rows)
         offset += 1000
         body['offset'] = offset
@@ -57,20 +52,20 @@ def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str):
     return token, client_id, sheet_id
 
 
-def ProcessProductsWarehouse(token: str, client_id: str, sheet:str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
-    list_of_products = GetData(SHEETS[sheet]['GetAll'], token, client_id)
+def ProcessProductsWarehouse(token: str, client_id: str, sheet_name: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
+    list_of_products = GetData(SHEETS[sheet_name]['GetAll'], token, client_id)
     product_ids = [item['product_id'] for item in list_of_products['result']['items']]
     body_id = {'product_id': product_ids}
-    list_of_info = GetData(SHEETS[sheet]['InfoAboutAll'], token, client_id, body_id)
+    list_of_info = GetData(SHEETS[sheet_name]['InfoAboutAll'], token, client_id, body_id)
     products_sku = []
     for item in list_of_info['result']['items']:
         if int(item['sku']) != 0:
             products_sku.append(str(item['sku']))
         else:
             products_sku.append(str(item['fbo_sku']))
-    list_of_ratings = GetAllSkus(products_sku, GetData, SHEETS[sheet]['GetRating'], token, client_id)
-    prepared = PrepareProductsWarehouse(list_of_info, list_of_ratings, sheet)
-    ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, sheet, sheet_id, service)
+    list_of_ratings = GetAllSkus(products_sku, GetData, SHEETS[sheet_name]['GetRating'], token, client_id)
+    prepared = PrepareProductsWarehouse(list_of_info, list_of_ratings, sheet_name)
+    UploadData(prepared, sheet_name, sheet_id, service)
 
 
 def GetAllSkus(big_list: list, func, *args) -> list:
@@ -84,8 +79,8 @@ def GetAllSkus(big_list: list, func, *args) -> list:
 
 
 def GetIntermediateDates() -> list:
-    current_date = datetime.strptime(TODAY, '%Y-%m-%dT%H:%M:%S.%fZ')
-    intermediate_dates = [TODAY]
+    current_date = datetime.strptime(TODAY_ACCURATE, '%Y-%m-%dT%H:%M:%S.%fZ')
+    intermediate_dates = [TODAY_ACCURATE]
     for i in range(1, MONTHS_HISTORY):
         intermediate_dates.append((current_date - timedelta(days=DAYS_IN_MONTH * i)).strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
     intermediate_dates.sort()
@@ -138,7 +133,7 @@ def ProcessTransactions(token: str, client_id: str, sheet_id: str, service: goog
                             case _:
                                 one_row.append(str(raw['result']['operations'][k][column]).replace('.', ','))
                     list_of_rows.append(one_row)
-        ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, list_of_rows, 'Transactions', sheet_id, service, row)
+        UploadData(list_of_rows, 'Transactions', sheet_id, service, row)
         row += len(list_of_rows)
 
 
@@ -168,10 +163,10 @@ def PrepareProductsWarehouse(main_data: dict, ratings: list, sheet_name: str) ->
     return list_of_rows
 
 
+@ControlRecursion
 def GetData(url: str, token: str, client_id: str, body: dict = None):
     Stamp(f'Trying to connect {url}', 'i')
     headers = {'Api-Key': token, 'Client-Id': client_id}
-    ControlTimeout(TIMEOUT, NAME)
     try:
         if body is None:
             response = requests.post(url, headers=headers)
@@ -187,7 +182,7 @@ def GetData(url: str, token: str, client_id: str, body: dict = None):
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = {}
         else:
             Stamp(f'Status = {response.status_code} on {url}', 'e')

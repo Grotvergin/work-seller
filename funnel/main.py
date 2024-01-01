@@ -2,26 +2,23 @@ from funnel.source import *
 
 
 def Main():
-    config, sections = ParseConfig(NAME.lower())
+    config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
-        Stamp(f'Start of processing {heading}', 'b')
+        Stamp(f'Processing {heading}', 'b')
         token, sheet_id = ParseCurrentHeading(config, heading)
-        for name, period in PERIODS.items():
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'r', name, len(COLUMNS), sheet_id, service)
-            empty = PrepareEmpty(len(COLUMNS), BLANK_ROWS)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, empty, name, sheet_id, service)
+        for sheet_name, period in PERIODS.items():
+            CleanSheet(len(COLUMNS), sheet_name, sheet_id, service)
             raw = GetAllPages(token, period)
             prepared = ProcessData(raw)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, UploadData, prepared, name, sheet_id, service)
-            ExecuteRetry(TIMEOUT, NAME, LONG_SLEEP, SwitchIndicator, 'g', name, len(COLUMNS), sheet_id, service)
+            UploadData(prepared, sheet_name, sheet_id, service)
             Sleep(SHORT_SLEEP)
-    Finish(TIMEOUT, NAME)
+    Finish(NAME)
 
 
+@ControlRecursion
 def GetData(token: str, period: dict, page: int) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
-    ControlTimeout(TIMEOUT, NAME)
     body = SAMPLE.copy()
     body['period']['begin'] = period['Start']
     body['period']['end'] = period['Finish']
@@ -38,7 +35,7 @@ def GetData(token: str, period: dict, page: int) -> dict:
             if response.content:
                 raw = response.json()
             else:
-                Stamp('Response in empty', 'w')
+                Stamp('Response is empty', 'w')
                 raw = {}
         else:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')
@@ -82,7 +79,7 @@ def ProcessData(raw: list) -> list:
     return list_of_rows
 
 
-def ParseCurrentHeading(config: ConfigParser, heading: str):
+def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
     token = config[heading]['Token']
     sheet_id = config[heading]['SheetID']
     return token, sheet_id
