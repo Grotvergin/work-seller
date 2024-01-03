@@ -1,6 +1,7 @@
 from discharge.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -15,7 +16,6 @@ def Main():
                 ProcessOrders(token, client_id, sheet_id, service)
             else:
                 ProcessProductsWarehouse(token, client_id, sheet_name, sheet_id, service)
-    Finish(NAME)
 
 
 def ProcessOrders(token: str, client_id: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:

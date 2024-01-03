@@ -2,12 +2,14 @@ from bot.source import *
 
 
 def Main() -> None:
-    polling_thr = Thread(target=Polling)
-    time_thr = Thread(target=Timetable)
-    polling_thr.start()
-    time_thr.start()
-    polling_thr.join()
-    time_thr.join()
+    threads = [
+        Thread(target=Polling),
+        Thread(target=Timetable)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
 
 def Polling() -> None:
@@ -15,7 +17,22 @@ def Polling() -> None:
         try:
             bot.polling(none_stop=True, interval=1)
         except Exception as e:
-            Stamp(str(e), 'e')
+            Stamp(f'Error {e} happened', 'e')
+
+
+def ProvideThread(back_name: str, front_name: str, message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
+    if not AddToDatabase(back_name, GENERAL_PATH_DB + '/active.txt'):
+        Stamp(f'Check passed: starting {back_name}', 's')
+        SendMessage(message.from_user.id, f'🟢 Процесс {front_name} запущен по запросу')
+        thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.main'],), kwargs={'check': False})
+        thread.start()
+        while thread.is_alive():
+            time.sleep(1)
+        RemoveFromDatabase(back_name, GENERAL_PATH_DB + '/active.txt')
+    else:
+        Stamp(f'Check failed: rejecting starting of {back_name}', 'w')
+        SendMessage(message.from_user.id, f'🔴 Процесс {front_name} уже запущен...')
 
 
 def Timetable() -> None:
@@ -23,40 +40,138 @@ def Timetable() -> None:
         time.sleep(1)
         if datetime.now().strftime('%M:%S') == TIME_CHECKER:
             Stamp('Time for checker message', 'i')
-            SendMessageAll(PATH_TO_DB, PrepareChecker())
+            msg = PrepareChecker()
+            SendMessageAll(GENERAL_PATH_DB + 'checker_all.txt', msg)
+            if msg:
+                SendMessageAll(GENERAL_PATH_DB + 'checker_some.txt', msg)
         elif datetime.now().strftime('%H:%M:%S') == TIME_REPORT:
             Stamp('Time for report message', 'i')
-            date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-            SendMessageAll(PATH_TO_DB, f'🟢 Отображаю отчёт за {date}')
-            SendMessageAll(PATH_TO_DB, PrepareReport(date[8:10]))
+            yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+            SendMessageAll(GENERAL_PATH_DB + 'report.txt', f'🟢 Отображаю отчёт за {yesterday}')
+            SendMessageAll(GENERAL_PATH_DB + 'report.txt', PrepareReport(yesterday[8:10]))
 
 
 def CallbackStart(message: telebot.types.Message) -> None:
-    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=False)
-    btn_report = telebot.types.KeyboardButton('Отчёт по дате 📊')
-    btn_sub = telebot.types.KeyboardButton('Подписаться ✅')
-    btn_stop = telebot.types.KeyboardButton('Отписаться ❌')
-    markup.row(btn_report)
-    markup.row(btn_sub, btn_stop)
-    bot.send_message(message.from_user.id, '/sub – подписаться на уведомления\n'
-                                           '/stop – отписаться от уведомлений\n'
-                                           '/report – получить отчёт по выбранной дате', reply_markup=markup)
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    btn_service = telebot.types.KeyboardButton(MANAGE_SERVICE)
+    btn_notify = telebot.types.KeyboardButton(MANAGE_NOTIFY)
+    markup.row(btn_service, btn_notify)
+    bot.send_message(message.from_user.id, CHOOSE, reply_markup=markup)
 
 
-def CallbackSub(user: int) -> None:
-    Stamp(f'User {user} requested /sub', 'i')
-    if AddToDatabase(user, PATH_TO_DB):
-        SendMessage(user, '🟡 Вы уже подписаны на уведомления')
+def CallbackService(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    service_names = [NAMES['advert'], NAMES['analytics'], NAMES['report'], NAMES['discharge'], NAMES['funnel'],
+                     NAMES['parser_day'], NAMES['parser_hour'], NAMES['prices'], NAMES['statist'], NAMES['top']]
+    buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
+    rows = [[buttons[i], buttons[i + 1]] for i in range(0, len(buttons), 2)]
+    for row in rows:
+        markup.row(*row)
+    bot.send_message(message.from_user.id, CHOOSE, reply_markup=markup)
+    bot.register_next_step_handler(message, ChosenService)
+
+
+def ChosenService(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    if message.text == NAMES['report']:
+        SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
+        bot.register_next_step_handler(message, CallbackReport)
+    elif message.text in NAMES.values():
+        ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message.text, message)
     else:
-        SendMessage(user, '🟢 Режим автоматической отправки сообщений включён')
+        SendMessage(message.from_user.id, UNKNOWN)
+    CallbackStart(message)
 
 
-def CallbackStop(user: int) -> None:
-    Stamp(f'User {user} requested /stop', 'i')
-    if RemoveFromDatabase(user, PATH_TO_DB):
-        SendMessage(user, '🟢 Уведомления для Вас приостановлены')
+def CallbackNotify(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    service_names = [NAMES['report'], NAMES['checker'], NAMES['status']]
+    buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
+    markup.row(*buttons)
+    bot.send_message(message.from_user.id, CHOOSE, reply_markup=markup)
+    bot.register_next_step_handler(message, ChosenNotifyType)
+
+
+def ChosenNotifyType(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    notifications = {
+        NAMES['report']: {'buttons': [ACCEPT, REJECT], 'handler': DecisionReport},
+        NAMES['checker']: {'buttons': [ACCEPT, SOME_CHECKER, REJECT], 'handler': DecisionChecker},
+        NAMES['status']: {'buttons': [ACCEPT, SOME_STATUS, REJECT], 'handler': DecisionStatus},
+    }
+    notify_type = notifications.get(message.text)
+    if notify_type:
+        buttons = [telebot.types.KeyboardButton(button) for button in notify_type['buttons']]
+        markup.row(*buttons)
+        bot.send_message(message.from_user.id, CHOOSE, reply_markup=markup)
+        bot.register_next_step_handler(message, notify_type['handler'])
     else:
-        SendMessage(user, '🟡 Вы не были подписаны на уведомления')
+        SendMessage(message.from_user.id, UNKNOWN)
+
+
+def DecisionStatus(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    if message.text == ACCEPT:
+        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'status_all.txt')
+        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'status_some.txt')
+    elif message.text == SOME_STATUS:
+        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'status_some.txt')
+        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'status_all.txt')
+    elif message.text == REJECT:
+        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'status_all.txt', GENERAL_PATH_DB + 'status_some.txt'])
+    else:
+        SendMessage(message.from_user.id, UNKNOWN)
+    CallbackStart(message)
+
+
+def DecisionChecker(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    if message.text == ACCEPT:
+        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'checker_all.txt')
+        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'checker_some.txt')
+    elif message.text == SOME_CHECKER:
+        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'checker_some.txt')
+        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'checker_all.txt')
+    elif message.text == REJECT:
+        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'checker_all.txt', GENERAL_PATH_DB + 'checker_some.txt'])
+    else:
+        SendMessage(message.from_user.id, UNKNOWN)
+    CallbackStart(message)
+
+
+def DecisionReport(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    if message.text == ACCEPT:
+        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'report.txt')
+    elif message.text == REJECT:
+        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'report.txt'])
+    else:
+        SendMessage(message.from_user.id, UNKNOWN)
+    CallbackStart(message)
+
+
+def CallbackSub(user: int, path: str) -> None:
+    Stamp(f'User {user} requested subscription to DB {path}', 'i')
+    if AddToDatabase(str(user), path):
+        SendMessage(user, '🟡 Вы уже подписаны этот тип уведомлений')
+    else:
+        SendMessage(user, '🟢 Вы успешно подписались на этот тип уведомлений')
+
+
+def CallbackStop(user: int, path: list[str]) -> None:
+    Stamp(f'User {user} requested removing from DBs {path}', 'i')
+    was_deleted = False
+    for db in path:
+        was_deleted = RemoveFromDatabase(str(user), db)
+        if was_deleted:
+            break
+    if was_deleted:
+        SendMessage(user, '🟢 Уведомления этого типа для Вас приостановлены')
+    else:
+        SendMessage(user, '🟡 Вы не были подписаны на этот тип уведомлений')
 
 
 def VerifyDate(day: str) -> bool:
@@ -75,41 +190,45 @@ def CallbackReport(message: telebot.types.Message) -> None:
     else:
         SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
         SendMessage(user, PrepareReport(body))
+    CallbackStart(message)
 
 
-def AddToDatabase(user: int, path: str) -> bool:
-    Stamp(f'Adding user {user} to DB', 'i')
+def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
+    Stamp(f'Adding note {note} to DB {path}', 'i')
     found = False
     with open(Path.cwd() / path, 'r') as f:
         for line in f:
-            if int(line.strip()) == user:
+            if line.strip() == note:
                 found = True
                 break
     if not found:
         with open(Path.cwd() / path, 'a') as f:
-            f.write(str(user) + '\n')
+            f.write(note + '\n')
+    if len_check:
+        lines = ReadLinesFromFile(path)
+        if SmartLen(lines) > MAX_PROCESSES:
+            found = True
     return found
 
 
-def RemoveFromDatabase(user: int, path: str) -> bool:
-    Stamp(f'Removing user {user} from DB', 'i')
+def RemoveFromDatabase(note: str, path: str) -> bool:
+    Stamp(f'Removing note {note} from DB {path}', 'i')
     found = False
-    with open(Path.cwd() / path, 'r') as f:
-        lines = f.readlines()
+    lines = ReadLinesFromFile(path)
     for line in lines:
-        if int(line.strip()) == user:
+        if line.strip() == note:
             found = True
             break
     if found:
         with open(Path.cwd() / path, 'w') as f:
             for line in lines:
-                if int(line.strip()) != user:
+                if line.strip() != note:
                     f.write(line)
     return found
 
 
 def SendMessage(user: int, msg: Union[str, list[str]]) -> None:
-    Stamp(f'Sending message to user {user}', 'i')
+    Stamp(f'Sending message to one user {user}', 'i')
     if isinstance(msg, str):
         bot.send_message(user, msg, parse_mode='Markdown')
     elif msg:
@@ -120,9 +239,9 @@ def SendMessage(user: int, msg: Union[str, list[str]]) -> None:
 
 
 def SendMessageAll(path: str, msg: Union[str, list[str]]) -> None:
-    Stamp('Sending message to all users', 'i')
-    with open(Path.cwd() / path, 'r') as f:
-        users = f.readlines()
+    Stamp('Sending message to numerous users', 'i')
+    path = PATH_TO_DB + path
+    users = ReadLinesFromFile(path)
     for user in users:
         SendMessage(int(user), msg)
 
@@ -130,22 +249,18 @@ def SendMessageAll(path: str, msg: Union[str, list[str]]) -> None:
 @bot.message_handler(content_types=['text'])
 def MessageAccept(message: telebot.types.Message) -> None:
     user = message.from_user.id
-    body = message.text.lower()
-    Stamp(f'Got message from user {user} – {body}', 'i')
-    match body:
-        case '/start':
-            SendMessage(user, f'Здравствуй, {message.from_user.first_name}!')
-            CallbackStart(message)
-        case '/sub' | 'подписаться ✅':
-            CallbackSub(user)
-        case '/stop' | 'отписаться ❌':
-            CallbackStop(user)
-        case '/report' | 'отчёт по дате 📊':
-            SendMessage(user, '❔ Введите число текущего месяца:')
-            bot.register_next_step_handler(message, CallbackReport)
-        case _:
-            SendMessage(user, '🔴 Я вас не понял...')
-            CallbackStart(message)
+    body = message.text
+    Stamp(f'User {user} requested <<{body}>>', 'i')
+    if body == '/start':
+        SendMessage(user, f'Здравствуй, {message.from_user.first_name}!')
+        CallbackStart(message)
+    elif body == MANAGE_NOTIFY:
+        CallbackNotify(message)
+    elif body == MANAGE_SERVICE:
+        CallbackService(message)
+    else:
+        SendMessage(user, '🔴 Я вас не понял... Воспользуйтесь кнопками')
+        CallbackStart(message)
 
 
 if __name__ == '__main__':

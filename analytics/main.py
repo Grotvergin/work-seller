@@ -1,6 +1,7 @@
 from analytics.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -8,15 +9,14 @@ def Main() -> None:
         Stamp(f'Processing {heading}', 'b')
         token, client_id, sheet_id = ParseCurrentHeading(config, heading)
         CleanSheet(len(COLUMNS), heading, sheet_id, service)
-        CleanSheet(len(COLUMNS), PREFIX + heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), PREFIX_MONTH + heading, sheet_id, service)
         data_all = GetData(token, client_id, START_OF_ALL, TODAY)
         data_all = ProcessData(data_all, heading)
         Sleep(SHORT_SLEEP)
         data_month = GetData(token, client_id, START_OF_MONTH, TODAY)
         data_month = ProcessData(data_month, heading)
         UploadData(data_all, heading, sheet_id, service)
-        UploadData(data_month, PREFIX + heading, sheet_id, service)
-    Finish(NAME)
+        UploadData(data_month, PREFIX_MONTH + heading, sheet_id, service)
 
 
 def ProcessData(raw: dict, sheet_name: str) -> list:

@@ -1,6 +1,7 @@
 from funnel.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -13,7 +14,6 @@ def Main():
             prepared = ProcessData(raw)
             UploadData(prepared, sheet_name, sheet_id, service)
             Sleep(SHORT_SLEEP)
-    Finish(NAME)
 
 
 @ControlRecursion

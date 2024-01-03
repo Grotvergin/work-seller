@@ -1,6 +1,7 @@
 from advert.source import *
 
 
+@Inspector(NAMES[PA[2]])
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -8,10 +9,9 @@ def Main() -> None:
         Stamp(f'Processing {heading}', 'b')
         token, sheet_id = ParseCurrentHeading(config, heading)
         CleanSheet(len(COLUMNS), heading, sheet_id, service)
-        CleanSheet(len(COLUMNS), PREFIX + heading, sheet_id, service)
+        CleanSheet(len(COLUMNS), PREFIX_MONTH + heading, sheet_id, service)
         campaigns = PrepareCampaigns(token)
         ProcessData(campaigns, heading, token, sheet_id, service)
-    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
@@ -33,6 +33,7 @@ def PrepareCampaigns(token: str) -> list:
         for j in range(SmartLen(raw['adverts'][i]['advert_list'])):
             list_of_campaigns.append(raw['adverts'][i]['advert_list'][j]['advertId'])
     return list_of_campaigns
+
 
 @ControlRecursion
 def GetData(url: str, token:str, body: list = None) -> dict:
@@ -62,14 +63,16 @@ def GetData(url: str, token:str, body: list = None) -> dict:
 
 
 def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
-    row_all = row_month = 2
+    row_all = 2
+    row_month = 2
     Stamp(f'For sheet {sheet_name} found {SmartLen(raw)} companies', 'i')
     for i in range(0, SmartLen(raw), PORTION):
         Stamp(f'Processing {PORTION} campaigns from {i} out of {SmartLen(raw)}', 'i')
         portion_of_campaigns = raw[i:i + PORTION]
         list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
         data = GetData(URL_STAT, token, list_for_request)
-        list_of_all = list_of_month = []
+        list_of_all = []
+        list_of_month = []
         for t in range(SmartLen(data)):
             for j in range(SmartLen(data[t]['days'])):
                 for k in range(SmartLen(data[t]['days'][j]['apps'])):
@@ -82,7 +85,9 @@ def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: 
                                 elif key == 'advertId':
                                     one_row.append(str(data[t]['advertId']))
                                 elif key == 'date':
-                                    one_row.append(str(data[t]['days'][j]['date']))
+                                    one_row.append(str(data[t]['days'][j]['date'])[:10])
+                                elif key == 'appType':
+                                    one_row.append(str(data[t]['days'][j]['apps'][k][key]))
                                 else:
                                     one_row.append(value.replace('.', ','))
                             except KeyError:
@@ -91,7 +96,7 @@ def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: 
                         if CheckCurMonth(one_row[1]):
                             list_of_month.append(one_row)
         UploadData(list_of_all, sheet_name, sheet_id, service, row_all)
-        UploadData(list_of_month, PREFIX + sheet_name, sheet_id, service, row_month)
+        UploadData(list_of_month, PREFIX_MONTH + sheet_name, sheet_id, service, row_month)
         row_all += len(list_of_all)
         row_month += len(list_of_month)
         Sleep(SHORT_SLEEP)

@@ -1,6 +1,7 @@
 from parsers.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -24,7 +25,6 @@ def Main():
                 UploadData(real, PREFIX + heading, sheet_id, service, row)
                 row += len(advertise)
                 Sleep(SHORT_SLEEP, 0.5)
-    Finish(NAME)
 
 
 if __name__ == '__main__':

@@ -1,9 +1,10 @@
 from bot.report.source import *
 
 
+@Inspector(NAMES[PATH[2]])
 def PrepareReport(req_date: str) -> str:
     service = BuildService()
-    config, _ = ParseConfig(NAME)
+    config, _ = ParseConfig(PATH[1] + '/' + PATH[2])
     sheet_id = config['DEFAULT']['SheetID']
     result = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, SHEET_NAME, sheet_id)
     formatted = ''

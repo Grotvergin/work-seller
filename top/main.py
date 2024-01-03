@@ -1,6 +1,7 @@
 from top.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -11,7 +12,6 @@ def Main() -> None:
         raw = GetData(Authorize())
         UploadData(ProcessData(raw), heading, sheet_id, service)
         Sleep(SHORT_SLEEP, 0.5)
-    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> str:

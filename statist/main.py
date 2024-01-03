@@ -1,6 +1,7 @@
 from statist.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -11,12 +12,10 @@ def Main() -> None:
             CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
             data = GetData(SHEETS[sheet_name]['URL'][0], token, date_from, date_to)
             if sheet_name == 'Realisations':
-                # data += GetData(url[1], token, date_from, date_to)
                 data = SortByRRD_ID(data)
             data = ProcessData(Normalize(data), sheet_name)
             UploadData(data, sheet_name, sheet_id, service)
             Sleep(SHORT_SLEEP)
-    Finish(NAME)
 
 
 @ControlRecursion

@@ -1,6 +1,7 @@
 from prices.source import *
 
 
+@Inspector(NAMES[NAME])
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()
@@ -11,7 +12,6 @@ def Main():
         raw = GetData(token)
         prepared = ProcessData(raw)
         UploadData(prepared, heading, sheet_id, service)
-    Finish(NAME)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
