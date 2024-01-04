@@ -1,7 +1,6 @@
 # Built-in
 import json
 import random
-import smtplib
 import subprocess
 import socket
 import ssl
@@ -10,10 +9,8 @@ import time
 import os
 from configparser import ConfigParser
 from datetime import datetime, timedelta, date
-from email.mime.multipart import MIMEMultipart
 from functools import wraps
 from pathlib import Path
-from pprint import pprint
 from threading import Thread
 from typing import Union, Callable, Any, List, Dict
 
@@ -40,14 +37,14 @@ YEAR = datetime.now().strftime('%Y')
 MONTH = datetime.now().strftime('%m')
 MSG = 'NoData'
 PREFIX_MONTH = 'Month'
-GENERAL_PATH_DB = str(Path.cwd() / 'bot/database') + '/'
-DEBUG_MODE = True
+PATH_DB = str(Path.cwd()) + '/bot/database/'
+DEBUG_MODE = False
 NAMES = {
     'top': 'Top V Top 🔝',
     'statist': 'WB Статистика 📊',
     'prices': 'WB Цены 🏷',
-    'parser_hour': 'WB Частый парсинг ⏭',
-    'parser_day': 'WB Ежедневный парсинг ⏩',
+    'hour_main': 'WB Частый парсинг ⏭',
+    'day_main': 'WB Ежедневный парсинг ⏩',
     'funnel': 'WB Аналитика 🔍',
     'discharge': 'OZON Выгрузка 🗂',
     'checker': 'Увеличение остатков ⚡️',
@@ -89,10 +86,10 @@ def StatusSender(msg: str, was_error: bool):
     Stamp('Trying to send notifications to all users', 'i')
     config, sections = ParseConfig('bot')
     token = config[sections[int(DEBUG_MODE)]]['Token']
-    users_all = ReadLinesFromFile(GENERAL_PATH_DB + 'status_all.txt')
+    users_all = ReadLinesFromFile(PATH_DB + 'status_all.txt')
     for user in users_all:
         SendTelegramNotify(msg, token, int(user))
-    users_some = ReadLinesFromFile(GENERAL_PATH_DB + 'status_some.txt')
+    users_some = ReadLinesFromFile(PATH_DB + 'status_some.txt')
     if was_error:
         for user in users_some:
             SendTelegramNotify(msg, token, int(user))

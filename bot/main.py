@@ -20,19 +20,21 @@ def Polling() -> None:
             Stamp(f'Error {e} happened', 'e')
 
 
-def ProvideThread(back_name: str, front_name: str, message: telebot.types.Message) -> None:
+def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main') -> None:
     Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
-    if not AddToDatabase(back_name, GENERAL_PATH_DB + '/active.txt'):
+    if not AddToDatabase(back_name, PATH_DB + 'active.txt', True):
         Stamp(f'Check passed: starting {back_name}', 's')
-        SendMessage(message.from_user.id, f'🟢 Процесс {front_name} запущен по запросу')
-        thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.main'],), kwargs={'check': False})
+        SendMessage(message.from_user.id, f'🟢 Процесс {message.text} запущен по запросу')
+        CallbackStart(message)
+        thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
         thread.start()
         while thread.is_alive():
             time.sleep(1)
-        RemoveFromDatabase(back_name, GENERAL_PATH_DB + '/active.txt')
+        RemoveFromDatabase(back_name, PATH_DB + 'active.txt')
     else:
         Stamp(f'Check failed: rejecting starting of {back_name}', 'w')
-        SendMessage(message.from_user.id, f'🔴 Процесс {front_name} уже запущен...')
+        SendMessage(message.from_user.id, f'🔴 Процесс {message.text} уже запущен, либо вы достигли предела в {MAX_PROCESSES} процесса...')
+        CallbackStart(message)
 
 
 def Timetable() -> None:
@@ -41,14 +43,14 @@ def Timetable() -> None:
         if datetime.now().strftime('%M:%S') == TIME_CHECKER:
             Stamp('Time for checker message', 'i')
             msg = PrepareChecker()
-            SendMessageAll(GENERAL_PATH_DB + 'checker_all.txt', msg)
+            SendMessageAll(PATH_DB + 'checker_all.txt', msg)
             if msg:
-                SendMessageAll(GENERAL_PATH_DB + 'checker_some.txt', msg)
+                SendMessageAll(PATH_DB + 'checker_some.txt', msg)
         elif datetime.now().strftime('%H:%M:%S') == TIME_REPORT:
             Stamp('Time for report message', 'i')
             yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-            SendMessageAll(GENERAL_PATH_DB + 'report.txt', f'🟢 Отображаю отчёт за {yesterday}')
-            SendMessageAll(GENERAL_PATH_DB + 'report.txt', PrepareReport(yesterday[8:10]))
+            SendMessageAll(PATH_DB + 'report.txt', f'🟢 Отображаю отчёт за {yesterday}')
+            SendMessageAll(PATH_DB + 'report.txt', PrepareReport(yesterday[8:10]))
 
 
 def CallbackStart(message: telebot.types.Message) -> None:
@@ -63,7 +65,7 @@ def CallbackService(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
     service_names = [NAMES['advert'], NAMES['analytics'], NAMES['report'], NAMES['discharge'], NAMES['funnel'],
-                     NAMES['parser_day'], NAMES['parser_hour'], NAMES['prices'], NAMES['statist'], NAMES['top']]
+                     NAMES['day_main'], NAMES['hour_main'], NAMES['prices'], NAMES['statist'], NAMES['top']]
     buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
     rows = [[buttons[i], buttons[i + 1]] for i in range(0, len(buttons), 2)]
     for row in rows:
@@ -77,11 +79,15 @@ def ChosenService(message: telebot.types.Message) -> None:
     if message.text == NAMES['report']:
         SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
         bot.register_next_step_handler(message, CallbackReport)
+    elif message.text == NAMES['hour_main']:
+        ProvideThread('parsers', message, 'hour_main')
+    elif message.text == NAMES['day_main']:
+        ProvideThread('parsers', message, 'day_main')
     elif message.text in NAMES.values():
-        ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message.text, message)
+        ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message)
     else:
         SendMessage(message.from_user.id, UNKNOWN)
-    CallbackStart(message)
+        CallbackStart(message)
 
 
 def CallbackNotify(message: telebot.types.Message) -> None:
@@ -115,13 +121,13 @@ def ChosenNotifyType(message: telebot.types.Message) -> None:
 def DecisionStatus(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     if message.text == ACCEPT:
-        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'status_all.txt')
-        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'status_some.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'status_all.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_some.txt')
     elif message.text == SOME_STATUS:
-        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'status_some.txt')
-        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'status_all.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'status_some.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_all.txt')
     elif message.text == REJECT:
-        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'status_all.txt', GENERAL_PATH_DB + 'status_some.txt'])
+        CallbackStop(message.from_user.id, [PATH_DB + 'status_all.txt', PATH_DB + 'status_some.txt'])
     else:
         SendMessage(message.from_user.id, UNKNOWN)
     CallbackStart(message)
@@ -130,13 +136,13 @@ def DecisionStatus(message: telebot.types.Message) -> None:
 def DecisionChecker(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     if message.text == ACCEPT:
-        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'checker_all.txt')
-        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'checker_some.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'checker_all.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_some.txt')
     elif message.text == SOME_CHECKER:
-        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'checker_some.txt')
-        RemoveFromDatabase(str(message.from_user.id), GENERAL_PATH_DB + 'checker_all.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'checker_some.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_all.txt')
     elif message.text == REJECT:
-        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'checker_all.txt', GENERAL_PATH_DB + 'checker_some.txt'])
+        CallbackStop(message.from_user.id, [PATH_DB + 'checker_all.txt', PATH_DB + 'checker_some.txt'])
     else:
         SendMessage(message.from_user.id, UNKNOWN)
     CallbackStart(message)
@@ -145,9 +151,9 @@ def DecisionChecker(message: telebot.types.Message) -> None:
 def DecisionReport(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     if message.text == ACCEPT:
-        CallbackSub(message.from_user.id, GENERAL_PATH_DB + 'report.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'report.txt')
     elif message.text == REJECT:
-        CallbackStop(message.from_user.id, [GENERAL_PATH_DB + 'report.txt'])
+        CallbackStop(message.from_user.id, [PATH_DB + 'report.txt'])
     else:
         SendMessage(message.from_user.id, UNKNOWN)
     CallbackStart(message)
@@ -202,12 +208,12 @@ def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
                 found = True
                 break
     if not found:
-        with open(Path.cwd() / path, 'a') as f:
-            f.write(note + '\n')
-    if len_check:
         lines = ReadLinesFromFile(path)
-        if SmartLen(lines) > MAX_PROCESSES:
+        if len_check and SmartLen(lines) >= MAX_PROCESSES:
             found = True
+        else:
+            with open(Path.cwd() / path, 'a') as f:
+                f.write(note + '\n')
     return found
 
 
@@ -240,7 +246,6 @@ def SendMessage(user: int, msg: Union[str, list[str]]) -> None:
 
 def SendMessageAll(path: str, msg: Union[str, list[str]]) -> None:
     Stamp('Sending message to numerous users', 'i')
-    path = PATH_TO_DB + path
     users = ReadLinesFromFile(path)
     for user in users:
         SendMessage(int(user), msg)

@@ -7,7 +7,7 @@ def PrepareReport(req_date: str) -> str:
     config, _ = ParseConfig(PATH[1] + '/' + PATH[2])
     sheet_id = config['DEFAULT']['SheetID']
     result = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, SHEET_NAME, sheet_id)
-    formatted = ''
+    formatted = str()
     headers = ('Посуда', 'Сантехника', 'Бижутерия', 'Освещение')
     for i in range(1, 36, 9):
         formatted += (f'🔳\t\t*{headers[i//9]}*\n\n▫️ WB\nСовершено заказов: {result[i]} шт\nПо среднему чеку: {result[i+1]} руб\n'

@@ -1,7 +1,7 @@
 from parsers.source import *
 
 
-@Inspector(NAMES[NAME])
+@Inspector(NAMES['hour_main'])
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()
