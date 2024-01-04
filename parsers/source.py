@@ -4,7 +4,7 @@ from common import *
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
-NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
+NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 SHORT_SLEEP = 3
 LONG_SLEEP = 45
 PAGES_QUANTITY = 10

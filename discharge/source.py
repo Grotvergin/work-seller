@@ -8,7 +8,7 @@ DAYS_IN_MONTH = 28
 CHUNK_SIZE = 100
 DATE_FROM = '2023-11-11'
 TODAY_ACCURATE = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
+NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 SHEETS = {
     'Orders': {'GetData': 'https://api-seller.ozon.ru/v2/posting/fbo/list',
                'Columns': ('sku', 'quantity', 'price', 'commission_amount', 'commission_percent', 'payout', 'created_at', 'in_process_at')

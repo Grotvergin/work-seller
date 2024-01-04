@@ -5,7 +5,7 @@ URL_AUTH = 'https://app.topvtop.pro/api/auth/callback/credentials'
 URL_DATA = 'https://app.topvtop.pro/api/paymenthistory/get'
 SHORT_SLEEP = 50
 LONG_SLEEP = 300
-NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
+NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 COLUMNS = ['_id', 'article', 'basisoperation', 'comment', 'dataoperation', 'refRewarded', 'summ', 'type', 'typeoperations', 'user']
 
 COOKIES_AUTH = {

@@ -7,7 +7,7 @@ SHORT_SLEEP = 60
 LONG_SLEEP = 60
 PORTION = 100
 BEGIN = '2023-01-01'
-NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
+NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 COLUMNS = {'advertId': 'SPEC',
            'date': 'SPEC',
            'appType': 'SPEC',
