@@ -1,9 +1,9 @@
 from bot.checker.source import *
 
 
-@Inspector(NAMES[PATH[2]])
+@Inspector(NAMES[PATH[-1]])
 def PrepareChecker() -> list:
-    config, sections = ParseConfig(PATH[1] + '/' + PATH[2])
+    config, sections = ParseConfig(PATH[-2] + '/' + PATH[-1])
     service = BuildService()
     list_of_differences = []
     for heading in sections:
