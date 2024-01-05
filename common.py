@@ -81,7 +81,7 @@ def Inspector(name: str) -> Callable[..., Any]:
                 return
             except Exception as e:
                 Stamp(f'Error {e} happened', 'e')
-                Stamp(traceback.format_exc(), 'e')
+                print(traceback.format_exc())
                 StatusSender(f'🔴 Ошибка при обновлении {name}', True)
                 return
         return Wrapper
