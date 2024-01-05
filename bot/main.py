@@ -18,6 +18,7 @@ def Polling() -> None:
             bot.polling(none_stop=True, interval=1)
         except Exception as e:
             Stamp(f'Error {e} happened', 'e')
+            Stamp(traceback.format_exc(), 'e')
 
 
 def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main') -> None:
