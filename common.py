@@ -13,6 +13,7 @@ from functools import wraps
 from pathlib import Path
 from threading import Thread
 from typing import Union, Callable, Any, List, Dict
+import traceback
 
 # External
 import googleapiclient.discovery
@@ -74,8 +75,13 @@ def Inspector(name: str) -> Callable[..., Any]:
                 Stamp('Keyboard interruption', 'w')
                 StatusSender(f'🟡 Ручная приостановка обновления {name}', False)
                 return
+            except RecursionError:
+                Stamp('Recursion error happened', 'e')
+                StatusSender(f'🔴 Ошибка РЕКУРСИИ при обновлении {name}', True)
+                return
             except Exception as e:
                 Stamp(f'Error {e} happened', 'e')
+                Stamp(traceback.format_exc(), 'e')
                 StatusSender(f'🔴 Ошибка при обновлении {name}', True)
                 return
         return Wrapper
@@ -128,8 +134,7 @@ def ControlRecursion(func: Callable[..., Any], maximum: int = MAX_RECURSION) -> 
     def Wrapper(*args, **kwargs):
         if func.recursion_depth > maximum:
             Stamp('Max level of recursion reached', 'e')
-            StatusSender('Recursion', True)
-            sys.exit(1)
+            raise RecursionError
         if func.recursion_depth > 0:
             Stamp(f"Recursion = {func.recursion_depth}, allowed = {maximum}", 'w')
         func.recursion_depth += 1
