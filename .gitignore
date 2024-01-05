@@ -8,3 +8,5 @@ config.ini
 *.ps1
 __pycache__/
 *.txt
+!/requirements.txt
+venv
