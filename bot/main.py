@@ -202,7 +202,7 @@ def CallbackReport(message: telebot.types.Message) -> None:
 def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
     Stamp(f'Adding note {note} to DB {path}', 'i')
     found = False
-    with open(Path.cwd() / path, 'r') as f:
+    with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
         for line in f:
             if line.strip() == note:
                 found = True
@@ -226,7 +226,7 @@ def RemoveFromDatabase(note: str, path: str) -> bool:
             found = True
             break
     if found:
-        with open(Path.cwd() / path, 'w') as f:
+        with open(Path.cwd() / path, 'w', encoding='utf-8') as f:
             for line in lines:
                 if line.strip() != note:
                     f.write(line)

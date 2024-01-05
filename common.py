@@ -57,7 +57,7 @@ NAMES = {
 
 
 def ReadLinesFromFile(path: Union[str, Path]) -> list:
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     return lines
 
