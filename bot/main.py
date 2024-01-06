@@ -2,17 +2,6 @@ from bot.source import *
 
 
 def Main() -> None:
-    threads = [
-        Thread(target=Polling),
-        Thread(target=Timetable)
-    ]
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
-
-
-def Polling() -> None:
     while True:
         try:
             bot.polling(none_stop=True, interval=1)
@@ -36,22 +25,6 @@ def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 
         Stamp(f'Check failed: rejecting starting of {back_name}', 'w')
         SendMessage(message.from_user.id, f'🔴 Процесс {message.text} уже запущен, либо вы достигли предела в {MAX_PROCESSES} процесса...')
         CallbackStart(message)
-
-
-def Timetable() -> None:
-    while True:
-        time.sleep(1)
-        if datetime.now().strftime('%M:%S') == TIME_CHECKER:
-            Stamp('Time for checker message', 'i')
-            msg = PrepareChecker()
-            SendMessageAll(PATH_DB + 'checker_all.txt', msg)
-            if msg:
-                SendMessageAll(PATH_DB + 'checker_some.txt', msg)
-        elif datetime.now().strftime('%H:%M:%S') == TIME_REPORT:
-            Stamp('Time for report message', 'i')
-            yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-            SendMessageAll(PATH_DB + 'report.txt', f'🟢 Отображаю отчёт за {yesterday}')
-            SendMessageAll(PATH_DB + 'report.txt', PrepareReport(yesterday[8:10]))
 
 
 def CallbackStart(message: telebot.types.Message) -> None:
@@ -122,13 +95,13 @@ def ChosenNotifyType(message: telebot.types.Message) -> None:
 def DecisionStatus(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     if message.text == ACCEPT:
-        CallbackSub(message.from_user.id, PATH_DB + 'status_all.txt')
-        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_some.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'status.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_important.txt')
     elif message.text == SOME_STATUS:
-        CallbackSub(message.from_user.id, PATH_DB + 'status_some.txt')
-        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_all.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'status_important.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status.txt')
     elif message.text == REJECT:
-        CallbackStop(message.from_user.id, [PATH_DB + 'status_all.txt', PATH_DB + 'status_some.txt'])
+        CallbackStop(message.from_user.id, [PATH_DB + 'status.txt', PATH_DB + 'status_important.txt'])
     else:
         SendMessage(message.from_user.id, UNKNOWN)
     CallbackStart(message)
@@ -137,13 +110,13 @@ def DecisionStatus(message: telebot.types.Message) -> None:
 def DecisionChecker(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     if message.text == ACCEPT:
-        CallbackSub(message.from_user.id, PATH_DB + 'checker_all.txt')
-        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_some.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'checker.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_important.txt')
     elif message.text == SOME_CHECKER:
-        CallbackSub(message.from_user.id, PATH_DB + 'checker_some.txt')
-        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_all.txt')
+        CallbackSub(message.from_user.id, PATH_DB + 'checker_important.txt')
+        RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker.txt')
     elif message.text == REJECT:
-        CallbackStop(message.from_user.id, [PATH_DB + 'checker_all.txt', PATH_DB + 'checker_some.txt'])
+        CallbackStop(message.from_user.id, [PATH_DB + 'checker.txt', PATH_DB + 'checker_important.txt'])
     else:
         SendMessage(message.from_user.id, UNKNOWN)
     CallbackStart(message)

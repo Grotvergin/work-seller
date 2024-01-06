@@ -36,10 +36,11 @@ START_OF_MONTH = datetime.now().strftime('%Y-%m') + '-01'
 TODAY = datetime.now().strftime('%Y-%m-%d')
 YEAR = datetime.now().strftime('%Y')
 MONTH = datetime.now().strftime('%m')
+YESTERDAY = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
-DEBUG_MODE = False
+DEBUG_MODE = True
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
     'top': 'Top V Top 🔝',
@@ -70,36 +71,39 @@ def Inspector(name: str) -> Callable[..., Any]:
             try:
                 result = func(*args, **kwargs)
                 Stamp('All data uploaded successfully', 'b')
-                StatusSender(f'🟢 Успешное обновление {name}', False)
+                IndependentSender(f'🟢 Успешное обновление {name}', 'status')
                 return result
             except KeyboardInterrupt:
                 Stamp('Keyboard interruption', 'w')
-                StatusSender(f'🟡 Ручная приостановка обновления {name}', False)
+                IndependentSender(f'🟡 Ручная приостановка обновления {name}', 'status')
                 return
             except RecursionError:
                 Stamp('Recursion error happened', 'e')
-                StatusSender(f'🔴 Ошибка РЕКУРСИИ при обновлении {name}', True)
+                IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {name}', 'status', True)
                 return
             except Exception as e:
                 Stamp(f'Error {e} happened', 'e')
                 Stamp(traceback.format_exc(), 'e')
-                StatusSender(f'🔴 Ошибка при обновлении {name}', True)
+                IndependentSender(f'🔴 Ошибка при обновлении {name}', 'status', True)
                 return
         return Wrapper
     return Decorator
 
 
-def StatusSender(msg: str, was_error: bool):
-    Stamp('Trying to send notifications to all users', 'i')
+def IndependentSender(msg: Union[str, list[str]], name: str, important: bool = False):
+    Stamp('Trying to send notifications to numerous users', 'i')
     config, sections = ParseConfig('bot')
     token = config[sections[int(DEBUG_MODE)]]['Token']
-    users_all = ReadLinesFromFile(PATH_DB + 'status_all.txt')
-    for user in users_all:
-        SendTelegramNotify(msg, token, int(user))
-    users_some = ReadLinesFromFile(PATH_DB + 'status_some.txt')
-    if was_error:
-        for user in users_some:
-            SendTelegramNotify(msg, token, int(user))
+    file_names = [name + '.txt', name + '_important.txt'] if important else [name + '.txt']
+    for file in file_names:
+        for user in ReadLinesFromFile(PATH_DB + file):
+            if isinstance(msg, str):
+                SendTelegramNotify(msg, token, int(user))
+            elif msg:
+                for m in msg:
+                    SendTelegramNotify(m, token, int(user))
+            else:
+                SendTelegramNotify('▪️Нет изменений/пустое сообщение', token, int(user))
 
 
 def SendTelegramNotify(msg: str, token: str, user: int) -> None:

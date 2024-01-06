@@ -2,7 +2,7 @@ from bot.checker.source import *
 
 
 @Inspector(NAMES[PATH[-1]])
-def PrepareChecker() -> list:
+def Main() -> None:
     config, sections = ParseConfig(PATH[-2] + '/' + PATH[-1])
     service = BuildService()
     list_of_differences = []
@@ -14,7 +14,10 @@ def PrepareChecker() -> list:
         UploadData(data, heading, sheet_id, service, row)
         row, new = CreateDict(heading, sheet_id, service)
         list_of_differences.append(Check(old, new, heading))
-    return PrepareMessages(list_of_differences)
+    msg = PrepareMessages(list_of_differences)
+    IndependentSender(msg, 'checker')
+    if msg:
+        IndependentSender(msg, 'checker', True)
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str, typology: str) -> (str, str):
@@ -99,3 +102,7 @@ def ProcessDataPackage(raw: list) -> [list, list, list]:
                 case 'time':
                     list_of_time.append(str(datetime.now().strftime('%m-%d %H:%M')))
     return [list_of_time, list_of_articles, list_of_quantities]
+
+
+if __name__ == '__main__':
+    Main()

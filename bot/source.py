@@ -5,8 +5,6 @@ from bot.report.main import *
 NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]
 config, sections = ParseConfig(NAME)
 bot = telebot.TeleBot(config[sections[int(DEBUG_MODE)]]['Token'])
-TIME_CHECKER = '00:00'
-TIME_REPORT = '17:05:00'
 REJECT = '❌ Не получать уведомления'
 ACCEPT = '✅ Получать все уведомления'
 SOME_CHECKER = '✔️ Получать только непустые уведомления'
