@@ -27,7 +27,7 @@ def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 
         Stamp(f'Check passed: starting {back_name}', 's')
         SendMessage(message.from_user.id, f'🟢 Процесс {message.text} запущен по запросу')
         CallbackStart(message)
-        thread = Thread(target=subprocess.run, args=(['python3', '-m', back_name + '.' + module],), kwargs={'check': False})
+        thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
         thread.start()
         while thread.is_alive():
             time.sleep(1)

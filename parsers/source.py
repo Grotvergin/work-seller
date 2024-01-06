@@ -94,6 +94,7 @@ PARAMS = {
     'sort': 'popular',
     'spp': '28',
     'suppressSpellcheck': 'false',
+    'uclusters': '1'
 }
 
 HEADERS = {

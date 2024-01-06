@@ -8,9 +8,18 @@ LONG_SLEEP = 60
 PORTION = 100
 BEGIN = '2023-01-01'
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
+TYPES_AND_NAMES = {
+    4: 'в каталоге',
+    5: 'в карточке товара',
+    6: 'в поиске',
+    7: 'в рекомендациях на главной странице',
+    8: 'автоматическая',
+    9: 'поиск + каталог'
+}
 COLUMNS = {'advertId': 'SPEC',
            'date': 'SPEC',
            'appType': 'SPEC',
+           'companyType': 'SPEC',
            'nmId': None,
            'name': None,
            'views': None,

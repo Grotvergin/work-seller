@@ -26,13 +26,13 @@ def CheckCurMonth(cur_date: str) -> bool:
     return False
 
 
-def PrepareCampaigns(token: str) -> list:
+def PrepareCampaigns(token: str) -> dict:
     raw = GetData(URL_CAMPAIGNS, token)
-    list_of_campaigns = []
+    dict_of_campaigns = {}
     for i in range(SmartLen(raw['adverts'])):
         for j in range(SmartLen(raw['adverts'][i]['advert_list'])):
-            list_of_campaigns.append(raw['adverts'][i]['advert_list'][j]['advertId'])
-    return list_of_campaigns
+            dict_of_campaigns[raw['adverts'][i]['advert_list'][j]['advertId']] = raw['adverts'][i]['type']
+    return dict_of_campaigns
 
 
 @ControlRecursion
@@ -62,13 +62,13 @@ def GetData(url: str, token:str, body: list = None) -> dict:
     return raw
 
 
-def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
+def ProcessData(raw: dict, sheet_name: str, token: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
     row_all = 2
     row_month = 2
     Stamp(f'For sheet {sheet_name} found {SmartLen(raw)} companies', 'i')
     for i in range(0, SmartLen(raw), PORTION):
         Stamp(f'Processing {PORTION} campaigns from {i} out of {SmartLen(raw)}', 'i')
-        portion_of_campaigns = raw[i:i + PORTION]
+        portion_of_campaigns = list(raw.keys())[i:i + PORTION]
         list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
         data = GetData(URL_STAT, token, list_for_request)
         list_of_all = []
@@ -88,6 +88,8 @@ def ProcessData(raw: list, sheet_name: str, token: str, sheet_id: str, service: 
                                     one_row.append(str(data[t]['days'][j]['date'])[:10])
                                 elif key == 'appType':
                                     one_row.append(str(data[t]['days'][j]['apps'][k][key]))
+                                elif key == 'companyType':
+                                    one_row.append(str(TYPES_AND_NAMES[int(raw[data[t]['advertId']])]))
                                 else:
                                     one_row.append(value.replace('.', ','))
                             except KeyError:
