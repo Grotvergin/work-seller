@@ -40,7 +40,7 @@ YESTERDAY = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
-DEBUG_MODE = True
+DEBUG_MODE = False
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
     'top': 'Top V Top 🔝',
