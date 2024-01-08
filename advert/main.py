@@ -5,13 +5,28 @@ from advert.source import *
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
+    threads = []
     for heading in sections:
-        Stamp(f'Processing {heading}', 'b')
+        Sleep(THR_DELTA, 0.5)
+        thread = Thread(target=ParallelThreads, args=(config,service,heading))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        thread.join()
+
+
+def ParallelThreads(config: ConfigParser, service: googleapiclient.discovery.Resource, heading: str):
+    with stamp_lock:
+        Stamp(f'Opened thread for {heading}', 'b')
+    with parse_lock:
         token, sheet_id = ParseCurrentHeading(config, heading)
+    with upload_lock:
         CleanSheet(len(COLUMNS), heading, sheet_id, service)
         CleanSheet(len(COLUMNS), PREFIX_MONTH + heading, sheet_id, service)
-        campaigns = PrepareCampaigns(token)
-        ProcessData(campaigns, heading, token, sheet_id, service)
+    campaigns = PrepareCampaigns(token)
+    ProcessData(campaigns, heading, token, sheet_id, service)
+    with stamp_lock:
+        Stamp(f'Closed thread for {heading}', 'b')
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
@@ -45,7 +60,7 @@ def GetData(url: str, token:str, body: list = None) -> dict:
             response = requests.post(url, headers={'Authorization': token}, data=json.dumps(body))
     except requests.ConnectionError:
         Stamp(f'Connection on {url}', 'e')
-        Sleep(LONG_SLEEP)
+        Sleep(SLEEP)
         raw = GetData(url, token, body)
     else:
         if str(response.status_code)[0] == '2':
@@ -57,7 +72,7 @@ def GetData(url: str, token:str, body: list = None) -> dict:
                 raw = {}
         else:
             Stamp(f'Status = {response.status_code} on {url}', 'e')
-            Sleep(LONG_SLEEP)
+            Sleep(SLEEP)
             raw = GetData(url, token, body)
     return raw
 
@@ -65,9 +80,11 @@ def GetData(url: str, token:str, body: list = None) -> dict:
 def ProcessData(raw: dict, sheet_name: str, token: str, sheet_id: str, service: googleapiclient.discovery.Resource) -> None:
     row_all = 2
     row_month = 2
-    Stamp(f'For sheet {sheet_name} found {SmartLen(raw)} companies', 'i')
+    with stamp_lock:
+        Stamp(f'For sheet {sheet_name} found {SmartLen(raw)} companies', 'i')
     for i in range(0, SmartLen(raw), PORTION):
-        Stamp(f'Processing {PORTION} campaigns from {i} out of {SmartLen(raw)}', 'i')
+        with stamp_lock:
+            Stamp(f'Processing {PORTION} campaigns from {i} out of {SmartLen(raw)}', 'i')
         portion_of_campaigns = list(raw.keys())[i:i + PORTION]
         list_for_request = [{'id': campaign, 'interval': {'begin': BEGIN, 'end': TODAY}} for campaign in portion_of_campaigns]
         data = GetData(URL_STAT, token, list_for_request)
@@ -97,12 +114,16 @@ def ProcessData(raw: dict, sheet_name: str, token: str, sheet_id: str, service: 
                         list_of_all.append(one_row)
                         if CheckCurMonth(one_row[1]):
                             list_of_month.append(one_row)
-        UploadData(list_of_all, sheet_name, sheet_id, service, row_all)
-        UploadData(list_of_month, PREFIX_MONTH + sheet_name, sheet_id, service, row_month)
+        with upload_lock:
+            UploadData(list_of_all, sheet_name, sheet_id, service, row_all)
+            UploadData(list_of_month, PREFIX_MONTH + sheet_name, sheet_id, service, row_month)
         row_all += len(list_of_all)
         row_month += len(list_of_month)
-        Sleep(SHORT_SLEEP)
+        Sleep(SLEEP)
 
 
 if __name__ == '__main__':
+    upload_lock = Lock()
+    stamp_lock = Lock()
+    parse_lock = Lock()
     Main()

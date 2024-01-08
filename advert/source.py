@@ -3,8 +3,8 @@ from common import *
 
 URL_CAMPAIGNS = 'https://advert-api.wb.ru/adv/v1/promotion/count'
 URL_STAT = 'https://advert-api.wb.ru/adv/v1/fullstats'
-SHORT_SLEEP = 60
-LONG_SLEEP = 60
+SLEEP = 60
+THR_DELTA = 15
 PORTION = 100
 BEGIN = '2023-01-01'
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
