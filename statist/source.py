@@ -2,8 +2,7 @@ from common import *
 
 
 PERC_COMM = 0.022249
-LONG_SLEEP = 120
-SHORT_SLEEP = 60
+SLEEP = 70
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 DATE_FROM = '2023-06-06'
 DATE_X = '2023-11-27'

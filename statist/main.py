@@ -5,17 +5,26 @@ from statist.source import *
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
+    for sheet_name in SHEETS.keys():
+        Body(config, service, sections[:4], sheet_name)
+        Body(config, service, sections[4:], sheet_name, PREFIX_MONTH)
+
+
+def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str, period: str = None):
+    Stamp(f'Processing sheet {sheet_name} for period {period}', 'b')
+    start = time.time()
     for heading in sections:
-        Stamp(f'Processing {heading}', 'b')
-        token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading)
-        for sheet_name in SHEETS.keys():
-            CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
-            data = GetData(SHEETS[sheet_name]['URL'][0], token, date_from, date_to)
-            if sheet_name == 'Realisations':
-                data = SortByRRD_ID(data)
-            data = ProcessData(Normalize(data), sheet_name)
-            UploadData(data, sheet_name, sheet_id, service)
-            Sleep(SHORT_SLEEP)
+        token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
+        CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
+        data = GetData(SHEETS[sheet_name]['URL'][0], token, date_from, date_to)
+        data = SortByRRD_ID(data) if sheet_name == 'Realisations' else data
+        data = ProcessData(Normalize(data), sheet_name)
+        UploadData(data, sheet_name, sheet_id, service)
+    elapsed = time.time() - start
+    if elapsed < SLEEP:
+        Sleep(SLEEP - elapsed)
+    else:
+        Stamp(f'No extra sleep needed, elapsed = {int(elapsed)}', 'l')
 
 
 @ControlRecursion
@@ -25,7 +34,7 @@ def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
         response = requests.get(url, headers={'Authorization': token}, params={'dateFrom': date_from, 'dateTo': date_to})
     except requests.ConnectionError:
         Stamp(f'On connection {url}', 'e')
-        Sleep(LONG_SLEEP)
+        Sleep(SLEEP)
         raw = GetData(url, token, date_from, date_to)
     else:
         if str(response.status_code)[0] == '2':
@@ -37,19 +46,17 @@ def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
                 raw = []
         else:
             Stamp(f'Status = {response.status_code} on {url}', 'e')
-            Sleep(LONG_SLEEP)
+            Sleep(SLEEP)
             raw = GetData(url, token, date_from, date_to)
     return raw
 
 
-def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str, str, str):
-    token = config[heading]['Token']
-    sheet_id = config[heading]['SheetID']
+def ParseCurrentHeading(config: ConfigParser, heading: str, period: str = None) -> (str, str, str, str):
     date_to = TODAY
-    if heading[0:5] == PREFIX_MONTH:
-        date_from = START_OF_MONTH
-    else:
-        date_from = DATE_FROM
+    token_key = 'Token' + heading[5:] if period else 'Token' + heading
+    token = config['DEFAULT'][token_key]
+    sheet_id = config[heading]['SheetID']
+    date_from = START_OF_MONTH if period else DATE_FROM
     return token, date_from, date_to, sheet_id
 
 
