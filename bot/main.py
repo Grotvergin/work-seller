@@ -12,19 +12,12 @@ def Main() -> None:
 
 def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main') -> None:
     Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
-    if not AddToDatabase(back_name, PATH_DB + 'active.txt', True):
-        Stamp(f'Check passed: starting {back_name} by user request', 's')
-        SendMessage(message.from_user.id, f'🟢 Процесс {message.text} запущен по запросу')
-        CallbackStart(message)
-        thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
-        thread.start()
-        while thread.is_alive():
-            time.sleep(1)
-        RemoveFromDatabase(back_name, PATH_DB + 'active.txt')
-    else:
-        Stamp(f'Check failed: rejecting starting of {back_name}', 'w')
-        SendMessage(message.from_user.id, f'🔴 Процесс {message.text} уже запущен, либо вы достигли предела в {MAX_PROCESSES} процесса...')
-        CallbackStart(message)
+    SendMessage(message.from_user.id, f'🟡 Запускаю процесс {message.text}...')
+    CallbackStart(message)
+    thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
+    thread.start()
+    while thread.is_alive():
+        time.sleep(1)
 
 
 def CallbackStart(message: telebot.types.Message) -> None:

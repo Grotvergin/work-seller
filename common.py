@@ -70,10 +70,10 @@ def Inspector(name: str) -> Callable[..., Any]:
         @wraps(func)
         def Wrapper(*args, **kwargs):
             if not AddToDatabase(name, PATH_DB + 'active.txt', True):
-                Stamp(f'Check passed: starting {name} by user request', 's')
+                Stamp(f'Check passed: starting {name}', 's')
             else:
-                IndependentSender(f'🟡 Повышенная нагрузка на сервер из-за запланированного запуска {NAMES[name]}', 'status')
-                Stamp(f'Check failed: already more processes than {MAX_PROCESSES}. Running {name} anyway', 'w')
+                IndependentSender(f'🔴 Процесс {NAMES[name]} уже запущен, либо достигнут предел в {MAX_PROCESSES} процесса...', 'status', True)
+                Stamp(f'Check failed: rejecting starting of {name}', 'w')
             result = None
             try:
                 result = func(*args, **kwargs)
@@ -105,8 +105,7 @@ def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
                 found = True
                 break
     if not found:
-        lines = ReadLinesFromFile(path)
-        if len_check and SmartLen(lines) >= MAX_PROCESSES:
+        if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
             found = True
         else:
             with open(Path.cwd() / path, 'a') as f:
