@@ -1,7 +1,7 @@
 from bot.checker.source import *
 
 
-@Inspector(NAMES[PATH[-1]])
+@Inspector(PATH[-1])
 def Main() -> None:
     config, sections = ParseConfig(PATH[-2] + '/' + PATH[-1])
     service = BuildService()

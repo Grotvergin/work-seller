@@ -1,7 +1,7 @@
 from funnel.source import *
 
 
-@Inspector(NAMES[NAME])
+@Inspector(NAME)
 def Main():
     config, sections = ParseConfig(NAME)
     service = BuildService()

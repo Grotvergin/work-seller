@@ -1,7 +1,7 @@
 from advert.source import *
 
 
-@Inspector(NAMES[NAME])
+@Inspector(NAME)
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()

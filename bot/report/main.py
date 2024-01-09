@@ -1,7 +1,7 @@
 from bot.report.source import *
 
 
-@Inspector(NAMES[PATH[-1]])
+@Inspector(PATH[-1])
 def Main() -> None:
     msg = PrepareReport(YESTERDAY[8:10])
     IndependentSender(f'🟢 Отображаю отчёт за {YESTERDAY}', 'report')

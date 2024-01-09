@@ -41,6 +41,7 @@ MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
 DEBUG_MODE = False
+MAX_PROCESSES = 2
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
     'top': 'Top V Top 🔝',
@@ -68,26 +69,65 @@ def Inspector(name: str) -> Callable[..., Any]:
     def Decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
         def Wrapper(*args, **kwargs):
+            if not AddToDatabase(name, PATH_DB + 'active.txt', True):
+                Stamp(f'Check passed: starting {name} by user request', 's')
+            else:
+                IndependentSender(f'🟡 Повышенная нагрузка на сервер из-за запланированного запуска {NAMES[name]}', 'status')
+                Stamp(f'Check failed: already more processes than {MAX_PROCESSES}. Running {name} anyway', 'w')
+            result = None
             try:
                 result = func(*args, **kwargs)
                 Stamp('All data uploaded successfully', 'b')
-                IndependentSender(f'🟢 Успешное обновление {name}', 'status')
-                return result
+                IndependentSender(f'🟢 Успешное обновление {NAMES[name]}', 'status')
             except KeyboardInterrupt:
                 Stamp('Keyboard interruption', 'w')
-                IndependentSender(f'🟡 Ручная приостановка обновления {name}', 'status')
-                return
+                IndependentSender(f'🟡 Ручная приостановка обновления {NAMES[name]}', 'status')
             except RecursionError:
-                Stamp('Recursion error happened', 'e')
-                IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {name}', 'status', True)
-                return
+                Stamp('On recursion', 'e')
+                IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {NAMES[name]}', 'status', True)
             except Exception as e:
-                Stamp(f'Error {e} happened', 'e')
+                Stamp(f'The following happened:\n{e}', 'e')
                 Stamp(traceback.format_exc(), 'e')
-                IndependentSender(f'🔴 Ошибка при обновлении {name}', 'status', True)
-                return
+                IndependentSender(f'🔴 Ошибка при обновлении {NAMES[name]}', 'status', True)
+            finally:
+                RemoveFromDatabase(name, PATH_DB + 'active.txt')
+                return result
         return Wrapper
     return Decorator
+
+
+def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
+    Stamp(f'Adding note {note} to DB {path}', 'i')
+    found = False
+    with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.strip() == note:
+                found = True
+                break
+    if not found:
+        lines = ReadLinesFromFile(path)
+        if len_check and SmartLen(lines) >= MAX_PROCESSES:
+            found = True
+        else:
+            with open(Path.cwd() / path, 'a') as f:
+                f.write(note + '\n')
+    return found
+
+
+def RemoveFromDatabase(note: str, path: str) -> bool:
+    Stamp(f'Removing note {note} from DB {path}', 'i')
+    found = False
+    lines = ReadLinesFromFile(path)
+    for line in lines:
+        if line.strip() == note:
+            found = True
+            break
+    if found:
+        with open(Path.cwd() / path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.strip() != note:
+                    f.write(line)
+    return found
 
 
 def IndependentSender(msg: Union[str, list[str]], name: str, important: bool = False):

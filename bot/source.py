@@ -13,4 +13,3 @@ CHOOSE = '❔ Сделайте выбор:'
 MANAGE_SERVICE = 'Обновить сервис 📊'
 MANAGE_NOTIFY = 'Управление уведомлениями 🔔'
 UNKNOWN = '🔴 Неизвестная опция...'
-MAX_PROCESSES = 1

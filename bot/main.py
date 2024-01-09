@@ -13,7 +13,7 @@ def Main() -> None:
 def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main') -> None:
     Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
     if not AddToDatabase(back_name, PATH_DB + 'active.txt', True):
-        Stamp(f'Check passed: starting {back_name}', 's')
+        Stamp(f'Check passed: starting {back_name} by user request', 's')
         SendMessage(message.from_user.id, f'🟢 Процесс {message.text} запущен по запросу')
         CallbackStart(message)
         thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
@@ -171,40 +171,6 @@ def CallbackReport(message: telebot.types.Message) -> None:
         SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
         SendMessage(user, PrepareReport(body))
     CallbackStart(message)
-
-
-def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
-    Stamp(f'Adding note {note} to DB {path}', 'i')
-    found = False
-    with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
-        for line in f:
-            if line.strip() == note:
-                found = True
-                break
-    if not found:
-        lines = ReadLinesFromFile(path)
-        if len_check and SmartLen(lines) >= MAX_PROCESSES:
-            found = True
-        else:
-            with open(Path.cwd() / path, 'a') as f:
-                f.write(note + '\n')
-    return found
-
-
-def RemoveFromDatabase(note: str, path: str) -> bool:
-    Stamp(f'Removing note {note} from DB {path}', 'i')
-    found = False
-    lines = ReadLinesFromFile(path)
-    for line in lines:
-        if line.strip() == note:
-            found = True
-            break
-    if found:
-        with open(Path.cwd() / path, 'w', encoding='utf-8') as f:
-            for line in lines:
-                if line.strip() != note:
-                    f.write(line)
-    return found
 
 
 def SendMessage(user: int, msg: Union[str, list[str]]) -> None:
