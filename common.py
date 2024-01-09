@@ -69,29 +69,29 @@ def Inspector(name: str) -> Callable[..., Any]:
     def Decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
         def Wrapper(*args, **kwargs):
-            if not AddToDatabase(name, PATH_DB + 'active.txt', True):
-                Stamp(f'Check passed: starting {name}', 's')
-            else:
+            if AddToDatabase(name, PATH_DB + 'active.txt', True):
                 IndependentSender(f'🔴 Процесс {NAMES[name]} уже запущен, либо достигнут предел в {MAX_PROCESSES} процесса...', 'status', True)
                 Stamp(f'Check failed: rejecting starting of {name}', 'w')
-            result = None
-            try:
-                result = func(*args, **kwargs)
-                Stamp('All data uploaded successfully', 'b')
-                IndependentSender(f'🟢 Успешное обновление {NAMES[name]}', 'status')
-            except KeyboardInterrupt:
-                Stamp('Keyboard interruption', 'w')
-                IndependentSender(f'🟡 Ручная приостановка обновления {NAMES[name]}', 'status')
-            except RecursionError:
-                Stamp('On recursion', 'e')
-                IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {NAMES[name]}', 'status', True)
-            except Exception as e:
-                Stamp(f'The following happened:\n{e}', 'e')
-                Stamp(traceback.format_exc(), 'e')
-                IndependentSender(f'🔴 Ошибка при обновлении {NAMES[name]}', 'status', True)
-            finally:
-                RemoveFromDatabase(name, PATH_DB + 'active.txt')
-                return result
+            else:
+                Stamp(f'Check passed: starting {name}', 's')
+                result = None
+                try:
+                    result = func(*args, **kwargs)
+                    Stamp('All data uploaded successfully', 'b')
+                    IndependentSender(f'🟢 Успешное обновление {NAMES[name]}', 'status')
+                except KeyboardInterrupt:
+                    Stamp('Keyboard interruption', 'w')
+                    IndependentSender(f'🟡 Ручная приостановка обновления {NAMES[name]}', 'status')
+                except RecursionError:
+                    Stamp('On recursion', 'e')
+                    IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {NAMES[name]}', 'status', True)
+                except Exception as e:
+                    Stamp(f'The following happened:\n{e}', 'e')
+                    Stamp(traceback.format_exc(), 'e')
+                    IndependentSender(f'🔴 Ошибка при обновлении {NAMES[name]}', 'status', True)
+                finally:
+                    RemoveFromDatabase(name, PATH_DB + 'active.txt')
+                    return result
         return Wrapper
     return Decorator
 
