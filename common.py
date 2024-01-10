@@ -129,6 +129,16 @@ def RemoveFromDatabase(note: str, path: str) -> bool:
     return found
 
 
+def GroupSender(msg: list[str], name: str):
+    Stamp('Trying to send notifications to numerous groups', 'i')
+    config, sections = ParseConfig('bot')
+    token = config[sections[int(DEBUG_MODE)]]['Token']
+    groups = ReadLinesFromFile(PATH_DB + name + '.txt')
+    for i in range(SmartLen(groups)):
+        SendTelegramNotify(f'🟢 Отображаю отчёт за {YESTERDAY}', token, groups[i])
+        SendTelegramNotify(msg[i], token, groups[i])
+
+
 def IndependentSender(msg: Union[str, list[str]], name: str, important: bool = False):
     Stamp('Trying to send notifications to numerous users', 'i')
     config, sections = ParseConfig('bot')
