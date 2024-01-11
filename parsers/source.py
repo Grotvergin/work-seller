@@ -1,10 +1,11 @@
 from common import *
 
+
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
 PREFIX = 'NoLog'
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
-SHORT_SLEEP = 2
+SHORT_SLEEP = 1
 LONG_SLEEP = 45
 PAGES_QUANTITY = 10
 
@@ -12,7 +13,11 @@ PAGES_QUANTITY = 10
 def ParseCurrentHeading(config: ConfigParser, heading: str, gap_name: str) -> (str, str):
     column = config[heading]['Column']
     sheet_id = config['DEFAULT'][gap_name + 'SheetID']
-    return column, sheet_id
+    proxies = {
+        'http': f'http://{config['DEFAULT']['Login']}:{config['DEFAULT']['Password']}@{config['DEFAULT']['IP/Port']}',
+        'https': f'http://{config['DEFAULT']['Login']}:{config['DEFAULT']['Password']}@{config['DEFAULT']['IP/Port']}'
+    }
+    return column, sheet_id, proxies
 
 
 def FilterByBarcode(list_for_filter: list, barcodes: list) -> list:
@@ -24,11 +29,16 @@ def FilterByBarcode(list_for_filter: list, barcodes: list) -> list:
 
 
 @ControlRecursion
-def GetData() -> dict:
+def GetData(proxies: dict = None) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
     HEADERS['User-Agent'] = random.choice(USER_AGENTS)
     try:
-        response = requests.get(URL, params=PARAMS, headers=HEADERS)
+        if random.choice([True, False]):
+            Stamp('Using proxy', 'i')
+            response = requests.get(URL, params=PARAMS, headers=HEADERS, proxies=proxies)
+        else:
+            Stamp('Using normal ip', 'i')
+            response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
         Stamp(f'Connection on {URL}', 'e')
         Sleep(LONG_SLEEP)

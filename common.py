@@ -12,8 +12,10 @@ from datetime import datetime, timedelta, date
 from functools import wraps
 from pathlib import Path
 from threading import Thread, Lock
-from typing import Union, Callable, Any, List, Dict
+from html.parser import HTMLParser
+from typing import Union, Callable, Any, List, Dict, Generator
 import traceback
+import re
 
 # External
 import googleapiclient.discovery
@@ -24,6 +26,13 @@ from colorama import Fore, Style, init
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import chromedriver_autoinstaller
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+import undetected_chromedriver
+
 
 init()
 random.seed()
@@ -55,7 +64,8 @@ NAMES = {
     'report': 'Отчёт по дате 📈',
     'analytics': 'OZON Аналитика 🔎',
     'advert': 'WB Реклама 💸',
-    'status': 'Статус обновлений 🆗'
+    'status': 'Статус обновлений 🆗',
+    'selozon': 'OZON Парсинг кабинета 🖱'
 }
 
 
