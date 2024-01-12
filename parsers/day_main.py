@@ -21,8 +21,8 @@ def Main():
                 PARAMS['query'] = word
                 raw = GetData(proxies)
                 advertise, real = ProcessData(raw, word, page)
-                real_pages.append(FilterByBarcode(real, barcodes))
-                advertise_pages.append(FilterByBarcode(advertise, barcodes))
+                real_pages += FilterByBarcode(real, barcodes)
+                advertise_pages += FilterByBarcode(advertise, barcodes)
                 Sleep(SHORT_SLEEP)
             UploadData(advertise_pages, heading, sheet_id, service, row)
             UploadData(real_pages, PREFIX + heading, sheet_id, service, row)
