@@ -298,8 +298,13 @@ def BuildService() -> googleapiclient.discovery.Resource:
 def Sleep(timer: int, ratio: float = 0.0) -> None:
     rand_time = random.randint(int((1 - ratio) * timer), int((1 + ratio) * timer))
     Stamp(f'Sleeping {rand_time} seconds', 'l')
-    for _ in range(rand_time):
-        time.sleep(1)
+    time.sleep(rand_time)
+
+
+def AccurateSleep(timer: float, ratio: float = 0.0) -> None:
+    rand_time = round(random.uniform((1 - ratio) * timer, (1 + ratio) * timer), 2)
+    Stamp(f'Sleeping {rand_time} seconds', 'l')
+    time.sleep(rand_time)
 
 
 def ParseConfig(direct: str = '') -> (ConfigParser, list):

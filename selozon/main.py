@@ -22,35 +22,63 @@ def Main() -> None:
     KillDriver(driver)
 
 
-def GetData(driver: undetected_chromedriver.Chrome, cab_num: int, cities: list, words: list) -> Generator:
-    Sleep(SLEEP_CLICK, 0.5)
+def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
+    notification = driver.find_elements(By.XPATH, '//*[@id="tippy-18"]/div/div[1]/div/div/div[2]/button/div')
+    if SmartLen(notification) > 0:
+        Stamp('Clicking the notification', 'i')
+        notification[0].click()
+    else:
+        Stamp('Notification is absent', 'i')
+
+
+def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
+    Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
-    Sleep(SLEEP_CLICK, 0.5)
+    AccurateSleep(SLEEP_CLICK, 0.4)
     driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
-    Sleep(SLEEP_CLICK, 0.5)
+    AccurateSleep(SLEEP_CLICK, 0.5)
+    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@placeholder='Например, iphone 12 pro']")))
+    Stamp('Input name appeared after choosing new cabinet', 's')
+    AccurateSleep(SLEEP_CLICK, 0.6)
+
+
+def InsertValues(driver: undetected_chromedriver.Chrome, value: str, XPath: str) -> None:
+    Stamp(f'Trying to insert value <<{value}>>', 'i')
+    element = driver.find_element(By.XPATH, XPath)
+    element.clear()
+    element.send_keys(value)
+    AccurateSleep(SLEEP_CLICK, 0.6)
+
+
+def ChooseFirstCity(driver: undetected_chromedriver.Chrome) -> None:
+    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div")))
+    driver.find_element(By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div").click()
+    AccurateSleep(SLEEP_CLICK, 0.5)
+
+
+def RequestTable(driver: undetected_chromedriver.Chrome) -> list:
+    driver.find_element(By.XPATH, "//span[contains(., 'Показать результат')]").click()
+    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@value='']")))
+    ClickNotification(driver)
+    Stamp('Table appeared', 's')
+    AccurateSleep(SLEEP_CLICK, 0.5)
+    driver.find_element(By.XPATH, "//input[@value='']").click()
+    AccurateSleep(SLEEP_CLICK, 0.5)
+    result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
+    AccurateSleep(SLEEP_CLICK, 0.5)
+    table = ParseHtmlTable(result.get_attribute('innerHTML'))
+    AccurateSleep(SLEEP_CLICK, 0.5)
+    return table
+
+
+def GetData(driver: undetected_chromedriver.Chrome, cab_num: int, cities: list, words: list) -> Generator:
+    ChooseCabinet(driver, cab_num)
     for word in words:
+        InsertValues(driver, word, "//input[@placeholder='Например, iphone 12 pro']")
         for city in cities:
-            Stamp(f'Processing word <<{word}>> city <<{city}>>', 'i')
-            Sleep(SLEEP_CLICK, 0.5)
-            pole_for_word = driver.find_element(By.XPATH, "//input[@placeholder='Например, iphone 12 pro']")
-            pole_for_word.clear()
-            pole_for_word.send_keys(word)
-            Sleep(SLEEP_CLICK, 0.5)
-            driver.find_element(By.XPATH, "//input[@placeholder='Введите любой город / область']").send_keys(city)
-            Sleep(SLEEP_CLICK, 0.5)
-            driver.find_element(By.XPATH,"//div[@class='tippy-content']/div/div/div/div/div/div/div/div").click()
-            Sleep(SLEEP_CLICK, 0.5)
-            driver.find_element(By.XPATH, "//span[contains(., 'Показать результат')]").click()
-            wait = WebDriverWait(driver, MAX_TIME_TABLE)
-            wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@value='']")))
-            Stamp('Table appeared', 's')
-            Sleep(SLEEP_CLICK, 0.5)
-            driver.find_element(By.XPATH, "//input[@value='']").click()
-            Sleep(SLEEP_CLICK, 0.5)
-            result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
-            Sleep(SLEEP_CLICK, 0.5)
-            table = parseHtmlTable(result.get_attribute('innerHTML'))
-            Sleep(SLEEP_CLICK, 0.5)
+            InsertValues(driver, city, "//input[@placeholder='Введите любой город / область']")
+            ChooseFirstCity(driver)
+            table = RequestTable(driver)
             yield ProcessData(table, word, city)
 
 
@@ -84,6 +112,7 @@ def CreateDriver() -> undetected_chromedriver.Chrome:
     chromedriver_autoinstaller.install()
     SuppressException(undetected_chromedriver)
     options = undetected_chromedriver.ChromeOptions()
+    options.add_argument('--headless')
     options.add_argument(r'--user-data-dir=C:\Users\Рома\AppData\Local\Google\Chrome\User Data')
     options.add_argument('--profile-directory=Profile 1')
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.888 YaBrowser/23.9.2.888 Yowser/2.5 Safari/537.36')
@@ -146,7 +175,7 @@ class MyHTMLParser(HTMLParser):
             self.stringData = self.stringData + data
 
 
-def parseHtmlTable(html):
+def ParseHtmlTable(html: str) -> List[List[str]]:
     parser = MyHTMLParser()
     parser.feed(html)
     return parser.fullList
