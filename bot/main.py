@@ -10,7 +10,7 @@ def Main() -> None:
             Stamp(traceback.format_exc(), 'e')
 
 
-def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main', flag: str = None) -> None:
+def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main', flag: str = '') -> None:
     Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
     SendMessage(message.from_user.id, f'🟡 Запускаю процесс {message.text}...')
     CallbackStart(message)
