@@ -49,15 +49,15 @@ YESTERDAY = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
-DEBUG_MODE = False
+DEBUG_MODE = True
 MAX_PROCESSES = 3
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
     'top': 'Top V Top 🔝',
     'statist': 'WB Статистика 📊',
     'prices': 'WB Цены 🏷',
-    'hour_main': 'WB Частый парсинг ⏭',
-    'day_main': 'WB Ежедневный парсинг ⏩',
+    'parsers-h': 'WB Частый парсинг ⏭',
+    'parsers-d': 'WB Ежедневный парсинг ⏩',
     'funnel': 'WB Аналитика 🔍',
     'discharge': 'OZON Выгрузка 🗂',
     'checker': 'Увеличение остатков ⚡️',
@@ -67,10 +67,6 @@ NAMES = {
     'status': 'Статус обновлений 🆗',
     'selozon': 'OZON Парсинг кабинета 🖱'
 }
-
-
-def InDict(key, dictionary: dict) -> bool:
-    return key in dictionary
 
 
 def ReadLinesFromFile(path: Union[str, Path]) -> list:

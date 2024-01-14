@@ -10,11 +10,11 @@ def Main() -> None:
             Stamp(traceback.format_exc(), 'e')
 
 
-def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main') -> None:
+def ProvideThread(back_name: str, message: telebot.types.Message, module: str = 'main', flag: str = None) -> None:
     Stamp(f'User {message.from_user.id} requested thread for {back_name}', 'i')
     SendMessage(message.from_user.id, f'🟡 Запускаю процесс {message.text}...')
     CallbackStart(message)
-    thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module],), kwargs={'check': False})
+    thread = Thread(target=subprocess.run, args=(['python', '-m', back_name + '.' + module, flag],), kwargs={'check': False})
     thread.start()
     while thread.is_alive():
         time.sleep(1)
@@ -32,7 +32,7 @@ def CallbackService(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
     service_names = [NAMES['advert'], NAMES['analytics'], NAMES['report'], NAMES['discharge'], NAMES['funnel'],
-                     NAMES['day_main'], NAMES['hour_main'], NAMES['prices'], NAMES['statist'], NAMES['top']]
+                     NAMES['parsers-d'], NAMES['parsers-h'], NAMES['prices'], NAMES['statist'], NAMES['top']]
     buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
     rows = [[buttons[i], buttons[i + 1]] for i in range(0, len(buttons), 2)]
     for row in rows:
@@ -46,10 +46,10 @@ def ChosenService(message: telebot.types.Message) -> None:
     if message.text == NAMES['report']:
         SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
         bot.register_next_step_handler(message, CallbackReport)
-    elif message.text == NAMES['hour_main']:
-        ProvideThread('parsers', message, 'hour_main')
-    elif message.text == NAMES['day_main']:
-        ProvideThread('parsers', message, 'day_main')
+    elif message.text == NAMES['parsers-h']:
+        ProvideThread('parsers', message, 'main', '-h')
+    elif message.text == NAMES['parsers-d']:
+        ProvideThread('parsers', message, 'main', '-d')
     elif message.text in NAMES.values():
         ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message)
     else:
