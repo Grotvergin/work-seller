@@ -69,6 +69,10 @@ NAMES = {
 }
 
 
+def InDict(key, dictionary: dict) -> bool:
+    return key in dictionary
+
+
 def ReadLinesFromFile(path: Union[str, Path]) -> list:
     with open(path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
