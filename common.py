@@ -49,7 +49,7 @@ YESTERDAY = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
-DEBUG_MODE = True
+DEBUG_MODE = False
 MAX_PROCESSES = 3
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
