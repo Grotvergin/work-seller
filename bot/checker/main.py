@@ -15,9 +15,7 @@ def Main() -> None:
         row, new = CreateDict(heading, sheet_id, service)
         list_of_differences.append(Check(old, new, heading))
     msg = PrepareMessages(list_of_differences)
-    IndependentSender(msg, 'checker')
-    if msg:
-        IndependentSender(msg, 'checker', True)
+    IndependentSender(msg, 'checker', True) if msg else IndependentSender(msg, 'checker')
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str, typology: str) -> (str, str):
