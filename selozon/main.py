@@ -9,65 +9,95 @@ def Main() -> None:
     sheet_id = config['DEFAULT']['SheetID']
     cities = GetColumn('A', service, 'Cities', sheet_id)
     driver.get('https://seller.ozon.ru/app/analytics/search-results/explainer')
+    row_all = 2
+    CleanSheet(len(COLUMNS), NAME_ALL, sheet_id, service)
     for heading in sections:
         Stamp(f'Processing {heading}', 'b')
-        row = 2
+        row_heading = 2
         column = config[heading]['Column']
         CleanSheet(len(COLUMNS), heading, sheet_id, service)
         words = GetColumn(column, service, 'Words', sheet_id)
         cab_num = ord(column) - ord('A') + 2
         for dataset in GetData(driver, cab_num, cities, words):
-            UploadData(dataset, heading, sheet_id, service, row)
-            row += SmartLen(dataset)
+            UploadData(dataset, heading, sheet_id, service, row_heading)
+            UploadData(dataset, NAME_ALL, sheet_id, service, row_all)
+            row_heading += SmartLen(dataset)
+            row_all += SmartLen(dataset)
     KillDriver(driver)
 
 
+@ControlRecursion
 def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
-    notification = driver.find_elements(By.XPATH, '//*[@id="tippy-18"]/div/div[1]/div/div/div[2]/button/div')
-    if SmartLen(notification) > 0:
-        Stamp('Clicking the notification', 'i')
-        notification[0].click()
-    else:
-        Stamp('Notification is absent', 'i')
+    Stamp(f'Trying to click notification', 'i')
+    try:
+        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-18"]/div/div[1]/div/div/div[2]/button/div')
+        if SmartLen(notification) > 0:
+            Stamp('Clicking the notification', 'w')
+            notification[0].click()
+        else:
+            Stamp('Notification is absent', 'i')
+    except WebDriverException as e:
+        Stamp(f'Webdriver error during notification click: {e}', 'e')
+        ClickNotification(driver)
 
 
+@ControlRecursion
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
-    driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
-    AccurateSleep(SLEEP_CLICK, 0.4)
-    driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
-    AccurateSleep(SLEEP_CLICK, 0.5)
-    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@placeholder='Например, iphone 12 pro']")))
-    Stamp('Input name appeared after choosing new cabinet', 's')
-    AccurateSleep(SLEEP_CLICK, 0.6)
+    try:
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
+        AccurateSleep(SLEEP_CLICK, 0.4)
+        driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
+        AccurateSleep(SLEEP_CLICK, 0.5)
+        WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@placeholder='Например, iphone 12 pro']")))
+        Stamp('Input name appeared after choosing new cabinet', 's')
+        AccurateSleep(SLEEP_CLICK, 0.6)
+    except WebDriverException as e:
+        Stamp(f'Webdriver error during choosing cabinet: {e}', 'e')
+        ChooseCabinet(driver, cab_num)
 
 
+@ControlRecursion
 def InsertValues(driver: undetected_chromedriver.Chrome, value: str, XPath: str) -> None:
     Stamp(f'Trying to insert value <<{value}>>', 'i')
-    element = driver.find_element(By.XPATH, XPath)
-    element.clear()
-    element.send_keys(value)
-    AccurateSleep(SLEEP_CLICK, 0.6)
+    try:
+        element = driver.find_element(By.XPATH, XPath)
+        element.clear()
+        element.send_keys(value)
+        AccurateSleep(SLEEP_CLICK, 0.6)
+    except WebDriverException as e:
+        Stamp(f'Webdriver error during inserting values: {e}', 'e')
+        InsertValues(driver, value, XPath)
 
 
 def ChooseFirstCity(driver: undetected_chromedriver.Chrome) -> None:
-    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div")))
-    driver.find_element(By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div").click()
-    AccurateSleep(SLEEP_CLICK, 0.5)
+    Stamp('Trying to choose first city', 'i')
+    try:
+        WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div")))
+        driver.find_element(By.XPATH, "//div[@class='tippy-content']/div/div/div/div/div/div/div/div").click()
+        AccurateSleep(SLEEP_CLICK, 0.5)
+    except WebDriverException as e:
+        Stamp(f'Webdriver error during choosing the first city: {e}', 'e')
+        ChooseFirstCity(driver)
 
 
 def RequestTable(driver: undetected_chromedriver.Chrome) -> list:
-    driver.find_element(By.XPATH, "//span[contains(., 'Показать результат')]").click()
-    WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@value='']")))
-    ClickNotification(driver)
-    Stamp('Table appeared', 's')
-    AccurateSleep(SLEEP_CLICK, 0.5)
-    driver.find_element(By.XPATH, "//input[@value='']").click()
-    AccurateSleep(SLEEP_CLICK, 0.5)
-    result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
-    AccurateSleep(SLEEP_CLICK, 0.5)
-    table = ParseHtmlTable(result.get_attribute('innerHTML'))
-    AccurateSleep(SLEEP_CLICK, 0.5)
+    Stamp('Trying to request table', 'i')
+    try:
+        driver.find_element(By.XPATH, "//span[contains(., 'Показать результат')]").click()
+        WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@value='']")))
+        ClickNotification(driver)
+        Stamp('Table appeared', 's')
+        AccurateSleep(SLEEP_CLICK, 0.5)
+        driver.find_element(By.XPATH, "//input[@value='']").click()
+        AccurateSleep(SLEEP_CLICK, 0.5)
+        result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
+        AccurateSleep(SLEEP_CLICK, 0.5)
+        table = ParseHtmlTable(result.get_attribute('innerHTML'))
+        AccurateSleep(SLEEP_CLICK, 0.5)
+    except WebDriverException as e:
+        Stamp(f'Webdriver error during requesting the table: {e}', 'e')
+        table = RequestTable(driver)
     return table
 
 
