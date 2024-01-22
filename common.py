@@ -41,6 +41,7 @@ CREDS = service_account.Credentials.from_service_account_file('keys.json', scope
 MAX_ROW = 150000
 MAX_RECURSION = 15
 SLEEP_GOOGLE = 20
+SIZE_CHUNK = 5000
 START = time.time()
 START_OF_MONTH = datetime.now().strftime('%Y-%m') + '-01'
 TODAY = datetime.now().strftime('%Y-%m-%d')
@@ -92,7 +93,7 @@ def Inspector(name: str) -> Callable[..., Any]:
                     IndependentSender(f'🟢 Успешное обновление {NAMES[name]}', 'status')
                 except KeyboardInterrupt:
                     Stamp('Keyboard interruption', 'w')
-                    IndependentSender(f'🟡 Ручная приостановка обновления {NAMES[name]}', 'status')
+                    RemoveFromDatabase(name, PATH_DB + 'active.txt')
                 except RecursionError:
                     Stamp('On recursion', 'e')
                     IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {NAMES[name]}', 'status', True)
@@ -262,6 +263,12 @@ def PrepareEmpty(width: int, blank: int) -> list:
     return list_of_empty
 
 
+def LargeUpload(list_of_rows: list, sheet_name: str, sheet_id: str, service: googleapiclient.discovery.Resource, row: int = 2) -> None:
+    chunks = [list_of_rows[i:i + SIZE_CHUNK] for i in range(0, len(list_of_rows), SIZE_CHUNK)]
+    for i, chunk in enumerate(chunks):
+        UploadData(chunk, sheet_name, sheet_id, service, row + i * SIZE_CHUNK)
+
+
 @ControlRecursion
 def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service: googleapiclient.discovery.Resource, row: int = 2) -> None:
     Stamp(f'Trying to upload data to sheet {sheet_name}', 'i')
@@ -269,11 +276,10 @@ def UploadData(list_of_rows: list, sheet_name: str, sheet_id: str, service: goog
         width = SmartLen(list_of_rows[0])
     except IndexError:
         width = 0
-    body = {'values': list_of_rows}
     try:
         res = service.spreadsheets().values().update(spreadsheetId=sheet_id,
-                                                     range=f'{sheet_name}!A{row}:{COLUMN_INDEXES[width]}{row + len(list_of_rows)}',
-                                                     valueInputOption='USER_ENTERED', body=body).execute()
+                                                 range=f'{sheet_name}!A{row}:{COLUMN_INDEXES[width]}{row + len(list_of_rows)}',
+                                                 valueInputOption='USER_ENTERED', body={'values': list_of_rows}).execute()
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on uploading data to sheet {sheet_name}', 'e')
         Sleep(SLEEP_GOOGLE)

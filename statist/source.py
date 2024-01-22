@@ -4,30 +4,10 @@ from common import *
 PERC_COMM = 0.022249
 SLEEP = 70
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
-DATE_FROM = '2023-07-06'
-DATE_X = '2023-11-27'
+DATE_FROM = (datetime.now() - timedelta(days=120)).strftime('%Y-%m-%d')
 SHEETS = {
-    'Incomes': {
-        'URL': ['https://statistics-api.wildberries.ru/api/v1/supplier/incomes'],
-        'Columns': {
-            'incomeId': None,
-            'number': None,
-            'date': None,
-            'lastChangeDate': None,
-            'supplierArticle': None,
-            'techSize': None,
-            'barcode': None,
-            'quantity': None,
-            'totalPrice': None,
-            'dateClose': None,
-            'warehouseName': None,
-            'nmId': None,
-            'status': None
-        }
-    },
     'Realisations': {
-        'URL': ['https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
-                'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod'],
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod',
         'Columns': {
             'realizationreport_id': None,
             'suppliercontract_code': 'SPEC',
@@ -70,8 +50,26 @@ SHEETS = {
             'srid': 'SPEC'
         }
     },
+    'Incomes': {
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/incomes',
+        'Columns': {
+            'incomeId': None,
+            'number': None,
+            'date': None,
+            'lastChangeDate': None,
+            'supplierArticle': None,
+            'techSize': None,
+            'barcode': None,
+            'quantity': None,
+            'totalPrice': None,
+            'dateClose': None,
+            'warehouseName': None,
+            'nmId': None,
+            'status': None
+        }
+    },
     'Orders': {
-        'URL': ['https://statistics-api.wildberries.ru/api/v1/supplier/orders'],
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/orders',
         'Columns': {
             'srid': 'SPEC',
             'date': None,
@@ -96,7 +94,7 @@ SHEETS = {
         }
     },
     'Sales': {
-        'URL': ['https://statistics-api.wildberries.ru/api/v1/supplier/sales'],
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/sales',
         'Columns': {
             'number': '',
             'supplierArticle': None,
@@ -131,7 +129,7 @@ SHEETS = {
         }
     },
     'Warehouse': {
-        'URL': ['https://statistics-api.wildberries.ru/api/v1/supplier/stocks'],
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks',
         'Columns': {
             'lastChangeDate': None,
             'supplierArticle': None,

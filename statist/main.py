@@ -16,10 +16,10 @@ def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
     for heading in sections:
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
-        data = GetData(SHEETS[sheet_name]['URL'][0], token, date_from, date_to)
+        data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
         data = SortByRRD_ID(data) if sheet_name == 'Realisations' else data
         data = ProcessData(Normalize(data), sheet_name)
-        UploadData(data, sheet_name, sheet_id, service)
+        LargeUpload(data, sheet_name, sheet_id, service)
     elapsed = time.time() - start
     if elapsed < SLEEP:
         Sleep(SLEEP - elapsed)
