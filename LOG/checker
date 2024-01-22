@@ -1,0 +1,114 @@
+[01-23|00:00:02][INF] Adding note checker to DB /root/work-seller/bot/database/active.txt.
+[01-23|00:00:02][SUC] Check passed: starting checker.
+[01-23|00:00:02][INF] Trying to build service.
+[01-23|00:00:02][SUC] Built service successfully.
+[01-23|00:00:02][BOR] Processing Dishes.
+[01-23|00:00:02][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:02][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:02][INF] Start of processing data.
+[01-23|00:00:02][INF] Creating dictionary.
+[01-23|00:00:02][INF] Trying to get column A from sheet Dishes.
+[01-23|00:00:10][SUC] Found 2078 elements from column A sheet Dishes.
+[01-23|00:00:10][INF] Trying to get row 2079 from sheet Dishes.
+[01-23|00:00:12][SUC] Found 254 elements from row 2079 sheet Dishes.
+[01-23|00:00:12][INF] Trying to get row 2078 from sheet Dishes.
+[01-23|00:00:13][SUC] Found 254 elements from row 2078 sheet Dishes.
+[01-23|00:00:13][INF] Trying to upload data to sheet Dishes.
+[01-23|00:00:13][SUC] On uploading: 3 rows in range Dishes!A2080:HC2082.
+[01-23|00:00:13][INF] Creating dictionary.
+[01-23|00:00:13][INF] Trying to get column A from sheet Dishes.
+[01-23|00:00:14][SUC] Found 2081 elements from column A sheet Dishes.
+[01-23|00:00:14][INF] Trying to get row 2082 from sheet Dishes.
+[01-23|00:00:15][SUC] Found 211 elements from row 2082 sheet Dishes.
+[01-23|00:00:15][INF] Trying to get row 2081 from sheet Dishes.
+[01-23|00:00:16][SUC] Found 211 elements from row 2081 sheet Dishes.
+[01-23|00:00:16][INF] Checking differences for Dishes.
+[01-23|00:00:16][BOR] Processing Lighting.
+[01-23|00:00:16][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:16][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:16][INF] Start of processing data.
+[01-23|00:00:16][INF] Creating dictionary.
+[01-23|00:00:16][INF] Trying to get column A from sheet Lighting.
+[01-23|00:00:17][SUC] Found 2052 elements from column A sheet Lighting.
+[01-23|00:00:17][INF] Trying to get row 2053 from sheet Lighting.
+[01-23|00:00:17][SUC] Found 68 elements from row 2053 sheet Lighting.
+[01-23|00:00:17][INF] Trying to get row 2052 from sheet Lighting.
+[01-23|00:00:18][SUC] Found 68 elements from row 2052 sheet Lighting.
+[01-23|00:00:18][INF] Trying to upload data to sheet Lighting.
+[01-23|00:00:19][SUC] On uploading: 3 rows in range Lighting!A2054:BH2056.
+[01-23|00:00:19][INF] Creating dictionary.
+[01-23|00:00:19][INF] Trying to get column A from sheet Lighting.
+[01-23|00:00:19][SUC] Found 2055 elements from column A sheet Lighting.
+[01-23|00:00:19][INF] Trying to get row 2056 from sheet Lighting.
+[01-23|00:00:20][SUC] Found 60 elements from row 2056 sheet Lighting.
+[01-23|00:00:20][INF] Trying to get row 2055 from sheet Lighting.
+[01-23|00:00:20][SUC] Found 60 elements from row 2055 sheet Lighting.
+[01-23|00:00:20][INF] Checking differences for Lighting.
+[01-23|00:00:20][BOR] Processing Bathroom.
+[01-23|00:00:20][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:20][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:20][INF] Start of processing data.
+[01-23|00:00:20][INF] Creating dictionary.
+[01-23|00:00:20][INF] Trying to get column A from sheet Bathroom.
+[01-23|00:00:21][SUC] Found 2052 elements from column A sheet Bathroom.
+[01-23|00:00:21][INF] Trying to get row 2053 from sheet Bathroom.
+[01-23|00:00:21][SUC] Found 281 elements from row 2053 sheet Bathroom.
+[01-23|00:00:21][INF] Trying to get row 2052 from sheet Bathroom.
+[01-23|00:00:21][SUC] Found 281 elements from row 2052 sheet Bathroom.
+[01-23|00:00:21][INF] Trying to upload data to sheet Bathroom.
+[01-23|00:00:22][SUC] On uploading: 3 rows in range Bathroom!A2054:HY2056.
+[01-23|00:00:22][INF] Creating dictionary.
+[01-23|00:00:22][INF] Trying to get column A from sheet Bathroom.
+[01-23|00:00:23][SUC] Found 2055 elements from column A sheet Bathroom.
+[01-23|00:00:23][INF] Trying to get row 2056 from sheet Bathroom.
+[01-23|00:00:23][SUC] Found 233 elements from row 2056 sheet Bathroom.
+[01-23|00:00:23][INF] Trying to get row 2055 from sheet Bathroom.
+[01-23|00:00:24][SUC] Found 233 elements from row 2055 sheet Bathroom.
+[01-23|00:00:24][INF] Checking differences for Bathroom.
+[01-23|00:00:24][BOR] Processing Jewelry.
+[01-23|00:00:24][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:24][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-23|00:00:24][INF] Start of processing data.
+[01-23|00:00:24][INF] Creating dictionary.
+[01-23|00:00:24][INF] Trying to get column A from sheet Jewelry.
+[01-23|00:00:25][SUC] Found 2052 elements from column A sheet Jewelry.
+[01-23|00:00:25][INF] Trying to get row 2053 from sheet Jewelry.
+[01-23|00:00:25][SUC] Found 162 elements from row 2053 sheet Jewelry.
+[01-23|00:00:25][INF] Trying to get row 2052 from sheet Jewelry.
+[01-23|00:00:25][SUC] Found 162 elements from row 2052 sheet Jewelry.
+[01-23|00:00:25][INF] Trying to upload data to sheet Jewelry.
+[01-23|00:00:26][SUC] On uploading: 3 rows in range Jewelry!A2054:DK2056.
+[01-23|00:00:26][INF] Creating dictionary.
+[01-23|00:00:26][INF] Trying to get column A from sheet Jewelry.
+[01-23|00:00:27][SUC] Found 2055 elements from column A sheet Jewelry.
+[01-23|00:00:27][INF] Trying to get row 2056 from sheet Jewelry.
+[01-23|00:00:27][SUC] Found 115 elements from row 2056 sheet Jewelry.
+[01-23|00:00:27][INF] Trying to get row 2055 from sheet Jewelry.
+[01-23|00:00:28][SUC] Found 115 elements from row 2055 sheet Jewelry.
+[01-23|00:00:28][INF] Checking differences for Jewelry.
+[01-23|00:00:28][INF] Trying to send notifications to numerous users.
+[01-23|00:00:28][INF] Trying to send notification to user 386988582.
+[01-23|00:00:28][SUC] Status = 200 telegram notification.
+[01-23|00:00:28][INF] Trying to send notification to user 386988582.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1045437076.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1045437076.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1020717320.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1020717320.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1170783398.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1170783398.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][BOR] All data uploaded successfully.
+[01-23|00:00:29][INF] Trying to send notifications to numerous users.
+[01-23|00:00:29][INF] Trying to send notification to user 386988582.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 1170783398.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Trying to send notification to user 993634536.
+[01-23|00:00:29][SUC] Status = 200 telegram notification.
+[01-23|00:00:29][INF] Removing note checker from DB /root/work-seller/bot/database/active.txt.
