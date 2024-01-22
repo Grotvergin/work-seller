@@ -1,0 +1,429 @@
+[01-22|16:30:02][INF] Adding note statist to DB /root/work-seller/bot/database/active.txt.
+[01-22|16:30:02][SUC] Check passed: starting statist.
+[01-22|16:30:02][INF] Trying to build service.
+[01-22|16:30:02][SUC] Built service successfully.
+[01-22|16:30:02][BOR] Processing sheet Incomes for period None.
+[01-22|16:30:02][INF] Trying to clean sheet Incomes.
+[01-22|16:30:02][INF] Trying to get column C from sheet Incomes.
+[01-22|16:30:14][SUC] Found 1028 elements from column C sheet Incomes.
+[01-22|16:30:14][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:15][SUC] On uploading: 1028 rows in range Incomes!A2:M1029.
+[01-22|16:30:15][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:16][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:16][INF] Data normalising.
+[01-22|16:30:16][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:20][SUC] On uploading: 1028 rows in range Incomes!A2:M1029.
+[01-22|16:30:20][INF] Trying to clean sheet Incomes.
+[01-22|16:30:20][INF] Trying to get column C from sheet Incomes.
+[01-22|16:30:22][SUC] Found 695 elements from column C sheet Incomes.
+[01-22|16:30:22][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:23][SUC] On uploading: 695 rows in range Incomes!A2:M696.
+[01-22|16:30:23][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:23][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:24][INF] Data normalising.
+[01-22|16:30:24][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:24][SUC] On uploading: 695 rows in range Incomes!A2:M696.
+[01-22|16:30:24][INF] Trying to clean sheet Incomes.
+[01-22|16:30:24][INF] Trying to get column C from sheet Incomes.
+[01-22|16:30:26][SUC] Found 412 elements from column C sheet Incomes.
+[01-22|16:30:26][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:26][SUC] On uploading: 412 rows in range Incomes!A2:M413.
+[01-22|16:30:26][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:27][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:27][INF] Data normalising.
+[01-22|16:30:27][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:28][SUC] On uploading: 412 rows in range Incomes!A2:M413.
+[01-22|16:30:28][INF] Trying to clean sheet Incomes.
+[01-22|16:30:28][INF] Trying to get column C from sheet Incomes.
+[01-22|16:30:29][SUC] Found 730 elements from column C sheet Incomes.
+[01-22|16:30:29][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:30][SUC] On uploading: 730 rows in range Incomes!A2:M731.
+[01-22|16:30:30][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:31][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:30:31][INF] Data normalising.
+[01-22|16:30:31][INF] Trying to upload data to sheet Incomes.
+[01-22|16:30:31][SUC] On uploading: 730 rows in range Incomes!A2:M731.
+[01-22|16:30:31][SLE] Sleeping 40 seconds...
+[01-22|16:31:11][BOR] Processing sheet Incomes for period Month.
+[01-22|16:31:11][INF] Trying to clean sheet Incomes.
+[01-22|16:31:11][INF] Trying to get column C from sheet Incomes.
+[01-22|16:31:12][SUC] Found 134 elements from column C sheet Incomes.
+[01-22|16:31:12][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:13][SUC] On uploading: 134 rows in range Incomes!A2:M135.
+[01-22|16:31:13][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:13][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:13][INF] Data normalising.
+[01-22|16:31:13][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:14][SUC] On uploading: 134 rows in range Incomes!A2:M135.
+[01-22|16:31:14][INF] Trying to clean sheet Incomes.
+[01-22|16:31:14][INF] Trying to get column C from sheet Incomes.
+[01-22|16:31:22][SUC] Found 373 elements from column C sheet Incomes.
+[01-22|16:31:22][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:22][SUC] On uploading: 373 rows in range Incomes!A2:M374.
+[01-22|16:31:22][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:23][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:23][INF] Data normalising.
+[01-22|16:31:23][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:25][SUC] On uploading: 373 rows in range Incomes!A2:M374.
+[01-22|16:31:25][INF] Trying to clean sheet Incomes.
+[01-22|16:31:25][INF] Trying to get column C from sheet Incomes.
+[01-22|16:31:26][SUC] Found 110 elements from column C sheet Incomes.
+[01-22|16:31:26][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:27][SUC] On uploading: 110 rows in range Incomes!A2:M111.
+[01-22|16:31:27][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:27][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:27][INF] Data normalising.
+[01-22|16:31:27][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:27][SUC] On uploading: 110 rows in range Incomes!A2:M111.
+[01-22|16:31:27][INF] Trying to clean sheet Incomes.
+[01-22|16:31:27][INF] Trying to get column C from sheet Incomes.
+[01-22|16:31:28][SUC] Found 68 elements from column C sheet Incomes.
+[01-22|16:31:28][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:29][SUC] On uploading: 68 rows in range Incomes!A2:M69.
+[01-22|16:31:29][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:29][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/incomes.
+[01-22|16:31:29][INF] Data normalising.
+[01-22|16:31:29][INF] Trying to upload data to sheet Incomes.
+[01-22|16:31:30][SUC] On uploading: 68 rows in range Incomes!A2:M69.
+[01-22|16:31:30][SLE] Sleeping 51 seconds...
+[01-22|16:32:21][BOR] Processing sheet Realisations for period None.
+[01-22|16:32:21][INF] Trying to clean sheet Realisations.
+[01-22|16:32:21][INF] Trying to get column C from sheet Realisations.
+[01-22|16:32:23][WAR] No elements in column C sheet Realisations found!
+[01-22|16:32:23][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:23][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:23][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:23][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:23][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:24][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:24][INF] Trying to clean sheet Realisations.
+[01-22|16:32:24][INF] Trying to get column C from sheet Realisations.
+[01-22|16:32:24][WAR] No elements in column C sheet Realisations found!
+[01-22|16:32:24][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:25][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:25][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:25][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:25][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:25][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:25][INF] Trying to clean sheet Realisations.
+[01-22|16:32:25][INF] Trying to get column C from sheet Realisations.
+[01-22|16:32:26][WAR] No elements in column C sheet Realisations found!
+[01-22|16:32:26][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:26][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:26][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:27][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:27][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:27][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:27][INF] Trying to clean sheet Realisations.
+[01-22|16:32:27][INF] Trying to get column C from sheet Realisations.
+[01-22|16:32:28][WAR] No elements in column C sheet Realisations found!
+[01-22|16:32:28][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:29][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:29][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:29][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:32:29][INF] Trying to upload data to sheet Realisations.
+[01-22|16:32:29][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:32:29][SLE] Sleeping 62 seconds...
+[01-22|16:33:31][BOR] Processing sheet Realisations for period Month.
+[01-22|16:33:31][INF] Trying to clean sheet Realisations.
+[01-22|16:33:31][INF] Trying to get column C from sheet Realisations.
+[01-22|16:33:32][WAR] No elements in column C sheet Realisations found!
+[01-22|16:33:32][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:32][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:32][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:33][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:33][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:33][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:33][INF] Trying to clean sheet Realisations.
+[01-22|16:33:33][INF] Trying to get column C from sheet Realisations.
+[01-22|16:33:34][WAR] No elements in column C sheet Realisations found!
+[01-22|16:33:34][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:34][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:34][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:34][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:34][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:35][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:35][INF] Trying to clean sheet Realisations.
+[01-22|16:33:35][INF] Trying to get column C from sheet Realisations.
+[01-22|16:33:35][WAR] No elements in column C sheet Realisations found!
+[01-22|16:33:35][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:36][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:36][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:36][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:36][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:36][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:36][INF] Trying to clean sheet Realisations.
+[01-22|16:33:36][INF] Trying to get column C from sheet Realisations.
+[01-22|16:33:37][WAR] No elements in column C sheet Realisations found!
+[01-22|16:33:37][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:37][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:37][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:37][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod.
+[01-22|16:33:37][INF] Trying to upload data to sheet Realisations.
+[01-22|16:33:37][SUC] On uploading: None rows in range Realisations!A2.
+[01-22|16:33:37][SLE] Sleeping 63 seconds...
+[01-22|16:34:40][BOR] Processing sheet Orders for period None.
+[01-22|16:34:40][INF] Trying to clean sheet Orders.
+[01-22|16:34:40][INF] Trying to get column C from sheet Orders.
+[01-22|16:34:41][SUC] Found 14002 elements from column C sheet Orders.
+[01-22|16:34:41][INF] Trying to upload data to sheet Orders.
+[01-22|16:34:46][SUC] On uploading: 14002 rows in range Orders!A2:T14003.
+[01-22|16:34:46][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:34:48][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:34:48][INF] Data normalising.
+[01-22|16:34:48][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:15][SUC] On uploading: 14063 rows in range Orders!A2:T14064.
+[01-22|16:35:15][INF] Trying to clean sheet Orders.
+[01-22|16:35:15][INF] Trying to get column C from sheet Orders.
+[01-22|16:35:16][SUC] Found 7217 elements from column C sheet Orders.
+[01-22|16:35:16][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:18][SUC] On uploading: 7217 rows in range Orders!A2:T7218.
+[01-22|16:35:18][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:18][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:18][INF] Data normalising.
+[01-22|16:35:19][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:34][SUC] On uploading: 7310 rows in range Orders!A2:T7311.
+[01-22|16:35:34][INF] Trying to clean sheet Orders.
+[01-22|16:35:34][INF] Trying to get column C from sheet Orders.
+[01-22|16:35:34][SUC] Found 2088 elements from column C sheet Orders.
+[01-22|16:35:34][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:36][SUC] On uploading: 2088 rows in range Orders!A2:T2089.
+[01-22|16:35:36][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:36][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:36][INF] Data normalising.
+[01-22|16:35:36][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:38][SUC] On uploading: 2101 rows in range Orders!A2:T2102.
+[01-22|16:35:38][INF] Trying to clean sheet Orders.
+[01-22|16:35:38][INF] Trying to get column C from sheet Orders.
+[01-22|16:35:39][SUC] Found 7853 elements from column C sheet Orders.
+[01-22|16:35:39][INF] Trying to upload data to sheet Orders.
+[01-22|16:35:42][SUC] On uploading: 7853 rows in range Orders!A2:T7854.
+[01-22|16:35:42][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:43][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:35:43][INF] Data normalising.
+[01-22|16:35:43][INF] Trying to upload data to sheet Orders.
+[01-22|16:36:00][SUC] On uploading: 7879 rows in range Orders!A2:T7880.
+[01-22|16:36:00][SLE] No extra sleep needed, elapsed = 79...
+[01-22|16:36:00][BOR] Processing sheet Orders for period Month.
+[01-22|16:36:00][INF] Trying to clean sheet Orders.
+[01-22|16:36:00][INF] Trying to get column C from sheet Orders.
+[01-22|16:36:01][SUC] Found 2038 elements from column C sheet Orders.
+[01-22|16:36:01][INF] Trying to upload data to sheet Orders.
+[01-22|16:36:02][SUC] On uploading: 2038 rows in range Orders!A2:T2039.
+[01-22|16:36:02][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:36:04][ERR] Status = 429 on https://statistics-api.wildberries.ru/api/v1/supplier/orders!!!
+[01-22|16:36:04][SLE] Sleeping 70 seconds...
+[01-22|16:37:14][WAR] Recursion = 1, allowed = 15!
+[01-22|16:37:14][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:15][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:15][INF] Data normalising.
+[01-22|16:37:15][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:20][SUC] On uploading: 2099 rows in range Orders!A2:T2100.
+[01-22|16:37:20][INF] Trying to clean sheet Orders.
+[01-22|16:37:20][INF] Trying to get column C from sheet Orders.
+[01-22|16:37:20][SUC] Found 2834 elements from column C sheet Orders.
+[01-22|16:37:20][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:21][SUC] On uploading: 2834 rows in range Orders!A2:T2835.
+[01-22|16:37:21][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:22][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:22][INF] Data normalising.
+[01-22|16:37:22][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:29][SUC] On uploading: 2927 rows in range Orders!A2:T2928.
+[01-22|16:37:29][INF] Trying to clean sheet Orders.
+[01-22|16:37:29][INF] Trying to get column C from sheet Orders.
+[01-22|16:37:29][SUC] Found 311 elements from column C sheet Orders.
+[01-22|16:37:29][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:30][SUC] On uploading: 311 rows in range Orders!A2:T312.
+[01-22|16:37:30][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:30][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:30][INF] Data normalising.
+[01-22|16:37:30][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:31][SUC] On uploading: 324 rows in range Orders!A2:T325.
+[01-22|16:37:31][INF] Trying to clean sheet Orders.
+[01-22|16:37:31][INF] Trying to get column C from sheet Orders.
+[01-22|16:37:32][SUC] Found 857 elements from column C sheet Orders.
+[01-22|16:37:32][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:33][SUC] On uploading: 857 rows in range Orders!A2:T858.
+[01-22|16:37:33][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:33][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/orders.
+[01-22|16:37:33][INF] Data normalising.
+[01-22|16:37:33][INF] Trying to upload data to sheet Orders.
+[01-22|16:37:34][SUC] On uploading: 886 rows in range Orders!A2:T887.
+[01-22|16:37:34][SLE] No extra sleep needed, elapsed = 94...
+[01-22|16:37:34][BOR] Processing sheet Sales for period None.
+[01-22|16:37:34][INF] Trying to clean sheet Sales.
+[01-22|16:37:34][INF] Trying to get column C from sheet Sales.
+[01-22|16:37:38][SUC] Found 12687 elements from column C sheet Sales.
+[01-22|16:37:38][INF] Trying to upload data to sheet Sales.
+[01-22|16:37:49][SUC] On uploading: 11907 rows in range Sales!A2:AD11908.
+[01-22|16:37:49][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:37:51][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:37:51][INF] Data normalising.
+[01-22|16:37:51][INF] Trying to upload data to sheet Sales.
+[01-22|16:38:48][SUC] On uploading: 12737 rows in range Sales!A2:AD12738.
+[01-22|16:38:48][INF] Trying to clean sheet Sales.
+[01-22|16:38:48][INF] Trying to get column C from sheet Sales.
+[01-22|16:38:49][SUC] Found 6321 elements from column C sheet Sales.
+[01-22|16:38:49][INF] Trying to upload data to sheet Sales.
+[01-22|16:38:53][SUC] On uploading: 6321 rows in range Sales!A2:AD6322.
+[01-22|16:38:53][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:38:54][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:38:54][INF] Data normalising.
+[01-22|16:38:54][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:12][SUC] On uploading: 6434 rows in range Sales!A2:AD6435.
+[01-22|16:39:12][INF] Trying to clean sheet Sales.
+[01-22|16:39:12][INF] Trying to get column C from sheet Sales.
+[01-22|16:39:12][SUC] Found 1769 elements from column C sheet Sales.
+[01-22|16:39:12][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:13][SUC] On uploading: 1769 rows in range Sales!A2:AD1770.
+[01-22|16:39:13][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:14][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:14][INF] Data normalising.
+[01-22|16:39:14][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:19][SUC] On uploading: 1772 rows in range Sales!A2:AD1773.
+[01-22|16:39:19][INF] Trying to clean sheet Sales.
+[01-22|16:39:19][INF] Trying to get column C from sheet Sales.
+[01-22|16:39:20][SUC] Found 6631 elements from column C sheet Sales.
+[01-22|16:39:20][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:25][SUC] On uploading: 6614 rows in range Sales!A2:AD6615.
+[01-22|16:39:25][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:26][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:26][INF] Data normalising.
+[01-22|16:39:26][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:45][SUC] On uploading: 6651 rows in range Sales!A2:AD6652.
+[01-22|16:39:45][SLE] No extra sleep needed, elapsed = 131...
+[01-22|16:39:45][BOR] Processing sheet Sales for period Month.
+[01-22|16:39:45][INF] Trying to clean sheet Sales.
+[01-22|16:39:45][INF] Trying to get column C from sheet Sales.
+[01-22|16:39:46][SUC] Found 1545 elements from column C sheet Sales.
+[01-22|16:39:46][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:48][SUC] On uploading: 1545 rows in range Sales!A2:AD1546.
+[01-22|16:39:48][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:48][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:49][INF] Data normalising.
+[01-22|16:39:49][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:54][SUC] On uploading: 1595 rows in range Sales!A2:AD1596.
+[01-22|16:39:54][INF] Trying to clean sheet Sales.
+[01-22|16:39:54][INF] Trying to get column C from sheet Sales.
+[01-22|16:39:54][SUC] Found 2510 elements from column C sheet Sales.
+[01-22|16:39:54][INF] Trying to upload data to sheet Sales.
+[01-22|16:39:56][SUC] On uploading: 2510 rows in range Sales!A2:AD2511.
+[01-22|16:39:56][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:57][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:39:57][INF] Data normalising.
+[01-22|16:39:57][INF] Trying to upload data to sheet Sales.
+[01-22|16:40:05][SUC] On uploading: 2623 rows in range Sales!A2:AD2624.
+[01-22|16:40:05][INF] Trying to clean sheet Sales.
+[01-22|16:40:05][INF] Trying to get column C from sheet Sales.
+[01-22|16:40:05][SUC] Found 282 elements from column C sheet Sales.
+[01-22|16:40:05][INF] Trying to upload data to sheet Sales.
+[01-22|16:40:05][SUC] On uploading: 282 rows in range Sales!A2:AD283.
+[01-22|16:40:05][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:40:06][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:40:06][INF] Data normalising.
+[01-22|16:40:06][INF] Trying to upload data to sheet Sales.
+[01-22|16:40:07][SUC] On uploading: 285 rows in range Sales!A2:AD286.
+[01-22|16:40:07][INF] Trying to clean sheet Sales.
+[01-22|16:40:07][INF] Trying to get column C from sheet Sales.
+[01-22|16:40:07][SUC] Found 698 elements from column C sheet Sales.
+[01-22|16:40:07][INF] Trying to upload data to sheet Sales.
+[01-22|16:40:08][SUC] On uploading: 698 rows in range Sales!A2:AD699.
+[01-22|16:40:08][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:40:08][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/sales.
+[01-22|16:40:08][INF] Data normalising.
+[01-22|16:40:08][INF] Trying to upload data to sheet Sales.
+[01-22|16:40:09][SUC] On uploading: 724 rows in range Sales!A2:AD725.
+[01-22|16:40:09][SLE] Sleeping 45 seconds...
+[01-22|16:40:54][BOR] Processing sheet Warehouse for period None.
+[01-22|16:40:54][INF] Trying to clean sheet Warehouse.
+[01-22|16:40:54][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:40:56][SUC] Found 414 elements from column C sheet Warehouse.
+[01-22|16:40:56][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:40:57][SUC] On uploading: 414 rows in range Warehouse!A2:U415.
+[01-22|16:40:57][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:40:57][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:40:57][INF] Data normalising.
+[01-22|16:40:57][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:40:59][SUC] On uploading: 408 rows in range Warehouse!A2:U409.
+[01-22|16:40:59][INF] Trying to clean sheet Warehouse.
+[01-22|16:40:59][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:41:02][SUC] Found 497 elements from column C sheet Warehouse.
+[01-22|16:41:02][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:03][SUC] On uploading: 497 rows in range Warehouse!A2:U498.
+[01-22|16:41:03][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:03][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:03][INF] Data normalising.
+[01-22|16:41:03][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:04][SUC] On uploading: 489 rows in range Warehouse!A2:U490.
+[01-22|16:41:04][INF] Trying to clean sheet Warehouse.
+[01-22|16:41:04][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:41:05][SUC] Found 169 elements from column C sheet Warehouse.
+[01-22|16:41:05][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:05][SUC] On uploading: 169 rows in range Warehouse!A2:U170.
+[01-22|16:41:05][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:06][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:06][INF] Data normalising.
+[01-22|16:41:06][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:06][SUC] On uploading: 164 rows in range Warehouse!A2:U165.
+[01-22|16:41:06][INF] Trying to clean sheet Warehouse.
+[01-22|16:41:06][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:41:08][SUC] Found 560 elements from column C sheet Warehouse.
+[01-22|16:41:08][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:08][SUC] On uploading: 560 rows in range Warehouse!A2:U561.
+[01-22|16:41:08][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:09][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:41:09][INF] Data normalising.
+[01-22|16:41:09][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:41:10][SUC] On uploading: 557 rows in range Warehouse!A2:U558.
+[01-22|16:41:10][SLE] Sleeping 54 seconds...
+[01-22|16:42:04][BOR] Processing sheet Warehouse for period Month.
+[01-22|16:42:04][INF] Trying to clean sheet Warehouse.
+[01-22|16:42:04][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:42:19][SUC] Found 378 elements from column C sheet Warehouse.
+[01-22|16:42:19][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:20][SUC] On uploading: 378 rows in range Warehouse!A2:U379.
+[01-22|16:42:20][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:20][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:20][INF] Data normalising.
+[01-22|16:42:20][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:21][SUC] On uploading: 373 rows in range Warehouse!A2:U374.
+[01-22|16:42:21][INF] Trying to clean sheet Warehouse.
+[01-22|16:42:21][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:42:22][SUC] Found 474 elements from column C sheet Warehouse.
+[01-22|16:42:22][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:22][SUC] On uploading: 474 rows in range Warehouse!A2:U475.
+[01-22|16:42:22][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:22][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:22][INF] Data normalising.
+[01-22|16:42:22][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:24][SUC] On uploading: 467 rows in range Warehouse!A2:U468.
+[01-22|16:42:24][INF] Trying to clean sheet Warehouse.
+[01-22|16:42:24][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:42:24][SUC] Found 132 elements from column C sheet Warehouse.
+[01-22|16:42:24][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:25][SUC] On uploading: 132 rows in range Warehouse!A2:U133.
+[01-22|16:42:25][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:25][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:25][INF] Data normalising.
+[01-22|16:42:25][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:26][SUC] On uploading: 128 rows in range Warehouse!A2:U129.
+[01-22|16:42:26][INF] Trying to clean sheet Warehouse.
+[01-22|16:42:26][INF] Trying to get column C from sheet Warehouse.
+[01-22|16:42:27][SUC] Found 348 elements from column C sheet Warehouse.
+[01-22|16:42:27][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:27][SUC] On uploading: 348 rows in range Warehouse!A2:U349.
+[01-22|16:42:27][INF] Trying to connect https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:27][SUC] Status = 200 on https://statistics-api.wildberries.ru/api/v1/supplier/stocks.
+[01-22|16:42:27][INF] Data normalising.
+[01-22|16:42:27][INF] Trying to upload data to sheet Warehouse.
+[01-22|16:42:29][SUC] On uploading: 347 rows in range Warehouse!A2:U348.
+[01-22|16:42:29][SLE] Sleeping 45 seconds...
+[01-22|16:43:14][BOR] All data uploaded successfully.
+[01-22|16:43:14][INF] Trying to send notifications to numerous users.
+[01-22|16:43:14][INF] Trying to send notification to user 386988582.
+[01-22|16:43:14][SUC] Status = 200 telegram notification.
+[01-22|16:43:14][INF] Trying to send notification to user 1170783398.
+[01-22|16:43:14][SUC] Status = 200 telegram notification.
+[01-22|16:43:14][INF] Trying to send notification to user 993634536.
+[01-22|16:43:14][SUC] Status = 200 telegram notification.
+[01-22|16:43:14][INF] Removing note statist from DB /root/work-seller/bot/database/active.txt.

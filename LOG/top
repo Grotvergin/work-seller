@@ -1,0 +1,104 @@
+[01-22|06:15:02][INF] Adding note top to DB /root/work-seller/bot/database/active.txt.
+[01-22|06:15:02][SUC] Check passed: starting top.
+[01-22|06:15:02][INF] Trying to build service.
+[01-22|06:15:02][SUC] Built service successfully.
+[01-22|06:15:02][BOR] Processing Jewelry.
+[01-22|06:15:02][INF] Trying to clean sheet Jewelry.
+[01-22|06:15:02][INF] Trying to get column A from sheet Jewelry.
+[01-22|06:15:07][SUC] Found 4107 elements from column A sheet Jewelry.
+[01-22|06:15:07][INF] Trying to upload data to sheet Jewelry.
+[01-22|06:15:09][SUC] On uploading: 4107 rows in range Jewelry!A2:J4108.
+[01-22|06:15:09][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:15:09][SUC] Status = 200 on authorization.
+[01-22|06:15:09][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:15:11][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:15:11][INF] Trying to upload data to sheet Jewelry.
+[01-22|06:15:16][SUC] On uploading: 4165 rows in range Jewelry!A2:J4166.
+[01-22|06:15:16][SLE] Sleeping 51 seconds...
+[01-22|06:16:07][BOR] Processing Bathroom.
+[01-22|06:16:07][INF] Trying to clean sheet Bathroom.
+[01-22|06:16:07][INF] Trying to get column A from sheet Bathroom.
+[01-22|06:16:08][SUC] Found 5000 elements from column A sheet Bathroom.
+[01-22|06:16:08][INF] Trying to upload data to sheet Bathroom.
+[01-22|06:16:09][SUC] On uploading: 5000 rows in range Bathroom!A2:J5001.
+[01-22|06:16:09][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:16:10][SUC] Status = 200 on authorization.
+[01-22|06:16:10][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:16:11][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:16:11][INF] Trying to upload data to sheet Bathroom.
+[01-22|06:16:14][SUC] On uploading: 5000 rows in range Bathroom!A2:J5001.
+[01-22|06:16:14][SLE] Sleeping 40 seconds...
+[01-22|06:16:54][BOR] Processing Bathroom2.
+[01-22|06:16:54][INF] Trying to clean sheet Bathroom2.
+[01-22|06:16:54][INF] Trying to get column A from sheet Bathroom2.
+[01-22|06:16:55][SUC] Found 4236 elements from column A sheet Bathroom2.
+[01-22|06:16:55][INF] Trying to upload data to sheet Bathroom2.
+[01-22|06:16:56][SUC] On uploading: 4236 rows in range Bathroom2!A2:J4237.
+[01-22|06:16:56][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:16:57][SUC] Status = 200 on authorization.
+[01-22|06:16:57][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:16:58][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:16:58][INF] Trying to upload data to sheet Bathroom2.
+[01-22|06:17:00][SUC] On uploading: 4430 rows in range Bathroom2!A2:J4431.
+[01-22|06:17:00][SLE] Sleeping 70 seconds...
+[01-22|06:18:10][BOR] Processing Lighting.
+[01-22|06:18:10][INF] Trying to clean sheet Lighting.
+[01-22|06:18:10][INF] Trying to get column A from sheet Lighting.
+[01-22|06:18:11][SUC] Found 2214 elements from column A sheet Lighting.
+[01-22|06:18:11][INF] Trying to upload data to sheet Lighting.
+[01-22|06:18:12][SUC] On uploading: 2214 rows in range Lighting!A2:J2215.
+[01-22|06:18:12][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:18:12][SUC] Status = 200 on authorization.
+[01-22|06:18:12][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:18:13][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:18:13][INF] Trying to upload data to sheet Lighting.
+[01-22|06:18:16][SUC] On uploading: 2217 rows in range Lighting!A2:J2218.
+[01-22|06:18:16][SLE] Sleeping 31 seconds...
+[01-22|06:18:47][BOR] Processing Lighting2.
+[01-22|06:18:47][INF] Trying to clean sheet Lighting2.
+[01-22|06:18:47][INF] Trying to get column A from sheet Lighting2.
+[01-22|06:18:48][SUC] Found 223 elements from column A sheet Lighting2.
+[01-22|06:18:48][INF] Trying to upload data to sheet Lighting2.
+[01-22|06:18:49][SUC] On uploading: 223 rows in range Lighting2!A2:J224.
+[01-22|06:18:49][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:18:49][SUC] Status = 200 on authorization.
+[01-22|06:18:49][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:18:50][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:18:50][INF] Trying to upload data to sheet Lighting2.
+[01-22|06:18:50][SUC] On uploading: 223 rows in range Lighting2!A2:J224.
+[01-22|06:18:50][SLE] Sleeping 46 seconds...
+[01-22|06:19:36][BOR] Processing Dishes.
+[01-22|06:19:36][INF] Trying to clean sheet Dishes.
+[01-22|06:19:36][INF] Trying to get column A from sheet Dishes.
+[01-22|06:19:37][SUC] Found 1438 elements from column A sheet Dishes.
+[01-22|06:19:37][INF] Trying to upload data to sheet Dishes.
+[01-22|06:19:37][SUC] On uploading: 1438 rows in range Dishes!A2:J1439.
+[01-22|06:19:37][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:19:38][SUC] Status = 200 on authorization.
+[01-22|06:19:38][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:19:39][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:19:39][INF] Trying to upload data to sheet Dishes.
+[01-22|06:19:41][SUC] On uploading: 1440 rows in range Dishes!A2:J1441.
+[01-22|06:19:41][SLE] Sleeping 75 seconds...
+[01-22|06:20:56][BOR] Processing Dishes2.
+[01-22|06:20:56][INF] Trying to clean sheet Dishes2.
+[01-22|06:20:56][INF] Trying to get column A from sheet Dishes2.
+[01-22|06:20:57][SUC] Found 563 elements from column A sheet Dishes2.
+[01-22|06:20:57][INF] Trying to upload data to sheet Dishes2.
+[01-22|06:20:57][SUC] On uploading: 563 rows in range Dishes2!A2:J564.
+[01-22|06:20:57][INF] Trying to authorize https://app.topvtop.pro/api/auth/callback/credentials.
+[01-22|06:20:58][SUC] Status = 200 on authorization.
+[01-22|06:20:58][INF] Trying to connect https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:20:58][SUC] Status = 200 on https://app.topvtop.pro/api/paymenthistory/get.
+[01-22|06:20:58][INF] Trying to upload data to sheet Dishes2.
+[01-22|06:20:59][SUC] On uploading: 564 rows in range Dishes2!A2:J565.
+[01-22|06:20:59][SLE] Sleeping 40 seconds...
+[01-22|06:21:39][BOR] All data uploaded successfully.
+[01-22|06:21:39][INF] Trying to send notifications to numerous users.
+[01-22|06:21:39][INF] Trying to send notification to user 386988582.
+[01-22|06:21:39][SUC] Status = 200 telegram notification.
+[01-22|06:21:39][INF] Trying to send notification to user 1170783398.
+[01-22|06:21:39][SUC] Status = 200 telegram notification.
+[01-22|06:21:39][INF] Trying to send notification to user 993634536.
+[01-22|06:21:39][SUC] Status = 200 telegram notification.
+[01-22|06:21:39][INF] Removing note top from DB /root/work-seller/bot/database/active.txt.

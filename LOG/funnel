@@ -1,0 +1,281 @@
+[01-22|06:45:02][INF] Adding note funnel to DB /root/work-seller/bot/database/active.txt.
+[01-22|06:45:02][SUC] Check passed: starting funnel.
+[01-22|06:45:02][INF] Trying to build service.
+[01-22|06:45:02][SUC] Built service successfully.
+[01-22|06:45:02][BOR] Processing Jewelry.
+[01-22|06:45:02][INF] Trying to clean sheet Yesterday.
+[01-22|06:45:02][INF] Trying to get column A from sheet Yesterday.
+[01-22|06:45:04][SUC] Found 225 elements from column A sheet Yesterday.
+[01-22|06:45:04][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:45:05][SUC] On uploading: 225 rows in range Yesterday!A2:U226.
+[01-22|06:45:05][INF] Trying to get all pages from 2024-01-21 00:00:00 to 2024-01-21 23:59:59.
+[01-22|06:45:05][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:06][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:06][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:45:07][SUC] On uploading: 226 rows in range Yesterday!A2:U227.
+[01-22|06:45:07][SLE] Sleeping 20 seconds...
+[01-22|06:45:27][INF] Trying to clean sheet DayBeforeYesterday.
+[01-22|06:45:27][INF] Trying to get column A from sheet DayBeforeYesterday.
+[01-22|06:45:28][SUC] Found 226 elements from column A sheet DayBeforeYesterday.
+[01-22|06:45:28][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:45:28][SUC] On uploading: 226 rows in range DayBeforeYesterday!A2:U227.
+[01-22|06:45:28][INF] Trying to get all pages from 2024-01-20 00:00:00 to 2024-01-20 23:59:59.
+[01-22|06:45:28][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:29][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:29][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:45:30][SUC] On uploading: 225 rows in range DayBeforeYesterday!A2:U226.
+[01-22|06:45:30][SLE] Sleeping 20 seconds...
+[01-22|06:45:50][INF] Trying to clean sheet 3Days.
+[01-22|06:45:50][INF] Trying to get column A from sheet 3Days.
+[01-22|06:45:51][SUC] Found 237 elements from column A sheet 3Days.
+[01-22|06:45:51][INF] Trying to upload data to sheet 3Days.
+[01-22|06:45:51][SUC] On uploading: 237 rows in range '3Days'!A2:U238.
+[01-22|06:45:51][INF] Trying to get all pages from 2024-01-19 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:45:51][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:52][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:45:52][INF] Trying to upload data to sheet 3Days.
+[01-22|06:45:53][SUC] On uploading: 237 rows in range '3Days'!A2:U238.
+[01-22|06:45:53][SLE] Sleeping 20 seconds...
+[01-22|06:46:13][INF] Trying to clean sheet 6-3Days.
+[01-22|06:46:13][INF] Trying to get column A from sheet 6-3Days.
+[01-22|06:46:14][SUC] Found 237 elements from column A sheet 6-3Days.
+[01-22|06:46:14][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:46:14][SUC] On uploading: 237 rows in range '6-3Days'!A2:U238.
+[01-22|06:46:14][INF] Trying to get all pages from 2024-01-16 00:00:00 to 2024-01-19 23:59:59.
+[01-22|06:46:14][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:46:15][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:46:15][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:46:15][SUC] On uploading: 237 rows in range '6-3Days'!A2:U238.
+[01-22|06:46:15][SLE] Sleeping 20 seconds...
+[01-22|06:46:35][INF] Trying to clean sheet 3Months.
+[01-22|06:46:35][INF] Trying to get column A from sheet 3Months.
+[01-22|06:46:36][SUC] Found 238 elements from column A sheet 3Months.
+[01-22|06:46:36][INF] Trying to upload data to sheet 3Months.
+[01-22|06:46:36][SUC] On uploading: 238 rows in range '3Months'!A2:U239.
+[01-22|06:46:36][INF] Trying to get all pages from 2023-10-23 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:46:36][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:46:37][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:46:37][INF] Trying to upload data to sheet 3Months.
+[01-22|06:46:38][SUC] On uploading: 238 rows in range '3Months'!A2:U239.
+[01-22|06:46:38][SLE] Sleeping 20 seconds...
+[01-22|06:46:58][INF] Trying to clean sheet 6-3Months.
+[01-22|06:46:58][INF] Trying to get column A from sheet 6-3Months.
+[01-22|06:46:58][SUC] Found 217 elements from column A sheet 6-3Months.
+[01-22|06:46:58][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:46:59][SUC] On uploading: 217 rows in range '6-3Months'!A2:U218.
+[01-22|06:46:59][INF] Trying to get all pages from 2023-07-23 00:00:00 to 2023-10-23 23:59:59.
+[01-22|06:46:59][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:00][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:00][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:47:01][SUC] On uploading: 217 rows in range '6-3Months'!A2:U218.
+[01-22|06:47:01][SLE] Sleeping 20 seconds...
+[01-22|06:47:21][BOR] Processing Lighting.
+[01-22|06:47:21][INF] Trying to clean sheet Yesterday.
+[01-22|06:47:21][INF] Trying to get column A from sheet Yesterday.
+[01-22|06:47:23][SUC] Found 87 elements from column A sheet Yesterday.
+[01-22|06:47:23][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:47:23][SUC] On uploading: 87 rows in range Yesterday!A2:U88.
+[01-22|06:47:23][INF] Trying to get all pages from 2024-01-21 00:00:00 to 2024-01-21 23:59:59.
+[01-22|06:47:23][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:24][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:24][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:47:24][SUC] On uploading: 87 rows in range Yesterday!A2:U88.
+[01-22|06:47:24][SLE] Sleeping 20 seconds...
+[01-22|06:47:44][INF] Trying to clean sheet DayBeforeYesterday.
+[01-22|06:47:44][INF] Trying to get column A from sheet DayBeforeYesterday.
+[01-22|06:47:45][SUC] Found 87 elements from column A sheet DayBeforeYesterday.
+[01-22|06:47:45][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:47:46][SUC] On uploading: 87 rows in range DayBeforeYesterday!A2:U88.
+[01-22|06:47:46][INF] Trying to get all pages from 2024-01-20 00:00:00 to 2024-01-20 23:59:59.
+[01-22|06:47:46][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:47][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:47:47][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:47:47][SUC] On uploading: 87 rows in range DayBeforeYesterday!A2:U88.
+[01-22|06:47:47][SLE] Sleeping 20 seconds...
+[01-22|06:48:07][INF] Trying to clean sheet 3Days.
+[01-22|06:48:07][INF] Trying to get column A from sheet 3Days.
+[01-22|06:48:08][SUC] Found 87 elements from column A sheet 3Days.
+[01-22|06:48:08][INF] Trying to upload data to sheet 3Days.
+[01-22|06:48:08][SUC] On uploading: 87 rows in range '3Days'!A2:U88.
+[01-22|06:48:08][INF] Trying to get all pages from 2024-01-19 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:48:08][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:09][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:09][INF] Trying to upload data to sheet 3Days.
+[01-22|06:48:09][SUC] On uploading: 87 rows in range '3Days'!A2:U88.
+[01-22|06:48:09][SLE] Sleeping 20 seconds...
+[01-22|06:48:29][INF] Trying to clean sheet 6-3Days.
+[01-22|06:48:29][INF] Trying to get column A from sheet 6-3Days.
+[01-22|06:48:30][SUC] Found 87 elements from column A sheet 6-3Days.
+[01-22|06:48:30][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:48:31][SUC] On uploading: 87 rows in range '6-3Days'!A2:U88.
+[01-22|06:48:31][INF] Trying to get all pages from 2024-01-16 00:00:00 to 2024-01-19 23:59:59.
+[01-22|06:48:31][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:31][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:31][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:48:32][SUC] On uploading: 87 rows in range '6-3Days'!A2:U88.
+[01-22|06:48:32][SLE] Sleeping 20 seconds...
+[01-22|06:48:52][INF] Trying to clean sheet 3Months.
+[01-22|06:48:52][INF] Trying to get column A from sheet 3Months.
+[01-22|06:48:53][SUC] Found 87 elements from column A sheet 3Months.
+[01-22|06:48:53][INF] Trying to upload data to sheet 3Months.
+[01-22|06:48:53][SUC] On uploading: 87 rows in range '3Months'!A2:U88.
+[01-22|06:48:53][INF] Trying to get all pages from 2023-10-23 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:48:53][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:54][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:48:54][INF] Trying to upload data to sheet 3Months.
+[01-22|06:48:55][SUC] On uploading: 87 rows in range '3Months'!A2:U88.
+[01-22|06:48:55][SLE] Sleeping 20 seconds...
+[01-22|06:49:15][INF] Trying to clean sheet 6-3Months.
+[01-22|06:49:15][INF] Trying to get column A from sheet 6-3Months.
+[01-22|06:49:15][SUC] Found 87 elements from column A sheet 6-3Months.
+[01-22|06:49:15][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:49:16][SUC] On uploading: 87 rows in range '6-3Months'!A2:U88.
+[01-22|06:49:16][INF] Trying to get all pages from 2023-07-23 00:00:00 to 2023-10-23 23:59:59.
+[01-22|06:49:16][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:49:16][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:49:16][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:49:17][SUC] On uploading: 87 rows in range '6-3Months'!A2:U88.
+[01-22|06:49:17][SLE] Sleeping 20 seconds...
+[01-22|06:49:37][BOR] Processing Bathroom.
+[01-22|06:49:37][INF] Trying to clean sheet Yesterday.
+[01-22|06:49:37][INF] Trying to get column A from sheet Yesterday.
+[01-22|06:49:38][SUC] Found 165 elements from column A sheet Yesterday.
+[01-22|06:49:38][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:49:39][SUC] On uploading: 165 rows in range Yesterday!A2:U166.
+[01-22|06:49:39][INF] Trying to get all pages from 2024-01-21 00:00:00 to 2024-01-21 23:59:59.
+[01-22|06:49:39][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:49:40][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:49:40][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:49:40][SUC] On uploading: 165 rows in range Yesterday!A2:U166.
+[01-22|06:49:40][SLE] Sleeping 20 seconds...
+[01-22|06:50:00][INF] Trying to clean sheet DayBeforeYesterday.
+[01-22|06:50:00][INF] Trying to get column A from sheet DayBeforeYesterday.
+[01-22|06:50:01][SUC] Found 165 elements from column A sheet DayBeforeYesterday.
+[01-22|06:50:01][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:50:01][SUC] On uploading: 165 rows in range DayBeforeYesterday!A2:U166.
+[01-22|06:50:01][INF] Trying to get all pages from 2024-01-20 00:00:00 to 2024-01-20 23:59:59.
+[01-22|06:50:01][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:02][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:02][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:50:02][SUC] On uploading: 165 rows in range DayBeforeYesterday!A2:U166.
+[01-22|06:50:02][SLE] Sleeping 20 seconds...
+[01-22|06:50:22][INF] Trying to clean sheet 3Days.
+[01-22|06:50:22][INF] Trying to get column A from sheet 3Days.
+[01-22|06:50:23][SUC] Found 166 elements from column A sheet 3Days.
+[01-22|06:50:23][INF] Trying to upload data to sheet 3Days.
+[01-22|06:50:24][SUC] On uploading: 166 rows in range '3Days'!A2:U167.
+[01-22|06:50:24][INF] Trying to get all pages from 2024-01-19 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:50:24][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:24][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:24][INF] Trying to upload data to sheet 3Days.
+[01-22|06:50:25][SUC] On uploading: 166 rows in range '3Days'!A2:U167.
+[01-22|06:50:25][SLE] Sleeping 20 seconds...
+[01-22|06:50:45][INF] Trying to clean sheet 6-3Days.
+[01-22|06:50:45][INF] Trying to get column A from sheet 6-3Days.
+[01-22|06:50:46][SUC] Found 166 elements from column A sheet 6-3Days.
+[01-22|06:50:46][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:50:46][SUC] On uploading: 166 rows in range '6-3Days'!A2:U167.
+[01-22|06:50:46][INF] Trying to get all pages from 2024-01-16 00:00:00 to 2024-01-19 23:59:59.
+[01-22|06:50:46][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:48][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:50:48][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:50:48][SUC] On uploading: 166 rows in range '6-3Days'!A2:U167.
+[01-22|06:50:48][SLE] Sleeping 20 seconds...
+[01-22|06:51:08][INF] Trying to clean sheet 3Months.
+[01-22|06:51:08][INF] Trying to get column A from sheet 3Months.
+[01-22|06:51:09][SUC] Found 166 elements from column A sheet 3Months.
+[01-22|06:51:09][INF] Trying to upload data to sheet 3Months.
+[01-22|06:51:10][SUC] On uploading: 166 rows in range '3Months'!A2:U167.
+[01-22|06:51:10][INF] Trying to get all pages from 2023-10-23 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:51:10][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:11][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:11][INF] Trying to upload data to sheet 3Months.
+[01-22|06:51:12][SUC] On uploading: 166 rows in range '3Months'!A2:U167.
+[01-22|06:51:12][SLE] Sleeping 20 seconds...
+[01-22|06:51:32][INF] Trying to clean sheet 6-3Months.
+[01-22|06:51:32][INF] Trying to get column A from sheet 6-3Months.
+[01-22|06:51:32][SUC] Found 165 elements from column A sheet 6-3Months.
+[01-22|06:51:32][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:51:33][SUC] On uploading: 165 rows in range '6-3Months'!A2:U166.
+[01-22|06:51:33][INF] Trying to get all pages from 2023-07-23 00:00:00 to 2023-10-23 23:59:59.
+[01-22|06:51:33][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:34][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:34][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:51:35][SUC] On uploading: 165 rows in range '6-3Months'!A2:U166.
+[01-22|06:51:35][SLE] Sleeping 20 seconds...
+[01-22|06:51:55][BOR] Processing Dishes.
+[01-22|06:51:55][INF] Trying to clean sheet Yesterday.
+[01-22|06:51:55][INF] Trying to get column A from sheet Yesterday.
+[01-22|06:51:56][SUC] Found 75 elements from column A sheet Yesterday.
+[01-22|06:51:56][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:51:56][SUC] On uploading: 75 rows in range Yesterday!A2:U76.
+[01-22|06:51:56][INF] Trying to get all pages from 2024-01-21 00:00:00 to 2024-01-21 23:59:59.
+[01-22|06:51:56][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:57][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:51:57][INF] Trying to upload data to sheet Yesterday.
+[01-22|06:51:58][SUC] On uploading: 75 rows in range Yesterday!A2:U76.
+[01-22|06:51:58][SLE] Sleeping 20 seconds...
+[01-22|06:52:18][INF] Trying to clean sheet DayBeforeYesterday.
+[01-22|06:52:18][INF] Trying to get column A from sheet DayBeforeYesterday.
+[01-22|06:52:18][SUC] Found 75 elements from column A sheet DayBeforeYesterday.
+[01-22|06:52:18][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:52:18][SUC] On uploading: 75 rows in range DayBeforeYesterday!A2:U76.
+[01-22|06:52:18][INF] Trying to get all pages from 2024-01-20 00:00:00 to 2024-01-20 23:59:59.
+[01-22|06:52:18][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:52:19][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:52:19][INF] Trying to upload data to sheet DayBeforeYesterday.
+[01-22|06:52:20][SUC] On uploading: 75 rows in range DayBeforeYesterday!A2:U76.
+[01-22|06:52:20][SLE] Sleeping 20 seconds...
+[01-22|06:52:40][INF] Trying to clean sheet 3Days.
+[01-22|06:52:40][INF] Trying to get column A from sheet 3Days.
+[01-22|06:52:40][SUC] Found 75 elements from column A sheet 3Days.
+[01-22|06:52:40][INF] Trying to upload data to sheet 3Days.
+[01-22|06:52:41][SUC] On uploading: 75 rows in range '3Days'!A2:U76.
+[01-22|06:52:41][INF] Trying to get all pages from 2024-01-19 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:52:41][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:52:41][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:52:41][INF] Trying to upload data to sheet 3Days.
+[01-22|06:52:42][SUC] On uploading: 75 rows in range '3Days'!A2:U76.
+[01-22|06:52:42][SLE] Sleeping 20 seconds...
+[01-22|06:53:02][INF] Trying to clean sheet 6-3Days.
+[01-22|06:53:02][INF] Trying to get column A from sheet 6-3Days.
+[01-22|06:53:03][SUC] Found 75 elements from column A sheet 6-3Days.
+[01-22|06:53:03][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:53:04][SUC] On uploading: 75 rows in range '6-3Days'!A2:U76.
+[01-22|06:53:04][INF] Trying to get all pages from 2024-01-16 00:00:00 to 2024-01-19 23:59:59.
+[01-22|06:53:04][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:04][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:04][INF] Trying to upload data to sheet 6-3Days.
+[01-22|06:53:05][SUC] On uploading: 75 rows in range '6-3Days'!A2:U76.
+[01-22|06:53:05][SLE] Sleeping 20 seconds...
+[01-22|06:53:25][INF] Trying to clean sheet 3Months.
+[01-22|06:53:25][INF] Trying to get column A from sheet 3Months.
+[01-22|06:53:26][SUC] Found 77 elements from column A sheet 3Months.
+[01-22|06:53:26][INF] Trying to upload data to sheet 3Months.
+[01-22|06:53:26][SUC] On uploading: 77 rows in range '3Months'!A2:U78.
+[01-22|06:53:26][INF] Trying to get all pages from 2023-10-23 00:00:00 to 2024-01-22 06:45:02.
+[01-22|06:53:26][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:27][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:27][INF] Trying to upload data to sheet 3Months.
+[01-22|06:53:28][SUC] On uploading: 77 rows in range '3Months'!A2:U78.
+[01-22|06:53:28][SLE] Sleeping 20 seconds...
+[01-22|06:53:48][INF] Trying to clean sheet 6-3Months.
+[01-22|06:53:48][INF] Trying to get column A from sheet 6-3Months.
+[01-22|06:53:49][SUC] Found 77 elements from column A sheet 6-3Months.
+[01-22|06:53:49][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:53:50][SUC] On uploading: 77 rows in range '6-3Months'!A2:U78.
+[01-22|06:53:50][INF] Trying to get all pages from 2023-07-23 00:00:00 to 2023-10-23 23:59:59.
+[01-22|06:53:50][INF] Trying to connect https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:51][SUC] Status = 200 on https://suppliers-api.wb.ru/content/v1/analytics/nm-report/detail.
+[01-22|06:53:51][INF] Trying to upload data to sheet 6-3Months.
+[01-22|06:53:51][SUC] On uploading: 77 rows in range '6-3Months'!A2:U78.
+[01-22|06:53:51][SLE] Sleeping 20 seconds...
+[01-22|06:54:11][BOR] All data uploaded successfully.
+[01-22|06:54:11][INF] Trying to send notifications to numerous users.
+[01-22|06:54:11][INF] Trying to send notification to user 386988582.
+[01-22|06:54:11][SUC] Status = 200 telegram notification.
+[01-22|06:54:11][INF] Trying to send notification to user 1170783398.
+[01-22|06:54:11][SUC] Status = 200 telegram notification.
+[01-22|06:54:11][INF] Trying to send notification to user 993634536.
+[01-22|06:54:11][SUC] Status = 200 telegram notification.
+[01-22|06:54:11][INF] Removing note funnel from DB /root/work-seller/bot/database/active.txt.
