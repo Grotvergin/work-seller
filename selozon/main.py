@@ -9,13 +9,11 @@ def Main() -> None:
     sheet_id = config['DEFAULT']['SheetID']
     cities = GetColumn('A', service, 'Cities', sheet_id)
     driver.get('https://seller.ozon.ru/app/analytics/search-results/explainer')
-    row_all = 2
-    CleanSheet(len(COLUMNS), NAME_ALL, sheet_id, service)
+    row_all = len(GetColumn('A', service, NAME_ALL, sheet_id)) + 2
     for heading in sections:
         Stamp(f'Processing {heading}', 'b')
-        row_heading = 2
+        row_heading = len(GetColumn('A', service, heading, sheet_id)) + 2
         column = config[heading]['Column']
-        CleanSheet(len(COLUMNS), heading, sheet_id, service)
         words = GetColumn(column, service, 'Words', sheet_id)
         cab_num = ord(column) - ord('A') + 2
         for dataset in GetData(driver, cab_num, cities, words):
@@ -38,6 +36,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
             Stamp('Notification is absent', 'i')
     except WebDriverException as e:
         Stamp(f'Webdriver error during notification click: {e}', 'e')
+        Sleep(MEDIUM_SLEEP)
         ClickNotification(driver)
 
 
@@ -45,7 +44,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)
@@ -54,6 +53,7 @@ def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
         AccurateSleep(SLEEP_CLICK, 0.6)
     except WebDriverException as e:
         Stamp(f'Webdriver error during choosing cabinet: {e}', 'e')
+        Sleep(MEDIUM_SLEEP)
         ChooseCabinet(driver, cab_num)
 
 
@@ -67,6 +67,7 @@ def InsertValues(driver: undetected_chromedriver.Chrome, value: str, XPath: str)
         AccurateSleep(SLEEP_CLICK, 0.6)
     except WebDriverException as e:
         Stamp(f'Webdriver error during inserting values: {e}', 'e')
+        Sleep(MEDIUM_SLEEP)
         InsertValues(driver, value, XPath)
 
 
@@ -78,6 +79,7 @@ def ChooseFirstCity(driver: undetected_chromedriver.Chrome) -> None:
         AccurateSleep(SLEEP_CLICK, 0.5)
     except WebDriverException as e:
         Stamp(f'Webdriver error during choosing the first city: {e}', 'e')
+        Sleep(MEDIUM_SLEEP)
         ChooseFirstCity(driver)
 
 
@@ -97,6 +99,7 @@ def RequestTable(driver: undetected_chromedriver.Chrome) -> list:
         AccurateSleep(SLEEP_CLICK, 0.5)
     except WebDriverException as e:
         Stamp(f'Webdriver error during requesting the table: {e}', 'e')
+        Sleep(MEDIUM_SLEEP)
         table = RequestTable(driver)
     return table
 

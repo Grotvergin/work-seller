@@ -38,7 +38,7 @@ import undetected_chromedriver
 init()
 random.seed()
 CREDS = service_account.Credentials.from_service_account_file('keys.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
-MAX_ROW = 80000
+MAX_ROW = 150000
 MAX_RECURSION = 15
 SLEEP_GOOGLE = 20
 START = time.time()
