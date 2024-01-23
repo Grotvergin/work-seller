@@ -32,6 +32,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
         if SmartLen(notification) > 0:
             Stamp('Clicking the notification', 'w')
             notification[0].click()
+            Sleep(SLEEP_CLICK)
         else:
             Stamp('Notification is absent', 'i')
     except WebDriverException as e:
@@ -44,7 +45,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)
@@ -146,7 +147,10 @@ def CreateDriver() -> undetected_chromedriver.Chrome:
     SuppressException(undetected_chromedriver)
     options = undetected_chromedriver.ChromeOptions()
     options.add_argument('--headless')
-    options.add_argument(r'--user-data-dir=C:\Users\Рома\AppData\Local\Google\Chrome\User Data')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument(r'--user-data-dir=/root/.config/google-chrome')
+    # options.add_argument(r'--user-data-dir=C:\Users\Рома\AppData\Local\Google\Chrome\User Data')
     options.add_argument('--profile-directory=Profile 1')
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.888 YaBrowser/23.9.2.888 Yowser/2.5 Safari/537.36')
     driver = undetected_chromedriver.Chrome(options=options)

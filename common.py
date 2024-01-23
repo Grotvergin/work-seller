@@ -93,7 +93,6 @@ def Inspector(name: str) -> Callable[..., Any]:
                     IndependentSender(f'🟢 Успешное обновление {NAMES[name]}', 'status')
                 except KeyboardInterrupt:
                     Stamp('Keyboard interruption', 'w')
-                    RemoveFromDatabase(name, PATH_DB + 'active.txt')
                 except RecursionError:
                     Stamp('On recursion', 'e')
                     IndependentSender(f'🔴 Рекурсивная ошибка при обновлении {NAMES[name]}', 'status', True)
