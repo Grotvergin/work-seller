@@ -35,7 +35,7 @@ def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
     raw = GetData(page, word, proxies)
     if 'data' not in raw:
         Stamp('No key <<data>> in response, processing again', 'w')
-        GetAndCheck(page, word, proxies)
+        raw = GetAndCheck(page, word, proxies)
     return raw
 
 
