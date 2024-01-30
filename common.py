@@ -212,7 +212,7 @@ def ControlRecursion(func: Callable[..., Any], maximum: int = MAX_RECURSION) -> 
 def SmartLen(data: Union[List, Dict]) -> int:
     try:
         length = len(data)
-    except TypeError:
+    except (TypeError, KeyError):
         length = 0
     return length
 
