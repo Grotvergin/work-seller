@@ -70,6 +70,6 @@ HEADERS_GET = {
 PARAMS_GET = {
     'dateFilter': 'all',
     'type': 'all',
-    'limit': '5000',
+    'limit': '10000',
     'skip': '0',
 }

@@ -45,7 +45,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)
@@ -90,8 +90,8 @@ def RequestTable(driver: undetected_chromedriver.Chrome) -> list:
         driver.find_element(By.XPATH, "//span[contains(., 'Показать результат')]").click()
         WebDriverWait(driver, MAX_TIME_TABLE).until(expected_conditions.visibility_of_element_located((By.XPATH, "//input[@value='']")))
         Stamp('Table appeared', 's')
-        ClickNotification(driver)
         AccurateSleep(SLEEP_CLICK, 0.5)
+        ClickNotification(driver)
         driver.find_element(By.XPATH, "//input[@value='']").click()
         AccurateSleep(SLEEP_CLICK, 0.5)
         result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
