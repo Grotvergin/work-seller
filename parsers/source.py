@@ -2,7 +2,7 @@ from common import *
 
 
 URL = 'https://search.wb.ru/exactmatch/ru/common/v4/search'
-COLUMNS = ['id', 'name', 'word', 'page', 'place', 'time']
+COLUMNS = ['id', 'name', 'word', 'page', 'place',  'price', 'time']
 PREFIX = 'NoLog'
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 SHORT_SLEEP = 2

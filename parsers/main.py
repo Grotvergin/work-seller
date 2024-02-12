@@ -120,6 +120,10 @@ def ProcessData(raw: dict, word: str, page: int) -> (list, list):
                 case 'time':
                     row_advertise.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
                     row_real.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
+                case 'price':
+                    if TYPE == '-h':
+                        row_advertise.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
+                        row_real.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
         list_advertise.append(row_advertise)
         list_real.append(row_real)
     return list_advertise, list_real
