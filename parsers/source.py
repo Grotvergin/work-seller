@@ -11,14 +11,12 @@ PAGES_QUANTITY = 10
 TYPE = sys.argv[1]
 
 PARAMS = {
-    'TestGroup': 'control',
-    'TestID': '367',
     'appType': '1',
     'curr': 'rub',
-    'dest': '-1257786',
+    'dest': '-445297',
     'resultset': 'catalog',
     'sort': 'popular',
-    'spp': '28',
+    'spp': '30',
     'suppressSpellcheck': 'false',
     'uclusters': '1'
 }
