@@ -166,7 +166,7 @@ def CallbackAcceptance(message: telebot.types.Message) -> None:
     if PrepareAcceptance(body):
         SendMessage(user, f'🟢 Отчёт по столбцу {body} подготовлен')
     else:
-        SendMessage(user, f'🔴 Некорректный столбец, проверьте его существование...')
+        SendMessage(user, f'🔴 Некорректный столбец {body}, проверьте его существование...')
     CallbackStart(message)
 
 

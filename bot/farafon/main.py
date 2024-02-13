@@ -1,7 +1,6 @@
 from bot.farafon.source import *
 
 
-@Inspector(PATH[-1])
 def PrepareAcceptance(req_col: str) -> bool:
     service = BuildService()
     config, _ = ParseConfig(PATH[-2] + '/' + PATH[-1])
@@ -27,7 +26,7 @@ def ProcessData(num_col: list[str], id_col: list[str]) -> list[list[str]]:
 def VerifyColumn(req_col: str, service: googleapiclient.discovery.Resource, sheet_id: str) -> bool:
     Stamp(f'Checking column, requested {req_col}', 'i')
     len_cols = SmartLen(GetRow(ROW_TO_CHECK, service, NAME_SOURCE, sheet_id))
-    if req_col in COLUMN_INDEXES.values() and req_col < COLUMN_INDEXES[len_cols]:
+    if req_col in COLUMN_INDEXES.values() and (req_col < COLUMN_INDEXES[len_cols] or len(req_col) < len(COLUMN_INDEXES[len_cols])):
         Stamp(f'Column check passed, {req_col} < {COLUMN_INDEXES[len_cols]}', 's')
         return True
     else:
