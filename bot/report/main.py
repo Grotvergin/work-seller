@@ -9,6 +9,14 @@ def Main() -> None:
     GroupSender(msg, 'report_groups')
 
 
+def VerifyDate(day: str) -> bool:
+    try:
+        datetime(datetime.now().year, datetime.now().month, int(day))
+        return True
+    except ValueError:
+        return False
+
+
 def PrepareReport(req_date: str) -> list[str]:
     service = BuildService()
     config, _ = ParseConfig(PATH[-2] + '/' + PATH[-1])

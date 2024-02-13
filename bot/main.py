@@ -29,10 +29,9 @@ def CallbackStart(message: telebot.types.Message) -> None:
 
 
 def CallbackService(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
-    service_names = [NAMES['advert'], NAMES['analytics'], NAMES['report'], NAMES['discharge'], NAMES['funnel'],
-                     NAMES['parsers-d'], NAMES['parsers-h'], NAMES['prices'], NAMES['statist'], NAMES['top']]
+    service_names = NAMES.values()
     buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
     rows = [[buttons[i], buttons[i + 1]] for i in range(0, len(buttons), 2)]
     for row in rows:
@@ -42,10 +41,13 @@ def CallbackService(message: telebot.types.Message) -> None:
 
 
 def ChosenService(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     if message.text == NAMES['report']:
         SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
         bot.register_next_step_handler(message, CallbackReport)
+    elif message.text == NAMES['farafon']:
+        SendMessage(message.from_user.id, '❔ Введите столбец, например, AI:')
+        bot.register_next_step_handler(message, CallbackAcceptance)
     elif message.text == NAMES['parsers-h']:
         ProvideThread('parsers', message, 'main', '-h')
     elif message.text == NAMES['parsers-d']:
@@ -58,7 +60,7 @@ def ChosenService(message: telebot.types.Message) -> None:
 
 
 def CallbackNotify(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
     service_names = [NAMES['report'], NAMES['checker'], NAMES['status']]
     buttons = list(map(lambda x: telebot.types.KeyboardButton(x), service_names))
@@ -68,7 +70,7 @@ def CallbackNotify(message: telebot.types.Message) -> None:
 
 
 def ChosenNotifyType(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
     notifications = {
         NAMES['report']: {'buttons': [ACCEPT, REJECT], 'handler': DecisionReport},
@@ -86,7 +88,7 @@ def ChosenNotifyType(message: telebot.types.Message) -> None:
 
 
 def DecisionStatus(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     if message.text == ACCEPT:
         CallbackSub(message.from_user.id, PATH_DB + 'status.txt')
         RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'status_important.txt')
@@ -101,7 +103,7 @@ def DecisionStatus(message: telebot.types.Message) -> None:
 
 
 def DecisionChecker(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     if message.text == ACCEPT:
         CallbackSub(message.from_user.id, PATH_DB + 'checker.txt')
         RemoveFromDatabase(str(message.from_user.id), PATH_DB + 'checker_important.txt')
@@ -116,7 +118,7 @@ def DecisionChecker(message: telebot.types.Message) -> None:
 
 
 def DecisionReport(message: telebot.types.Message) -> None:
-    Stamp(f'User {message.from_user.id} requested <<{message.text}>>', 'i')
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     if message.text == ACCEPT:
         CallbackSub(message.from_user.id, PATH_DB + 'report.txt')
     elif message.text == REJECT:
@@ -147,22 +149,24 @@ def CallbackStop(user: int, path: list[str]) -> None:
         SendMessage(user, '🟡 Вы не были подписаны на этот тип уведомлений')
 
 
-def VerifyDate(day: str) -> bool:
-    try:
-        datetime(datetime.now().year, datetime.now().month, int(day))
-        return True
-    except ValueError:
-        return False
-
-
 def CallbackReport(message: telebot.types.Message) -> None:
     user = message.from_user.id
     body = message.text.lower()
     if not VerifyDate(body):
-        SendMessage(user, '🔴 Ошибка в предоставленной дате')
+        SendMessage(user, '🔴 Ошибка в предоставленной дате...')
     else:
         SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
         SendMessage(user, PrepareReport(body))
+    CallbackStart(message)
+
+
+def CallbackAcceptance(message: telebot.types.Message) -> None:
+    user = message.from_user.id
+    body = message.text.upper()
+    if PrepareAcceptance(body):
+        SendMessage(user, f'🟢 Отчёт по столбцу {body} подготовлен')
+    else:
+        SendMessage(user, f'🔴 Некорректный столбец, проверьте его существование...')
     CallbackStart(message)
 
 
@@ -188,7 +192,7 @@ def SendMessageAll(path: str, msg: Union[str, list[str]]) -> None:
 def MessageAccept(message: telebot.types.Message) -> None:
     user = message.from_user.id
     body = message.text
-    Stamp(f'User {user} requested <<{body}>>', 'i')
+    Stamp(f'User {user} requested {body}', 'i')
     if body == '/start':
         SendMessage(user, f'Здравствуй, {message.from_user.first_name}!')
         CallbackStart(message)

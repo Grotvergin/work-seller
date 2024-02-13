@@ -1,5 +1,6 @@
 from bot.checker.main import *
 from bot.report.main import *
+from bot.farafon.main import *
 
 
 NAME = os.path.dirname(os.path.realpath(__file__)).rsplit('\\', 1)[-1]

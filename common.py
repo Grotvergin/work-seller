@@ -67,7 +67,8 @@ NAMES = {
     'analytics': 'OZON Аналитика 🔎',
     'advert': 'WB Реклама 💸',
     'status': 'Статус обновлений 🆗',
-    'selozon': 'OZON Парсинг кабинета 🖱'
+    'selozon': 'OZON Парсинг кабинета 🖱',
+    'farafon': 'Отчёт по приёмкам 📦'
 }
 
 
@@ -237,20 +238,23 @@ def GetRow(row: int, service: googleapiclient.discovery.Resource, sheet_name: st
 
 
 @ControlRecursion
-def GetColumn(column: str, service: googleapiclient.discovery.Resource, sheet_name: str, sheet_id: str) -> list:
+def GetColumn(column: str, service: googleapiclient.discovery.Resource, sheet_name: str, sheet_id: str, skip_empty: bool = True, start_row: int = 2, end_row: int = MAX_ROW) -> list:
     Stamp(f'Trying to get column {column} from sheet {sheet_name}', 'i')
     try:
-        res = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=f'{sheet_name}!{column}2:{column}{MAX_ROW}').execute().get('values', [])
+        res = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=f'{sheet_name}!{column}{start_row}:{column}{end_row}').execute().get('values', [])
     except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
         Stamp(f'Status = {err} on getting column {column} from sheet {sheet_name}', 'e')
         Sleep(SLEEP_GOOGLE)
-        res = GetColumn(column, service, sheet_name, sheet_id)
+        res = GetColumn(column, service, sheet_name, sheet_id, skip_empty, start_row, end_row)
     else:
         if not res:
             Stamp(f'No elements in column {column} sheet {sheet_name} found', 'w')
         else:
             Stamp(f'Found {len(res)} elements from column {column} sheet {sheet_name}', 's')
-            res = [item for sublist in res for item in sublist]
+            if skip_empty:
+                res = [item for sublist in res for item in sublist]
+            else:
+                res = [None if not sublist else item for sublist in res for item in (sublist if sublist else [None])]
     return res
 
 
