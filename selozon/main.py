@@ -28,7 +28,7 @@ def Main() -> None:
 def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
     Stamp(f'Trying to click notification', 'i')
     try:
-        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-19"]/div/div[1]/div/div/div[2]/button/div/span')
+        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-18"]/div/div[1]/div/div/div[2]/button/div/span')
         if SmartLen(notification) > 0:
             Stamp('Clicking the notification', 'w')
             notification[0].click()
@@ -94,7 +94,7 @@ def RequestTable(driver: undetected_chromedriver.Chrome) -> list:
         ClickNotification(driver)
         driver.find_element(By.XPATH, "//input[@value='']").click()
         AccurateSleep(SLEEP_CLICK, 0.5)
-        result = driver.find_element(By.XPATH, "//div[@id='result-list']/div[2]/div/div[1]/table/tbody")
+        result = driver.find_element(By.XPATH, '//*[@id="result-list"]/div[2]/div/div[1]/div/table/tbody')
         AccurateSleep(SLEEP_CLICK, 0.5)
         table = ParseHtmlTable(result.get_attribute('innerHTML'))
         AccurateSleep(SLEEP_CLICK, 0.5)
