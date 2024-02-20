@@ -2,7 +2,7 @@ from parsers.source import *
 
 
 @Inspector(NAME + TYPE)
-def Main():
+def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
