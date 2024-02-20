@@ -52,7 +52,7 @@ MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
 DEBUG_MODE = False
-MAX_PROCESSES = 3
+MAX_PROCESSES = 4
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 NAMES = {
     'top': 'Top V Top 🔝',
