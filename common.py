@@ -67,7 +67,6 @@ NAMES = {
     'analytics': 'OZON Аналитика 🔎',
     'advert': 'WB Реклама 💸',
     'status': 'Статус обновлений 🆗',
-    'selozon': 'OZON Парсинг кабинета 🖱',
     'farafon': 'Отчёт по приёмкам 📦',
     'pricepec': 'WB Цены по сайту 🛒'
 }
