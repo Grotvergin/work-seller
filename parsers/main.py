@@ -30,7 +30,7 @@ def Main() -> None:
             row += len(advertise_pages)
 
 
-@ControlRecursion
+# UNSAFE RECURSION FUNCTION
 def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
     raw = GetData(page, word, proxies)
     if 'data' not in raw:
