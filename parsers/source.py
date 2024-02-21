@@ -5,8 +5,8 @@ URL = 'https://search.wb.ru/exactmatch/ru/male/v4/search'
 COLUMNS = ['id', 'name', 'word', 'page', 'place',  'price', 'time']
 PREFIX = 'NoLog'
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
-SHORT_SLEEP = 2
-LONG_SLEEP = 45
+SHORT_SLEEP = 1
+LONG_SLEEP = 20
 PAGES_QUANTITY = 10
 TYPE = sys.argv[1]
 
