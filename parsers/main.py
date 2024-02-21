@@ -86,6 +86,7 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')
             Sleep(LONG_SLEEP)
             raw = GetData(page, word, proxies)
+    print(raw['data']['products'][0])
     return raw
 
 
