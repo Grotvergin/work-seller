@@ -18,7 +18,7 @@ PARAMS = {
     'sort': 'popular',
     'spp': '30',
     'suppressSpellcheck': 'false',
-    'uclusters': '8',
+    'uclusters': '1',
     'uiv': '2',
     'uv': 'pcurgKtTrZ8qY7FdL0-vCjAuqbE02ShGqcouqqbDHJkn2yz0FGGv2aIRLv-ixSwpJrEYviqGIogjCy1DL54xnK4zsXqhGKcfqoAh-TAOLxIsyieRLX8uMayjrlUrz7IwrKguC6kIrqAk06nDIACllCi-pBmrN6eipJ6w-DCjMPsy0i0dKtirlq6aLbWqc6s0JaUoWy4BJN6yaKwfnyiw_SdaHssxoyoRkOssN6pYqY0vxaw5LIitOLDtsQqroaywKCuozagEL6MtIiRlINyZkKWYlkQnm6iJJ-gnprK9qzouZK3kFjoqUycilfea3LC0LdarCx5lsAokz6-umAUnVQ',
 }

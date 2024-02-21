@@ -35,7 +35,17 @@ def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
     raw = GetData(page, word, proxies)
     if 'data' not in raw:
         Stamp('No key <<data>> in response, processing again', 'w')
+        AccurateSleep(SHORT_SLEEP, 0.5)
         raw = GetAndCheck(page, word, proxies)
+    elif SmartLen(raw['data']['products']) == 1:
+        Stamp('Length of products list is equal 1, processing again', 'w')
+        AccurateSleep(SHORT_SLEEP, 0.5)
+        raw = GetAndCheck(page, word, proxies)
+    else:
+        Stamp('Good data', 's')
+        print(raw['data']['products'][0])
+        print(raw['data']['products'][1])
+        print(raw['data']['products'][2])
     return raw
 
 
@@ -64,10 +74,10 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
     PARAMS['query'] = word
     HEADERS['User-Agent'] = random.choice(USER_AGENTS)
     try:
-        # if random.choice([True, False]):
-        #     Stamp('Using proxy', 'i')
-        #     response = requests.get(URL, params=PARAMS, headers=HEADERS, proxies=proxies)
-        # else:
+        if random.choice([True, False]):
+            Stamp('Using proxy', 'i')
+            response = requests.get(URL, params=PARAMS, headers=HEADERS, proxies=proxies)
+        else:
             Stamp('Using normal ip', 'i')
             response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
@@ -86,7 +96,6 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
             Stamp(f'Status = {response.status_code} on {URL}', 'e')
             Sleep(LONG_SLEEP)
             raw = GetData(page, word, proxies)
-    print(raw['data']['products'][0])
     return raw
 
 
