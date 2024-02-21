@@ -43,9 +43,6 @@ def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
         raw = GetAndCheck(page, word, proxies)
     else:
         Stamp('Good data', 's')
-        print(raw['data']['products'][0])
-        print(raw['data']['products'][1])
-        print(raw['data']['products'][2])
     return raw
 
 
