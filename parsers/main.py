@@ -64,10 +64,10 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
     PARAMS['query'] = word
     HEADERS['User-Agent'] = random.choice(USER_AGENTS)
     try:
-        if random.choice([True, False]):
-            Stamp('Using proxy', 'i')
-            response = requests.get(URL, params=PARAMS, headers=HEADERS, proxies=proxies)
-        else:
+        # if random.choice([True, False]):
+        #     Stamp('Using proxy', 'i')
+        #     response = requests.get(URL, params=PARAMS, headers=HEADERS, proxies=proxies)
+        # else:
             Stamp('Using normal ip', 'i')
             response = requests.get(URL, params=PARAMS, headers=HEADERS)
     except requests.ConnectionError:
