@@ -1,14 +1,14 @@
 from bot.farafon.source import *
 
 
-def PrepareAcceptance(req_col: str) -> bool:
+def PrepareAcceptance(req_col: str, heading: str) -> bool:
     service = BuildService()
     config, _ = ParseConfig(PATH[-2] + '/' + PATH[-1])
-    sheet_id = config['DEFAULT']['SheetID']
+    sheet_id = config[heading]['SheetID']
     if not VerifyColumn(req_col, service, sheet_id):
         return False
-    num_col = GetColumn(req_col, service, NAME_SOURCE, sheet_id, False, START_ROW, END_ROW)
-    id_col = GetColumn(COLUMN_ID, service, NAME_SOURCE, sheet_id, False, START_ROW, END_ROW)
+    num_col = GetColumn(req_col, service, NAME_SOURCE, sheet_id, False, START_ROW, END_ROWS[heading])
+    id_col = GetColumn(COLUMN_ID, service, NAME_SOURCE, sheet_id, False, START_ROW, END_ROWS[heading])
     data = ProcessData(num_col, id_col)
     CleanSheet(LEN_COLS, NAME_OUTPUT, sheet_id, service)
     UploadData(data, NAME_OUTPUT, sheet_id, service)

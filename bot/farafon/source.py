@@ -5,6 +5,9 @@ NAME_SOURCE = 'Приёмки на складах ФФ'
 NAME_OUTPUT = 'Report'
 COLUMN_ID = 'B'
 START_ROW = 6
-END_ROW = 185
+END_ROWS = {
+    'Bathroom': 185,
+    'Lighting': 92
+}
 LEN_COLS = 2
 ROW_TO_CHECK = 4

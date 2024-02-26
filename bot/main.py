@@ -46,14 +46,40 @@ def ChosenService(message: telebot.types.Message) -> None:
         SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
         bot.register_next_step_handler(message, CallbackReport)
     elif message.text == NAMES['farafon']:
-        SendMessage(message.from_user.id, '❔ Введите столбец, например, AI')
-        bot.register_next_step_handler(message, CallbackAcceptance)
+        markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+        cab_names = CABINETS_ACCEPTANCE.keys()
+        buttons = list(map(lambda x: telebot.types.KeyboardButton(x), cab_names))
+        rows = [[buttons[i], buttons[i + 1]] for i in range(0, len(buttons), 2)]
+        for row in rows:
+            markup.row(*row)
+        bot.send_message(message.from_user.id, '❔ Выберите желаемый кабинет:', reply_markup=markup)
+        bot.register_next_step_handler(message, CallbackAcceptanceCabinet)
     elif message.text == NAMES['parsers-h']:
         ProvideThread('parsers', message, 'main', '-h')
     elif message.text == NAMES['parsers-d']:
         ProvideThread('parsers', message, 'main', '-d')
     elif message.text in NAMES.values():
         ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message)
+    else:
+        SendMessage(message.from_user.id, UNKNOWN)
+        CallbackStart(message)
+
+
+def CallbackAcceptanceColumn(message: telebot.types.Message) -> None:
+    if PrepareAcceptance(message.text.upper(), CABINETS_ACCEPTANCE[CUR_CAB_ACCEPTANCE]):
+        SendMessage(message.from_user.id, f'🟢 Отчёт по столбцу {message.text.upper()} подготовлен')
+    else:
+        SendMessage(message.from_user.id, f'🔴 Некорректный столбец {message.text.upper()}, проверьте его существование...')
+    CallbackStart(message)
+
+
+def CallbackAcceptanceCabinet(message: telebot.types.Message) -> None:
+    Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
+    if message.text in CABINETS_ACCEPTANCE.keys():
+        global CUR_CAB_ACCEPTANCE
+        CUR_CAB_ACCEPTANCE = message.text
+        SendMessage(message.from_user.id, '❔ Напишите желаемый столбец, например, AI')
+        bot.register_next_step_handler(message, CallbackAcceptanceColumn)
     else:
         SendMessage(message.from_user.id, UNKNOWN)
         CallbackStart(message)
@@ -157,16 +183,6 @@ def CallbackReport(message: telebot.types.Message) -> None:
     else:
         SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
         SendMessage(user, PrepareReport(body))
-    CallbackStart(message)
-
-
-def CallbackAcceptance(message: telebot.types.Message) -> None:
-    user = message.from_user.id
-    body = message.text.upper()
-    if PrepareAcceptance(body):
-        SendMessage(user, f'🟢 Отчёт по столбцу {body} подготовлен')
-    else:
-        SendMessage(user, f'🔴 Некорректный столбец {body}, проверьте его существование...')
     CallbackStart(message)
 
 
