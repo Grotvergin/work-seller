@@ -37,6 +37,10 @@ def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
         Stamp('No key <<data>> in response, processing again', 'w')
         AccurateSleep(SHORT_SLEEP, 0.5)
         raw = GetAndCheck(page, word, proxies)
+    elif 'products' not in raw['data']:
+        Stamp('No key <<products>> in response, processing again', 'w')
+        AccurateSleep(SHORT_SLEEP, 0.5)
+        raw = GetAndCheck(page, word, proxies)
     elif SmartLen(raw['data']['products']) == 1:
         Stamp('Length of products list is equal 1, processing again', 'w')
         AccurateSleep(SHORT_SLEEP, 0.5)
