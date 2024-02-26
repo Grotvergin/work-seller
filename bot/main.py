@@ -46,7 +46,7 @@ def ChosenService(message: telebot.types.Message) -> None:
         SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
         bot.register_next_step_handler(message, CallbackReport)
     elif message.text == NAMES['farafon']:
-        SendMessage(message.from_user.id, '❔ Введите столбец, например, AI:')
+        SendMessage(message.from_user.id, '❔ Введите столбец, например, AI')
         bot.register_next_step_handler(message, CallbackAcceptance)
     elif message.text == NAMES['parsers-h']:
         ProvideThread('parsers', message, 'main', '-h')
