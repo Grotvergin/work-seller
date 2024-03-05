@@ -219,7 +219,7 @@ def MessageAccept(message: telebot.types.Message) -> None:
     elif body == MANAGE_SERVICE:
         CallbackService(message)
     else:
-        SendMessage(user, '🔴 Я вас не понял... Воспользуйтесь кнопками')
+        SendMessage(user, '⤵️ Воспользуйтесь кнопками')
         CallbackStart(message)
 
 
