@@ -75,7 +75,7 @@ def CallbackAcceptanceColumn(message: telebot.types.Message) -> None:
 
 def CallbackAcceptanceCabinet(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
-    if message.text == '/start':
+    if message.text == 'Вернуться на главную ◀️':
         CallbackStart(message)
     elif message.text in CABINETS_ACCEPTANCE.keys():
         global CUR_CAB_ACCEPTANCE

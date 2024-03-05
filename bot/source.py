@@ -18,6 +18,6 @@ CABINETS_ACCEPTANCE = {
     'Освещение (LUMIRE) 💡': 'Lighting',
     'Сантехника (WODOR) 🚰': 'Bathroom',
     'Посуда (FOODTERIA) 🍽': 'Dishes',
-    'Вернуться на главную': '/start'
+    'Вернуться на главную ◀️': '/start'
 }
 CUR_CAB_ACCEPTANCE = None
