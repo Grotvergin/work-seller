@@ -181,7 +181,7 @@ def CallbackReport(message: telebot.types.Message) -> None:
     if not VerifyDate(body):
         SendMessage(user, '🔴 Ошибка в предоставленной дате...')
     else:
-        SendMessage(user, f"🟢 Отображаю отчёт за {datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}")
+        SendMessage(user, f"🟢 Отчёт от *{datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}*")
         SendMessage(user, PrepareReport(body))
     CallbackStart(message)
 
