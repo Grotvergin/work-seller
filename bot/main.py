@@ -75,7 +75,9 @@ def CallbackAcceptanceColumn(message: telebot.types.Message) -> None:
 
 def CallbackAcceptanceCabinet(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
-    if message.text in CABINETS_ACCEPTANCE.keys():
+    if message.text == '/start':
+        CallbackStart(message)
+    elif message.text in CABINETS_ACCEPTANCE.keys():
         global CUR_CAB_ACCEPTANCE
         CUR_CAB_ACCEPTANCE = message.text
         SendMessage(message.from_user.id, '❔ Напишите желаемый столбец, например, AI')
