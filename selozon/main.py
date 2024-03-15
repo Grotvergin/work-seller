@@ -28,7 +28,7 @@ def Main() -> None:
 def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
     Stamp(f'Trying to click notification', 'i')
     try:
-        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-18"]/div/div[1]/div/div/div[2]/button/div/span')
+        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-16"]/div/div[1]/div/div/div[2]/button/div/span')
         if SmartLen(notification) > 0:
             Stamp('Clicking the notification', 'w')
             notification[0].click()
@@ -45,7 +45,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)
