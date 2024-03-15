@@ -18,6 +18,6 @@ CABINETS_ACCEPTANCE = {
     'Освещение (LUMIRE) 💡': 'Lighting',
     'Сантехника (WODOR) 🚰': 'Bathroom',
     'Посуда (FOODTERIA) 🍽': 'Dishes',
-    'Бижутерия (MUDRA)': 'Jewelry'
+    'Бижутерия (MUDRA) 💍': 'Jewelry'
 }
 CUR_CAB_ACCEPTANCE = None
