@@ -45,7 +45,7 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span').click()
+        driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span').click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)
@@ -147,6 +147,7 @@ def CreateDriver() -> undetected_chromedriver.Chrome:
     chromedriver_autoinstaller.install()
     SuppressException(undetected_chromedriver)
     options = undetected_chromedriver.ChromeOptions()
+
     options.add_argument('--headless')
     # options.add_argument('--no-sandbox')
     # options.add_argument('--disable-gpu')

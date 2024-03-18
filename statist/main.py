@@ -20,7 +20,8 @@ def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
             if period is None:
                 data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
                 extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
-                data.extend(extra_data)
+                if extra_data:
+                    data.extend(extra_data)
             else:
                 data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
             data = SortByRRD_ID(data)
