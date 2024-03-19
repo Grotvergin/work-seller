@@ -1,6 +1,7 @@
 from common import *
 
 
+HEADLESS = True
 SLEEP_CLICK = 1
 MEDIUM_SLEEP = 60
 MAX_TIME_TABLE = 300
@@ -18,3 +19,5 @@ COLUMNS = {
     'General': 6,
     'Date': None
 }
+POSSIBLE_XPATH_CAB = ['//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span',
+                      '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span']
