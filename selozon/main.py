@@ -161,7 +161,7 @@ def CreateDriver() -> undetected_chromedriver.Chrome:
     SuppressException(undetected_chromedriver)
     options = undetected_chromedriver.ChromeOptions()
     if HEADLESS:
-        options.add_argument('--headless')
+        options.add_argument('--headless') 
     options.add_argument(r'--user-data-dir=C:\Users\Рома\AppData\Local\Google\Chrome\User Data')
     options.add_argument('--profile-directory=Profile 1')
     options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.888 YaBrowser/23.9.2.888 Yowser/2.5 Safari/537.36')
