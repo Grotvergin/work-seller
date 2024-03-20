@@ -17,13 +17,13 @@ def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
         if sheet_name == 'Realisations':
-            if period is None:
-                data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
-                extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
-                if extra_data:
-                    data.extend(extra_data)
-            else:
-                data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
+            # if period is None:
+            #     data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
+            #     extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
+            #     if extra_data:
+            #         data.extend(extra_data)
+            # else:
+            data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
             data = SortByRRD_ID(data)
         else:
             data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
