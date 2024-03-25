@@ -26,11 +26,9 @@ def Main() -> None:
 
 
 def BarcodeIsValid(raw: dict) -> bool:
-    if 'data' in raw:
-        if 'products' in raw['data']:
-            if raw['data']['products'][0]:
-                if 'salePriceU' in raw['data']['products'][0]:
-                    return True
+    if 'data' in raw and 'products' in raw['data'] and raw['data']['products']:
+        if 'salePriceU' in raw['data']['products'][0]:
+            return True
     return False
 
 
