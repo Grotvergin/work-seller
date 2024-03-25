@@ -5,9 +5,48 @@ from statist.source import *
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
+    if datetime.now().strftime('%d') == '01':
+        for sheet_name in SHEETS.keys():
+            Save(config, service, sections[4:], sheet_name)
     for sheet_name in SHEETS.keys():
         Body(config, service, sections[:4], sheet_name)
         Body(config, service, sections[4:], sheet_name, PREFIX_MONTH)
+
+
+def Save(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str):
+    Stamp(f'Saving sheet {sheet_name}', 'i')
+    for heading in sections:
+        try:
+            sheet_id = config[heading]['SheetID']
+            old_numeric_name = service.spreadsheets().get(spreadsheetId=sheet_id, ranges=[sheet_name], includeGridData=False).execute().get('sheets')[0].get('properties').get('sheetId')
+            service.spreadsheets().sheets().copyTo(
+                spreadsheetId=sheet_id,
+                sheetId=old_numeric_name,
+                body={
+                    'destinationSpreadsheetId': sheet_id
+                }
+            ).execute()
+            copy_numeric_name = service.spreadsheets().get(spreadsheetId=sheet_id, ranges=[sheet_name + ' (копия)'], includeGridData=False).execute().get('sheets')[0].get('properties').get('sheetId')
+            body = {
+                'requests': [{
+                    "updateSheetProperties": {
+                        "properties": {
+                            "sheetId": copy_numeric_name,
+                            "title": f'Архив {sheet_name} от {TODAY}',
+                        },
+                        "fields": "title",
+                    }
+                }]
+            }
+            service.spreadsheets().batchUpdate(
+                spreadsheetId=sheet_id,
+                body=body
+            ).execute()
+        except (TimeoutError, httplib2.error.ServerNotFoundError, socket.gaierror, HttpError, ssl.SSLEOFError) as err:
+            Stamp(f'Status = {err} on saving sheet {sheet_name} from section {heading}', 'e')
+        else:
+            Stamp(f'Sheet {sheet_name} from section {heading} was saved', 's')
+        Sleep(SLEEP_GOOGLE/4)
 
 
 def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str, period: str = None):
