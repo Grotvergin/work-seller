@@ -68,7 +68,9 @@ NAMES = {
     'advert': 'WB Реклама 💸',
     'status': 'Статус обновлений 🆗',
     'farafon': 'Отчёт по приёмкам 📦',
-    'pricepec': 'WB Цены по сайту 🛒'
+    'pricepec': 'WB Цены по сайту 🛒',
+    'monstr': 'MarketMonstr 👹',
+    'selozon': 'OZON Кабинет продавца 🧾'
 }
 
 

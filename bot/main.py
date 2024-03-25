@@ -58,6 +58,8 @@ def ChosenService(message: telebot.types.Message) -> None:
         ProvideThread('parsers', message, 'main', '-h')
     elif message.text == NAMES['parsers-d']:
         ProvideThread('parsers', message, 'main', '-d')
+    elif message.text == NAMES['selozon']:
+        bot.send_message(message.from_user.id, '📌 Запуск этой выгрузки осуществляется только вручную')
     elif message.text in NAMES.values():
         ProvideThread(list(filter(lambda x: NAMES[x] == message.text, NAMES))[0], message)
     else:
