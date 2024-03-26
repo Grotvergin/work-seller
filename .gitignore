@@ -11,3 +11,7 @@ __pycache__/
 !/requirements.txt
 venv
 LOG/*
+*.xlsx
+test.py
+secret.py
+*.html

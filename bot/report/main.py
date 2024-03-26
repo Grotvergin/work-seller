@@ -4,10 +4,10 @@ from bot.report.source import *
 @Inspector(PATH[-1])
 def Main() -> None:
     msg = PrepareReport(YESTERDAY[8:10])
-    IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report')
-    IndependentSender(msg, 'report')
-    IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report_groups')
-    GroupSender(msg, 'report_groups')
+    # IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report')
+    # IndependentSender(msg, 'report')
+    # IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report_groups')
+    # GroupSender(msg, 'report_groups')
 
 
 def VerifyDate(day: str) -> bool:
@@ -28,12 +28,12 @@ def PrepareReport(req_date: str) -> list[str]:
                      f'На сумму: *{simple[3]}* руб\n\n️▫️ OZON\nСовершено заказов: *{simple[4]}* шт\nПо среднему чеку: *{simple[5]}* руб\n'
                      f'На сумму: *{simple[6]}* руб\n\nИтого: *{simple[7]}* заказов\nНа сумму: *{simple[8]}* руб\n\n')
     detailed = GetColumn(COLUMN_INDEXES[int(req_date) + 1], service, NAME_DETAILED, sheet_id)
-    for i in range(1, 51, 17):
+    for i in range(1, 54, 18):
         project = (f'🔳 *{HEADERS_DETAILED[i // 17]}*\n\n▫️ WB\nСовершено заказов всего: *{detailed[i]}* шт\nПо среднему чеку: *{detailed[i + 2]}* руб\n'
                    f'На сумму: *{detailed[i + 1]}* руб\n\nОрганических заказов: *{detailed[i + 3]}*\nПо среднему чеку: *{detailed[i + 5]}* руб\n'
                    f'На сумму: *{detailed[i + 4]}* руб\n\nСовершено самовыкупов: *{detailed[i + 6]}* штук\nНа сумму: *{detailed[i + 7]}* руб\n\n'
                    f'▫️ OZON\nСовершено заказов: *{detailed[i + 8]}* шт\nПо среднему чеку: *{detailed[i + 9]}* руб\n'
-                   f'На сумму: *{detailed[i + 10]}* руб\n\nИтого: *{detailed[i + 12]}* органических заказов\nНа сумму: *{detailed[i + 14]}* руб\n\n')
+                   f'На сумму: *{detailed[i + 10]}* руб\n\nИтого: *{detailed[i + 12]}* органических заказов\nНа сумму: *{detailed[i + 15]}* руб\n\n')
         formatted.append(project)
     return formatted
 

@@ -33,6 +33,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 import undetected_chromedriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 init()
