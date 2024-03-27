@@ -4,10 +4,10 @@ from bot.report.source import *
 @Inspector(PATH[-1])
 def Main() -> None:
     msg = PrepareReport(YESTERDAY[8:10])
-    # IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report')
-    # IndependentSender(msg, 'report')
-    # IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report_groups')
-    # GroupSender(msg, 'report_groups')
+    IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report')
+    IndependentSender(msg, 'report')
+    IndependentSender(f'🟢 Отчёт от *{YESTERDAY}*', 'report_groups')
+    GroupSender(msg, 'report_groups')
 
 
 def VerifyDate(day: str) -> bool:

@@ -28,10 +28,10 @@ def Main() -> None:
 def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
     Stamp(f'Trying to click notification', 'i')
     try:
-        notification = driver.find_elements(By.XPATH, '//*[@id="tippy-16"]/div/div[1]/div/div/div[2]/button/div/span')
-        if SmartLen(notification) > 0:
+        notification = ChooseElementXPath(driver, POSSIBLE_XPATH_NOTIF)
+        if notification:
             Stamp('Clicking the notification', 'w')
-            notification[0].click()
+            notification.click()
             Sleep(SLEEP_CLICK)
         else:
             Stamp('Notification is absent', 'i')
@@ -41,15 +41,15 @@ def ClickNotification(driver: undetected_chromedriver.Chrome) -> None:
         ClickNotification(driver)
 
 
-def ChooseXPathCabinet(driver: undetected_chromedriver.Chrome) -> str | None:
-    for xpath in POSSIBLE_XPATH_CAB:
+def ChooseElementXPath(driver: undetected_chromedriver.Chrome, lst_xpaths: list):
+    for xpath in lst_xpaths:
         try:
-            driver.find_element(By.XPATH, xpath)
-            Stamp('Aprropriate XPath for cabinet found', 's')
-            return xpath
+            element = driver.find_element(By.XPATH, xpath)
+            Stamp(f'Aprropriate XPath found', 's')
+            return element
         except WebDriverException:
             continue
-    Stamp('No appropriate paths for cabinet click found', 'w')
+    Stamp(f'No appropriate paths found from {lst_xpaths}', 'w')
     return None
 
 
@@ -57,8 +57,7 @@ def ChooseXPathCabinet(driver: undetected_chromedriver.Chrome) -> str | None:
 def ChooseCabinet(driver: undetected_chromedriver.Chrome, cab_num: int) -> None:
     Stamp(f'Trying to choose cabinet <<{cab_num}>>', 'i')
     try:
-        path = ChooseXPathCabinet(driver)
-        driver.find_element(By.XPATH, path).click()
+        ChooseElementXPath(driver, POSSIBLE_XPATH_CAB).click()
         AccurateSleep(SLEEP_CLICK, 0.4)
         driver.find_element(By.XPATH, f'//div[4]/div/div/div/div/div/div/div/div[{cab_num}]').click()
         AccurateSleep(SLEEP_CLICK, 0.5)

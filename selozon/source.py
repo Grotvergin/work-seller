@@ -21,3 +21,5 @@ COLUMNS = {
 }
 POSSIBLE_XPATH_CAB = ['//*[@id="app"]/div[1]/div/div[1]/div/div/div[1]/div/span',
                       '//*[@id="app"]/div[2]/div/div[1]/div/div/div[1]/div/span']
+POSSIBLE_XPATH_NOTIF = ['//*[@id="tippy-15"]/div/div[1]/div/div/div[2]/button/div/span',
+                        '//*[@id="tippy-16"]/div/div[1]/div/div/div[2]/button/div/span']
