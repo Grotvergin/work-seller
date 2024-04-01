@@ -43,7 +43,7 @@ def CallbackService(message: telebot.types.Message) -> None:
 def ChosenService(message: telebot.types.Message) -> None:
     Stamp(f'User {message.from_user.id} requested {message.text}', 'i')
     if message.text == NAMES['report']:
-        SendMessage(message.from_user.id, '❔ Введите число текущего месяца:')
+        SendMessage(message.from_user.id, '❔ Введите число текущего месяца или -1 для предыдущего дня:')
         bot.register_next_step_handler(message, CallbackReport)
     elif message.text == NAMES['farafon']:
         markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
@@ -180,10 +180,14 @@ def CallbackStop(user: int, path: list[str]) -> None:
 def CallbackReport(message: telebot.types.Message) -> None:
     user = message.from_user.id
     body = message.text.lower()
-    if not VerifyDate(body):
+    if not VerifyDate(body) and body != '-1':
         SendMessage(user, '🔴 Ошибка в предоставленной дате...')
     else:
-        SendMessage(user, f"🟢 Отчёт от *{datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}*")
+        if body == '-1':
+            body = YESTERDAY[8:10]
+            SendMessage(user, f'🟢 Отчёт от *{YESTERDAY}*')
+        else:
+            SendMessage(user, f"🟢 Отчёт от *{datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}*")
         SendMessage(user, PrepareReport(body))
     CallbackStart(message)
 
