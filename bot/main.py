@@ -184,8 +184,8 @@ def CallbackReport(message: telebot.types.Message) -> None:
         SendMessage(user, '🔴 Ошибка в предоставленной дате...')
     else:
         if body == '-1':
-            body = YESTERDAY[8:10]
-            SendMessage(user, f'🟢 Отчёт от *{YESTERDAY}*')
+            body = (datetime.now() - timedelta(days=1)).strftime('%d')
+            SendMessage(user, f'🟢 Отчёт от *{(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')}*')
         else:
             SendMessage(user, f"🟢 Отчёт от *{datetime(datetime.now().year, datetime.now().month, int(body)).strftime('%Y-%m-%d')}*")
         SendMessage(user, PrepareReport(body))
