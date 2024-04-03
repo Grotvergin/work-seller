@@ -133,8 +133,12 @@ def ProcessData(raw: dict, word: str, page: int) -> (list, list):
                     row_real.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
                 case 'price':
                     if TYPE == '-h':
-                        row_advertise.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
-                        row_real.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
+                        try:
+                            row_advertise.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
+                            row_real.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
+                        except KeyError:
+                            row_advertise.append(MSG)
+                            row_real.append(MSG)
         list_advertise.append(row_advertise)
         list_real.append(row_real)
     return list_advertise, list_real
