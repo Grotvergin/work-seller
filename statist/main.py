@@ -56,14 +56,14 @@ def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
         if sheet_name == 'Realisations':
-            # if period is None:
-            #     data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
-            #     extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
-            #     if extra_data:
-            #         data.extend(extra_data)
-            # else:
-            data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
-            data = SortByRRD_ID(data)
+            if period is None:
+                data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
+                extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
+                if extra_data:
+                    data.extend(extra_data)
+            else:
+                data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
+                data = SortByRRD_ID(data)
         else:
             data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
         data = ProcessData(Normalize(data), sheet_name)
@@ -100,12 +100,11 @@ def GetData(url: str, token: str, date_from: str, date_to: str) -> list:
 
 
 def ParseCurrentHeading(config: ConfigParser, heading: str, period: str = None) -> (str, str, str, str):
-    date_to = TODAY
     token_key = 'Token' + heading[5:] if period else 'Token' + heading
     token = config['DEFAULT'][token_key]
     sheet_id = config[heading]['SheetID']
     date_from = START_OF_MONTH if period else DATE_FROM
-    return token, date_from, date_to, sheet_id
+    return token, date_from, TODAY, sheet_id
 
 
 def Normalize(raw: list) -> list:
