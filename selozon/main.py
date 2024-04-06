@@ -75,7 +75,8 @@ def InsertValues(driver: undetected_chromedriver.Chrome, value: str, XPath: str)
     Stamp(f'Trying to insert value <<{value}>>', 'i')
     try:
         element = driver.find_element(By.XPATH, XPath)
-        element.clear()
+        element.send_keys(Keys.CONTROL + "A")
+        element.send_keys(Keys.DELETE)
         element.send_keys(value)
         AccurateSleep(SLEEP_CLICK, 0.6)
     except WebDriverException as e:
