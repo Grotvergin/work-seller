@@ -1,7 +1,7 @@
 from common import *
 
 
-HEADLESS = False
+HEADLESS = True
 SLEEP_CLICK = 1
 MEDIUM_SLEEP = 60
 MAX_TIME_TABLE = 300
