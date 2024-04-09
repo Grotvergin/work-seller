@@ -2,7 +2,7 @@ from discharge.source import *
 
 
 @Inspector(NAME)
-def Main():
+def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
     for heading in sections:
