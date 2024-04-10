@@ -6,8 +6,6 @@ from stencil.secret import *
 def Main():
     service = BuildService()
     for i, (cabinet, creds) in enumerate(CABINETS_AND_CREDS.items()):
-        if cabinet == 'Bathroom':
-            continue
         final_data = []
         CleanSheet(len(COLUMNS), cabinet, SHEET_ID, service)
         column = chr(i + ord('A'))
