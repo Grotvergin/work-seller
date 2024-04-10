@@ -4,6 +4,7 @@ NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/
 URL = 'https://seller.ozon.ru/api/site/seller-analytics/v1/data/table'
 LONG_SLEEP = 60
 SHORT_SLEEP = 10
+CABINETS = ['Bathroom']
 COLUMNS = ['name', 'id', 'sellerId', 'source', 'amount', 'summ', 'basket', 'unique', 'showall', 'showsearch']
 SAMPLE = {
     'group_by': 'SKU',
