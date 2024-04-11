@@ -43,4 +43,5 @@ def PrepareReport(req_date: str) -> list[str]:
 
 
 if __name__ == '__main__':
+    TYPE = sys.argv[1]
     Main()
