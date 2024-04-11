@@ -6,7 +6,7 @@ app = FastAPI()
 @app.get('/renew')
 def run_program():
     Stamp('Request to renew accepted', 'i')
-    if AddToDatabase('external', PATH_DB + 'active.txt', True):
+    if not AddToDatabase('external', PATH_DB + 'active.txt', True):
         Stamp('Check passed, starting renew', 's')
         thread = Thread(target=subprocess.run, args=(['python', '-m', 'external.main'],), kwargs={'check': False})
         thread.start()
