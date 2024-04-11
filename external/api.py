@@ -17,6 +17,7 @@ def run_program():
         Stamp('Process is finished', 'b')
         RemoveFromDatabase('external', PATH_DB + 'active.txt')
         return {'message': 'Program executed successfully'}
+    Stamp('Check failed, program is already running', 'e')
     return {'message': 'Program is already running'}
 
 
