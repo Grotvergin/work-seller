@@ -34,6 +34,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import undetected_chromedriver
+from fastapi import FastAPI
+import uvicorn
 
 
 init()

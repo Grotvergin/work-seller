@@ -1,12 +1,18 @@
-from fastapi import FastAPI
-import uvicorn
+from common import *
 
 app = FastAPI()
 
 
 @app.get('/renew')
 def run_program():
-    return {"message": "Program started"}
+    if AddToDatabase('external', PATH_DB + 'active.txt', True):
+        thread = Thread(target=subprocess.run, args=(['python', '-m', 'external.api'],), kwargs={'check': False})
+        thread.start()
+        while thread.is_alive():
+            time.sleep(1)
+        RemoveFromDatabase('external', PATH_DB + 'active.txt')
+        return {'message': 'Program executed successfully'}
+    return {'message': 'Program is already running'}
 
 
 if __name__ == '__main__':
