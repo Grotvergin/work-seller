@@ -8,3 +8,4 @@ selenium==4.16.0
 chromedriver-autoinstaller==0.6.4
 undetected_chromedriver==3.5.5
 setuptools==69.0.3
+fastapi==0.110.1
