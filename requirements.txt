@@ -9,3 +9,4 @@ chromedriver-autoinstaller==0.6.4
 undetected_chromedriver==3.5.5
 setuptools==69.0.3
 fastapi==0.110.1
+uvicorn==0.29.0
