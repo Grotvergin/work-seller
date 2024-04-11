@@ -14,8 +14,8 @@ def run_program():
         while thread.is_alive():
             Stamp('Process is alive', 'i')
             time.sleep(1)
-        Stamp('Process is finished', 'b')
         RemoveFromDatabase('external', PATH_DB + 'active.txt')
+        Stamp('Process is finished', 'b')
         return {'message': 'Program executed successfully'}
     Stamp('Check failed, program is already running', 'e')
     return {'message': 'Program is already running'}

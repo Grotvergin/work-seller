@@ -57,6 +57,7 @@ PATH_DB = str(Path.cwd()) + '/bot/database/'
 DEBUG_MODE = False
 MAX_PROCESSES = 4
 os.environ['PYTHONIOENCODING'] = 'utf-8'
+file_lock = Lock()
 NAMES = {
     'top': 'Top V Top 🔝',
     'statist': 'WB Статистика 📊',
@@ -114,35 +115,37 @@ def Inspector(name: str) -> Callable[..., Any]:
 
 
 def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
-    Stamp(f'Adding note {note} to DB {path}', 'i')
-    found = False
-    with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
-        for line in f:
-            if line.strip() == note:
+    with file_lock:
+        Stamp(f'Adding note {note} to DB {path}', 'i')
+        found = False
+        with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip() == note:
+                    found = True
+                    break
+        if not found:
+            if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
                 found = True
-                break
-    if not found:
-        if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
-            found = True
-        else:
-            with open(Path.cwd() / path, 'a') as f:
-                f.write(note + '\n')
+            else:
+                with open(Path.cwd() / path, 'a') as f:
+                    f.write(note + '\n')
     return found
 
 
 def RemoveFromDatabase(note: str, path: str) -> bool:
-    Stamp(f'Removing note {note} from DB {path}', 'i')
-    found = False
-    lines = ReadLinesFromFile(path)
-    for line in lines:
-        if line.strip() == note:
-            found = True
-            break
-    if found:
-        with open(Path.cwd() / path, 'w', encoding='utf-8') as f:
-            for line in lines:
-                if line.strip() != note:
-                    f.write(line)
+    with file_lock:
+        Stamp(f'Removing note {note} from DB {path}', 'i')
+        found = False
+        lines = ReadLinesFromFile(path)
+        for line in lines:
+            if line.strip() == note:
+                found = True
+                break
+        if found:
+            with open(Path.cwd() / path, 'w', encoding='utf-8') as f:
+                for line in lines:
+                    if line.strip() != note:
+                        f.write(line)
     return found
 
 
