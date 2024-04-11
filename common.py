@@ -127,8 +127,10 @@ def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
         Stamp('First check passed', 's')
         if not found:
             if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
+                Stamp('first', 'w')
                 found = True
             else:
+                Stamp('second', 'w')
                 with open(Path.cwd() / path, 'a') as f:
                     f.write(note + '\n')
     return found
