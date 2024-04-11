@@ -120,9 +120,11 @@ def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
         found = False
         with open(Path.cwd() / path, 'r', encoding='utf-8') as f:
             for line in f:
+                Stamp(line, 'i')
                 if line.strip() == note:
                     found = True
                     break
+        Stamp('First check passed', 's')
         if not found:
             if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
                 found = True
