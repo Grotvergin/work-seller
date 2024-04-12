@@ -55,7 +55,7 @@ MSG = 'NoData'
 PREFIX_MONTH = 'Month'
 PATH_DB = str(Path.cwd()) + '/bot/database/'
 DEBUG_MODE = False
-MAX_PROCESSES = 4
+MAX_PROCESSES = 5
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 file_lock = Lock()
 NAMES = {
@@ -124,13 +124,10 @@ def AddToDatabase(note: str, path: str, len_check: bool = False) -> bool:
                 if line.strip() == note:
                     found = True
                     break
-        Stamp('First check passed', 's')
         if not found:
             if len_check and SmartLen(ReadLinesFromFile(path)) >= MAX_PROCESSES:
-                Stamp('first', 'w')
                 found = True
             else:
-                Stamp('second', 'w')
                 with open(Path.cwd() / path, 'a') as f:
                     f.write(note + '\n')
     return found
