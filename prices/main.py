@@ -24,7 +24,7 @@ def ParseCurrentHeading(config: ConfigParser, heading: str) -> (str, str):
 def GetData(token: str) -> list:
     Stamp(f'Trying to connect {URL}', 'i')
     try:
-        response = requests.get(URL, headers={'Authorization': token})
+        response = requests.get(URL, headers={'Authorization': token}, params={'limit': 1000})
     except requests.ConnectionError:
         Stamp(f'Connection on {URL}', 'e')
         Sleep(LONG_SLEEP)
@@ -44,19 +44,19 @@ def GetData(token: str) -> list:
     return raw
 
 
-def ProcessData(raw: list) -> list:
+def ProcessData(raw: dict) -> list:
     list_of_rows = []
-    for i in range(SmartLen(raw)):
-        one_row = []
-        for column in COLUMNS:
-            if column == 'time':
-                one_row.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
-            else:
-                try:
-                    one_row.append(str(raw[i][column]).replace('.', ','))
-                except KeyError:
-                    one_row.append(MSG)
-        list_of_rows.append(one_row)
+    for good in raw['data']['listGoods']:
+        for size in good['sizes']:
+            one_row = []
+            for column in COLUMNS:
+                if column == 'time':
+                    one_row.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
+                elif column in ('nmID', 'vendorCode', 'discount'):
+                    one_row.append(str(good[column]))
+                else:
+                    one_row.append(str(size[column]).replace('.', ','))
+            list_of_rows.append(one_row)
     return list_of_rows
 
 
