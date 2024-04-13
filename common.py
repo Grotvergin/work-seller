@@ -74,8 +74,8 @@ NAMES = {
     'farafon': 'Отчёт по приёмкам 📦',
     'pricepec': 'WB Цены по сайту 🛒',
     'monstr': 'MarketMonstr 👹',
-    'selozon': 'OZON Кабинет продавца 🧾',
-    # 'graphs': 'OZON Графики 📈',
+    # 'selozon': 'OZON Кабинет продавца 🧾',
+    'graphs': 'OZON Графики 📈',
     'stencil': 'OZON Трафареты 📐',
     'search': 'OZON Продвижение в поиске 🎛'
 }
