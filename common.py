@@ -67,14 +67,17 @@ NAMES = {
     'funnel': 'WB Аналитика 🔍',
     'discharge': 'OZON Выгрузка 🗂',
     'checker': 'Увеличение остатков ⚡️',
-    'report': 'Отчёт по дате 📈',
+    'report': 'Отчёт по дате 📅',
     'analytics': 'OZON Аналитика 🔎',
     'advert': 'WB Реклама 💸',
     'status': 'Статус обновлений 🆗',
     'farafon': 'Отчёт по приёмкам 📦',
     'pricepec': 'WB Цены по сайту 🛒',
     'monstr': 'MarketMonstr 👹',
-    'selozon': 'OZON Кабинет продавца 🧾'
+    'selozon': 'OZON Кабинет продавца 🧾',
+    'graphs': 'OZON Графики 📈',
+    'stencil': 'OZON Трафареты 📐',
+    'search': 'OZON Продвижение в поиске 🎛'
 }
 
 
