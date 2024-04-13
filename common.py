@@ -75,7 +75,7 @@ NAMES = {
     'pricepec': 'WB Цены по сайту 🛒',
     'monstr': 'MarketMonstr 👹',
     'selozon': 'OZON Кабинет продавца 🧾',
-    'graphs': 'OZON Графики 📈',
+    # 'graphs': 'OZON Графики 📈',
     'stencil': 'OZON Трафареты 📐',
     'search': 'OZON Продвижение в поиске 🎛'
 }
