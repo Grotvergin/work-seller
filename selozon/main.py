@@ -6,22 +6,24 @@ def Main() -> None:
     service = BuildService()
     config, sections = ParseConfig(NAME)
     driver = CreateDriver()
-    sheet_id = config['DEFAULT']['SheetID']
-    cities = GetColumn('A', service, 'Cities', sheet_id)
-    driver.get('https://seller.ozon.ru/app/analytics/search-results/explainer')
-    row_all = len(GetColumn('A', service, NAME_ALL, sheet_id)) + 2
-    for heading in sections:
-        Stamp(f'Processing {heading}', 'b')
-        row_heading = len(GetColumn('A', service, heading, sheet_id)) + 2
-        column = config[heading]['Column']
-        words = GetColumn(column, service, 'Words', sheet_id)
-        cab_num = ord(column) - ord('A') + 2
-        for dataset in GetData(driver, cab_num, cities, words):
-            UploadData(dataset, heading, sheet_id, service, row_heading)
-            UploadData(dataset, NAME_ALL, sheet_id, service, row_all)
-            row_heading += SmartLen(dataset)
-            row_all += SmartLen(dataset)
-    KillDriver(driver)
+    try:
+        sheet_id = config['DEFAULT']['SheetID']
+        cities = GetColumn('A', service, 'Cities', sheet_id)
+        driver.get('https://seller.ozon.ru/app/analytics/search-results/explainer')
+        row_all = len(GetColumn('A', service, NAME_ALL, sheet_id)) + 2
+        for heading in sections:
+            Stamp(f'Processing {heading}', 'b')
+            row_heading = len(GetColumn('A', service, heading, sheet_id)) + 2
+            column = config[heading]['Column']
+            words = GetColumn(column, service, 'Words', sheet_id)
+            cab_num = ord(column) - ord('A') + 2
+            for dataset in GetData(driver, cab_num, cities, words):
+                UploadData(dataset, heading, sheet_id, service, row_heading)
+                UploadData(dataset, NAME_ALL, sheet_id, service, row_all)
+                row_heading += SmartLen(dataset)
+                row_all += SmartLen(dataset)
+    finally:
+        KillDriver(driver)
 
 
 @ControlRecursion
