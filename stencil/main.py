@@ -65,8 +65,8 @@ def GetDetailed(cookie: str, headers: str, date_from: str, date_to: str, id_camp
 def GetCampaigns(cookie: str, headers: str, date_from: str, date_to: str) -> list:
     Stamp(f'Trying to connect {URL_CAMPAIGNS}', 'i')
     body = SAMPLE_CAMPAIGNS.copy()
-    body['statsFrom'] = date_from
-    body['statsTo'] = date_to
+    body['statsFrom'] = date_from + 'T00:00:00.000Z'
+    body['statsTo'] = date_to + 'T00:00:00.000Z'
     try:
         response = requests.post(URL_CAMPAIGNS, headers=headers, json=body, cookies=cookie)
     except requests.ConnectionError:
