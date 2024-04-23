@@ -8,13 +8,13 @@ def run_program():
     Stamp('Request to renew accepted', 'i')
     for name in ('graphs', 'stencil', 'search'):
         if not AddToDatabase(name, PATH_DB + 'active.txt', True):
+            RemoveFromDatabase(name, PATH_DB + 'active.txt')
             Stamp(f'{name} check passed', 's')
             thread = Thread(target=subprocess.run, args=(['python', '-m', f'{name}.main'],), kwargs={'check': False})
             thread.start()
             Stamp(f'Thread was given to {name}', 'b')
             while thread.is_alive():
                 time.sleep(1)
-            RemoveFromDatabase(name, PATH_DB + 'active.txt')
             Stamp(f'Process  {name} is finished', 'b')
         else:
             Stamp(f'Check {name} failed, program is already running', 'e')
