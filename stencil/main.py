@@ -38,8 +38,8 @@ def GetDetailed(cookie: str, headers: str, date_from: str, date_to: str, id_camp
     url = URL_INFO.format(id_campaign)
     Stamp(f'Trying to connect {url}', 'i')
     params = PARAMS_INFO.copy()
-    params['statsIntervalFrom'] = date_from
-    params['statsIntervalTo'] = date_to
+    params['statsIntervalFrom'] = date_from + 'T00:00:00.000Z'
+    params['statsIntervalTo'] = date_to + 'T00:00:00.000Z'
     try:
         response = requests.get(url, headers=headers, cookies=cookie, params=params)
     except requests.ConnectionError:
