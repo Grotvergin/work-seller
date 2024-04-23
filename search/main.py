@@ -53,8 +53,8 @@ def GetData(cookie: str, headers: str, uuid: str) -> dict:
 def GetReportUUID(cookie: str, headers: str, date_from: str, date_to: str, id_campaign: str) -> dict:
     Stamp(f'Trying to connect {URL_PREPARE}', 'i')
     body = SAMPLE_PREPARE.copy()
-    body['dateTo'] = date_to + 'T00:00:00.000Z'
-    body['dateFrom'] = date_from + 'T00:00:00.000Z'
+    body['dateTo'] = date_to
+    body['dateFrom'] = date_from
     body['campaignId'] = id_campaign
     try:
         response = requests.post(URL_PREPARE, headers=headers, json=body, cookies=cookie)

@@ -6,7 +6,7 @@ app = FastAPI()
 @app.get('/three')
 def run_program():
     Stamp('Request to renew accepted', 'i')
-    for name in ('stencil', 'graphs', 'search'):
+    for name in ('search', 'stencil', 'graphs'):
         if not AddToDatabase(name, PATH_DB + 'active.txt', True):
             RemoveFromDatabase(name, PATH_DB + 'active.txt')
             Stamp(f'{name} check passed', 's')
