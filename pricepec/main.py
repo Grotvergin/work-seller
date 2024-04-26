@@ -1,7 +1,6 @@
 from pricepec.source import *
 
 
-# ДОБАВИТЬ В БОТА
 @Inspector(NAME)
 def Main() -> None:
     config, sections = ParseConfig(NAME)

@@ -1,6 +1,6 @@
 from common import *
 
-URL = 'https://card.wb.ru/cards/v1/detail'
+URL = 'https://card.wb.ru/cards/v2/detail'
 COLUMNS = ['id', 'name', 'price', 'time']
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 SHORT_SLEEP = 6
