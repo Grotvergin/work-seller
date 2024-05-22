@@ -33,7 +33,7 @@ def PrepareData(data: dict) -> list:
 
 
 @ControlRecursion
-def GetData(cookies: dict, headers:dict, code: str, date_from: str, date_to: str) -> dict:
+def GetData(cookies: dict, headers: dict, code: str, date_from: str, date_to: str) -> dict:
     Stamp(f'Trying to connect {URL}', 'i')
     body = SAMPLE.copy()
     body['date_from'] = date_from
