@@ -20,10 +20,13 @@ def ProcessData(data: dict) -> list:
     for row in data:
         one_row = []
         for column in COLUMNS:
-            if IsNumber(row[column]):
-                one_row.append((str(round(float(row[column]), 2))).replace('.', ','))
-            else:
-                one_row.append(row[column])
+            try:
+                if IsNumber(row[column]):
+                    one_row.append((str(round(float(row[column]), 2))).replace('.', ','))
+                else:
+                    one_row.append(row[column])
+            except KeyError:
+                one_row.append(MSG)
         list_of_rows.append(one_row)
     return list_of_rows
 
