@@ -26,8 +26,11 @@ def Main() -> None:
 
 def BarcodeIsValid(raw: dict) -> bool:
     if 'data' in raw and 'products' in raw['data'] and raw['data']['products']:
-        if 'salePriceU' in raw['data']['products'][0]:
-            return True
+        if 'sizes' in raw['data']['products'][0] and raw['data']['products'][0]['sizes']:
+            if raw['data']['products'][0]['sizes'][0] and 'price' in raw['data']['products'][0]['sizes'][0]:
+                if raw['data']['products'][0]['sizes'][0]['price'] and 'total' in raw['data']['products'][0]['sizes'][0]['price']:
+                    if raw['data']['products'][0]['sizes'][0]['price']['total']:
+                        return True
     return False
 
 
@@ -40,7 +43,7 @@ def ProcessData(raw: dict) -> list[str]:
             case 'name':
                 one_row.append(str(raw['name']))
             case 'price':
-                one_row.append(str(int(raw['salePriceU']/100)))
+                one_row.append(str(int(int(raw['sizes'][0]['price']['total']))/100))
             case 'time':
                 one_row.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
     return one_row
