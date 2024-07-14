@@ -13,15 +13,27 @@ def Main() -> None:
         list_of_rows = []
         for barcode in barcodes:
             Stamp(f'Processing barcode: {barcode}', 'i')
-            raw = GetData(barcode, proxies)
-            if BarcodeIsValid(raw):
+            raw = GetDataWhileNotCorrect(barcode, proxies, MAX_ATTEMPTS)
+            if raw:
                 Stamp('Barcode is valid', 'i')
                 list_of_rows.append(ProcessData(raw['data']['products'][0]))
             else:
-                Stamp('Barcode is not valid', 'w')
+                Stamp('Barcode is NOT valid', 'w')
                 list_of_rows.append([barcode] + ['BarcodeError'] * 2 + [str(datetime.now().strftime('%Y-%m-%d %H:%M'))])
             Sleep(SHORT_SLEEP, 0.5)
         UploadData(list_of_rows, heading, sheet_id, service)
+
+
+def GetDataWhileNotCorrect(barcode: str, proxies: dict, max_attempts: int) -> dict | None:
+    attempts = 0
+    while attempts < max_attempts:
+        raw_data = GetData(barcode, proxies)
+        if BarcodeIsValid(raw_data):
+            return raw_data
+        attempts += 1
+        Stamp(f'Attempt {attempts} failed, retrying', 'w')
+    Stamp(f'Exceeded maximum attempts ({max_attempts}) for barcode: {barcode}', 'e')
+    return
 
 
 def BarcodeIsValid(raw: dict) -> bool:
