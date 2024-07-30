@@ -38,6 +38,7 @@ from selenium.common.exceptions import WebDriverException
 import undetected_chromedriver
 from fastapi import FastAPI
 import uvicorn
+from urllib.parse import quote
 
 
 init()

@@ -26,7 +26,7 @@ HEADERS = {
     'Accept-Language': 'ru,en;q=0.9,cy;q=0.8',
     'Connection': 'keep-alive',
     'Origin': 'https://www.wildberries.ru',
-    'Referer': 'https://www.wildberries.ru/catalog/0/search.aspx',
+    'Referer': 'https://www.wildberries.ru/catalog/0/search.aspx?search={}',
     'Sec-Fetch-Dest': 'empty',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'cross-site',
@@ -34,5 +34,5 @@ HEADERS = {
     'sec-ch-ua': '"Chromium";v="116", "Not)A;Brand";v="24", "YaBrowser";v="23"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
-    'x-queryid': 'qid276998376170013136520240610105312',
+    'x-queryid': 'qid398444427171994228020240721103639',
 }

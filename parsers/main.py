@@ -16,21 +16,17 @@ def Main() -> None:
             CleanSheet(len(COLUMNS), PREFIX + heading, sheet_id, service)
         for word in words:
             Stamp(f'Processing template: {word}', 'i')
-            real_pages = []
-            advertise_pages = []
+            data = []
             for page in range(1, PAGES_QUANTITY + 1):
                 Stamp(f'Processing page {page}', 'i')
                 raw = GetAndCheck(page, word, proxies)
-                advertise, real = ProcessData(raw, word, page)
-                real_pages += FilterByBarcode(real, barcodes)
-                advertise_pages += FilterByBarcode(advertise, barcodes)
+                real = ProcessData(raw, word, page)
+                data += FilterByBarcode(real, barcodes)
                 AccurateSleep(SHORT_SLEEP, 0.5)
-            UploadData(advertise_pages, heading, sheet_id, service, row)
-            UploadData(real_pages, PREFIX + heading, sheet_id, service, row)
-            row += len(advertise_pages)
+            UploadData(data, heading, sheet_id, service, row)
+            row += len(data)
 
 
-# UNSAFE RECURSION FUNCTION
 def GetAndCheck(page: int, word: str, proxies: dict = None) -> dict:
     raw = GetData(page, word, proxies)
     if 'data' not in raw:
@@ -74,6 +70,7 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
     PARAMS['page'] = page
     PARAMS['query'] = word
     HEADERS['User-Agent'] = random.choice(USER_AGENTS)
+    HEADERS['Referer'] = HEADERS['Referer'].format(quote(word))
     try:
         if random.choice([True, False]):
             Stamp('Using proxy', 'i')
@@ -101,47 +98,27 @@ def GetData(page: int, word: str, proxies: dict) -> dict:
 
 
 def ProcessData(raw: dict, word: str, page: int) -> (list, list):
-    list_real = []
-    list_advertise = []
+    data = []
     for i in range(SmartLen(raw['data']['products'])):
-        row_advertise = []
-        row_real = []
+        row = []
         for column in COLUMNS:
             match column:
                 case 'id':
-                    row_advertise.append(str(raw['data']['products'][i]['id']))
-                    row_real.append(str(raw['data']['products'][i]['id']))
+                    row.append(str(raw['data']['products'][i]['id']))
                 case 'name':
-                    row_advertise.append(str(raw['data']['products'][i]['name']))
-                    row_real.append(str(raw['data']['products'][i]['name']))
+                    row.append(str(raw['data']['products'][i]['name']))
                 case 'word':
-                    row_advertise.append(word)
-                    row_real.append(word)
+                    row.append(word)
                 case 'page':
-                    row_advertise.append(str(page))
-                    row_real.append(str(page))
+                    row.append(str(page))
                 case 'place':
-                    row_real.append(str(i + 1))
-                    try:
-                        index_from_log = raw['data']['products'][i]['log']['position']
-                    except KeyError:
-                        row_advertise.append(str(i + 1))
-                    else:
-                        row_advertise.append(str(index_from_log + 1))
+                    row.append(str(i + 1))
                 case 'time':
-                    row_advertise.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
-                    row_real.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
+                    row.append(str(datetime.now().strftime('%Y-%m-%d %H:%M')))
                 case 'price':
-                    if TYPE == '-h':
-                        try:
-                            row_advertise.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
-                            row_real.append(str(int(raw['data']['products'][i]['salePriceU'] / 100)))
-                        except KeyError:
-                            row_advertise.append(MSG)
-                            row_real.append(MSG)
-        list_advertise.append(row_advertise)
-        list_real.append(row_real)
-    return list_advertise, list_real
+                    row.append(str(round(int(raw['data']['products'][i]['sizes'][0]['price']['product']) / 100)))
+        data.append(row)
+    return data
 
 
 if __name__ == '__main__':
