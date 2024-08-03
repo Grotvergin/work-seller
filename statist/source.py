@@ -5,6 +5,7 @@ PERC_COMM = 0.022249
 SLEEP = 70
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 DATE_FROM = (datetime.now() - timedelta(days=120)).strftime('%Y-%m-%d')
+YEAR_AGO = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
 SHEETS = { 
     'Realisations': {
         'URL': 'https://statistics-api.wildberries.ru/api/v5/supplier/reportDetailByPeriod',

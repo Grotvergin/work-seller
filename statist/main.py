@@ -5,9 +5,9 @@ from statist.source import *
 def Main() -> None:
     config, sections = ParseConfig(NAME)
     service = BuildService()
-    if datetime.now().strftime('%d') == '01':
-        for sheet_name in SHEETS.keys():
-            Save(config, service, sections[4:], sheet_name)
+    # if datetime.now().strftime('%d') == '01':
+    #     for sheet_name in SHEETS.keys():
+    #         Save(config, service, sections[4:], sheet_name)
     for sheet_name in SHEETS.keys():
         Body(config, service, sections[:4], sheet_name)
         Body(config, service, sections[4:], sheet_name, PREFIX_MONTH)
@@ -52,20 +52,11 @@ def Save(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
 def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str, period: str = None):
     Stamp(f'Processing sheet {sheet_name} for period {period}', 'b')
     start = time.time()
+    date_start = YEAR_AGO if sheet_name == 'Warehouse' else DATE_FROM
     for heading in sections:
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
-        if sheet_name == 'Realisations':
-            if period is None:
-                data = GetData(SHEETS[sheet_name]['URL'], token, '2024-01-30', date_to)
-                extra_data = GetData('https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod', token, date_from, '2024-01-29')
-                if extra_data:
-                    data.extend(extra_data)
-            else:
-                data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
-                data = SortByRRD_ID(data)
-        else:
-            data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
+        data = GetData(SHEETS[sheet_name]['URL'], token, date_start, TODAY)
         data = ProcessData(Normalize(data), sheet_name)
         LargeUpload(data, sheet_name, sheet_id, service)
     elapsed = time.time() - start
@@ -169,19 +160,6 @@ def ProcessData(raw: list, sheet_name: str) -> list:
                 one_row.append(value.replace('.', ','))
         list_of_rows.append(one_row)
     return list_of_rows
-
-
-def SortByRRD_ID(raw: list) -> list:
-    if SmartLen(raw) > 1:
-        Stamp('Sorting by RRD_ID', 'i')
-        swap = True
-        while swap:
-            swap = False
-            for i in range(len(raw) - 1):
-                if raw[i]['rrd_id'] > raw[i + 1]['rrd_id']:
-                    raw[i], raw[i + 1] = raw[i + 1], raw[i]
-                    swap = True
-    return raw
 
 
 if __name__ == '__main__':
