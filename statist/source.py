@@ -6,7 +6,33 @@ SLEEP = 70
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 DATE_FROM = (datetime.now() - timedelta(days=120)).strftime('%Y-%m-%d')
 YEAR_AGO = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
-SHEETS = { 
+SHEETS = {
+    'Warehouse': {
+        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks',
+        'Columns': {
+            'lastChangeDate': None,
+            'supplierArticle': None,
+            'techSize': None,
+            'barcode': None,
+            'quantity': None,
+            'isSupply': None,
+            'isRealization': None,
+            'quantityFull': None,
+            'quantityNotInOrders': '',
+            'warehouseName': None,
+            'inWayToClient': None,
+            'inWayFromClient': None,
+            'nmId': None,
+            'subject': None,
+            'category': None,
+            'daysOnSite': '',
+            'brand': None,
+            'SCCode': None,
+            'Price': None,
+            'Discount': None,
+            'WarehouseID': ''
+        }
+    },
     'Realisations': {
         'URL': 'https://statistics-api.wildberries.ru/api/v5/supplier/reportDetailByPeriod',
         'Columns': {
@@ -127,32 +153,6 @@ SHEETS = {
             'gNumber': None,
             'date': None,
             'lastChangeDate': None
-        }
-    },
-    'Warehouse': {
-        'URL': 'https://statistics-api.wildberries.ru/api/v1/supplier/stocks',
-        'Columns': {
-            'lastChangeDate': None,
-            'supplierArticle': None,
-            'techSize': None,
-            'barcode': None,
-            'quantity': None,
-            'isSupply': None,
-            'isRealization': None,
-            'quantityFull': None,
-            'quantityNotInOrders': '',
-            'warehouseName': None,
-            'inWayToClient': None,
-            'inWayFromClient': None,
-            'nmId': None,
-            'subject': None,
-            'category': None,
-            'daysOnSite': '',
-            'brand': None,
-            'SCCode': None,
-            'Price': None,
-            'Discount': None,
-            'WarehouseID': ''
         }
     }
 }
