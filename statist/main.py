@@ -9,8 +9,8 @@ def Main() -> None:
     #     for sheet_name in SHEETS.keys():
     #         Save(config, service, sections[4:], sheet_name)
     for sheet_name in SHEETS.keys():
-        Body(config, service, sections[:4], sheet_name)
         Body(config, service, sections[4:], sheet_name, PREFIX_MONTH)
+        Body(config, service, sections[:4], sheet_name)
 
 
 def Save(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str):
@@ -54,7 +54,8 @@ def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
     start = time.time()
     for heading in sections:
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
-        date_from = YEAR_AGO if sheet_name == 'Warehouse' else DATE_FROM
+        if sheet_name == 'Warehouse':
+            date_from = YEAR_AGO
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
         data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
         data = ProcessData(Normalize(data), sheet_name)
