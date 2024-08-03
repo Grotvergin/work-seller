@@ -52,11 +52,11 @@ def Save(config: ConfigParser, service: googleapiclient.discovery.Resource, sect
 def Body(config: ConfigParser, service: googleapiclient.discovery.Resource, sections: list, sheet_name: str, period: str = None):
     Stamp(f'Processing sheet {sheet_name} for period {period}', 'b')
     start = time.time()
-    date_start = YEAR_AGO if sheet_name == 'Warehouse' else DATE_FROM
     for heading in sections:
         token, date_from, date_to, sheet_id = ParseCurrentHeading(config, heading, period)
+        date_from = YEAR_AGO if sheet_name == 'Warehouse' else DATE_FROM
         CleanSheet(len(SHEETS[sheet_name]['Columns']), sheet_name, sheet_id, service, 'C')
-        data = GetData(SHEETS[sheet_name]['URL'], token, date_start, TODAY)
+        data = GetData(SHEETS[sheet_name]['URL'], token, date_from, date_to)
         data = ProcessData(Normalize(data), sheet_name)
         LargeUpload(data, sheet_name, sheet_id, service)
     elapsed = time.time() - start
