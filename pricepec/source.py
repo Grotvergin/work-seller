@@ -5,7 +5,7 @@ COLUMNS = ['id', 'name', 'price', 'time']
 NAME = (os.path.dirname(os.path.realpath(__file__))).replace('\\', '/').split('/')[-1]
 SHORT_SLEEP = 6
 LONG_SLEEP = 45
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 20
 
 PARAMS = {
     'appType': '1',
